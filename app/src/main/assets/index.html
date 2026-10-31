@@ -2256,7 +2256,7 @@ function hurtAlly(t, amt) {
     case "player": t.alive = false; t.respawnT = 5; t.stun = 0; t.slowStack = 0; burst(t.x, t.y - 20, "#ff8a1f", 26, 230); text(t.x, t.y - 60, "¡Fobi cayó!", "#ffb06a", 16); break;
     case "ally": { const n = allyCount(); t.alive = false; t.dead = true; rescaleTeam(n, n - 1); } burst(t.x, t.y - 20, t.cos.lining, 22, 220); text(t.x, t.y - 60, "Aliado fuera", "#ffd7a8", 13); break;
     case "core": endGame(false); break;
-    case "spirit": fobiFeel(t.from, "sad", 5); t.dead = true; burst(t.x, t.y, "#c9fbf3", 20, 180); text(t.x, t.y - 50, "El fantasma se deshizo", "#a6f4e8", 13); break;
+    case "spirit": fobiFeel(t.from, "sad", 5); t.dead = true; burst(t.x, t.y, "#c9fbf3", 20, 180); text(t.x, t.y - 50, "El " + SPIRIT_NAME + " se deshizo", "#a6f4e8", 13); break;
     case "vela": t.dead = true; burst(t.x, t.y - 40, "#ffcf57", 18, 160); text(t.x, t.y - 70, "¡Se apagó una vela!", "#ffcf57", 13); break;
     case "deco":
       t.dead = true; G.slots[t.slot].deco = null; burst(t.x, t.y - 10, "#e57a24", 20, 200);
@@ -2597,7 +2597,7 @@ function dropPart(s) {
     // only one ghost per festiloco: extra parts power up the one you already have
     const mine = spiritOf(d.owner);
     if (mine) buffSpirit(mine, cx, cy);
-    else { summonSpirit(d.owner, cx, cy - 30); ring(cx, cy, 10, DROP_R * 1.6, "rgba(166,244,232,.8)", .6); text(cx, cy - 70, "¡Fantasma reunido!", "#a6f4e8", 16); }
+    else { summonSpirit(d.owner, cx, cy - 30); ring(cx, cy, 10, DROP_R * 1.6, "rgba(166,244,232,.8)", .6); text(cx, cy - 70, "¡Volvió el " + SPIRIT_NAME + "!", "#a6f4e8", 16); }
   }
 }
 function updateDrops(dt) {
@@ -3449,7 +3449,7 @@ function cleanup() {
 
 // ================= skill animations: things come out of the keyhole =================
 const CAST_DUR = { bats: 1.05, tomb: .95, wolf: 1.05, rage: .6, ult: .65 };
-function startCast(u, kind, pt) { u.cast = { kind, t: 0, dur: CAST_DUR[kind], pt, spawned: 0, kicked: false }; if (kind !== "ult") spiritReact(u, "cheer", .9); }
+function startCast(u, kind, pt) { u.cast = { kind, t: 0, dur: CAST_DUR[kind], pt, spawned: 0, kicked: false }; if (kind !== "ult") spiritReact(u, kind, CAST_DUR[kind] + .2); }
 function keyholePos(u) { return { x: u.x + u.face * 1.5, y: u.y - 70 }; }
 function handsPos(u) { return { x: u.x + u.face * 24, y: u.y - 37 }; }
 function updateCasts(dt) {
@@ -3768,7 +3768,9 @@ const lowK = o => o && o.maxhp ? clamp(1 - (o.hp / o.maxhp) / .3, 0, 1) : 0;
 
 // ---------- the reunited ghost: one per festiloco, permanent until destroyed, levels up to 5 ----------
 const SPIRIT_MAX = 5;
-const spiritStats = l => ({ hp: 54 + 27 * (l - 1), dmg: 14 * (1 + .25 * (l - 1)), spd: 190 * (1 + .08 * (l - 1)) });
+// the Señor Ghonzalo is fragile: little health, but long reach
+const SPIRIT_NAME = "Señor Ghonzalo";
+const spiritStats = l => ({ hp: 30 + 15 * (l - 1), dmg: 14 * (1 + .25 * (l - 1)), spd: 190 * (1 + .08 * (l - 1)) });
 function makeSpirit(x, y, from) {
   const s = spiritStats(1);
   return { kind: "spirit", x, y, r: 14, lvl: 1, hp: s.hp, maxhp: s.hp, atkT: 0, bob: rand(0, TAU), face: 1, from, swing: 0, appear: 0 };
@@ -3782,8 +3784,8 @@ function buffSpirit(g, cx, cy) {
   const before = g.maxhp;
   if (g.lvl < SPIRIT_MAX) {
     g.lvl++; const s = spiritStats(g.lvl); g.maxhp = s.hp; g.hp = Math.min(g.maxhp, g.hp + (g.maxhp - before) + g.maxhp * .25);
-    text(g.x, g.y - 60, "¡Fantasma nivel " + g.lvl + "!", "#a6f4e8", 16);
-  } else { g.hp = Math.min(g.maxhp, g.hp + g.maxhp * .4); text(g.x, g.y - 60, "¡Fantasma al máximo!", "#a6f4e8", 14); }
+    text(g.x, g.y - 60, SPIRIT_NAME + " · nivel " + g.lvl, "#a6f4e8", 15);
+  } else { g.hp = Math.min(g.maxhp, g.hp + g.maxhp * .4); text(g.x, g.y - 60, SPIRIT_NAME + " al máximo", "#a6f4e8", 14); }
   g.flash = .3; g.pump = .5; fobiFeel(g.from, "happy", 1.4);
   ring(cx, cy, 10, DROP_R * 1.4, "rgba(166,244,232,.8)", .5);
   for (let i = 0; i < 10; i++) G.parts.push({ x: cx + rand(-30, 30), y: cy + rand(-10, 10), vx: (g.x - cx) * 1.8, vy: (g.y - cy) * 1.8, life: .5, max: .5, color: "#c9fbf3", size: 3 });
@@ -4061,14 +4063,13 @@ function enrageWolf(w) {
 function spiritReact(u, k, t) { const g = u && spiritOf(u); if (g && !g.phobia) g.react = { k, t: t || .9, max: t || .9 }; }
 // Fobi reacts to what his ghost does
 function fobiFeel(u, k, t) { if (u) u.dadMood = { k, t: t || 1.2 }; }
-const PUNCH_R = 150;
+const PUNCH_R = 215;
 // the ghost rides on Fobi's back like a companion, and throws stretchy punches at whoever gets close
 function updateSpirits(dt) {
   for (const g of G.spirits) {
     if (g.dead) continue;
     if (g.from && g.from.kind === "ally" && g.from.dead) { g.dead = true; burst(g.x, g.y, "#c9fbf3", 14, 140); continue; }
     g.atkT -= dt; g.bob += dt * 4; g.swing = Math.max(0, g.swing - dt); g.flash = Math.max(0, (g.flash || 0) - dt); g.pump = Math.max(0, (g.pump || 0) - dt); g.appear = Math.min(1, g.appear + dt * 1.6);
-    g.patT = (g.patT ?? rand(6, 10)) - dt;
     if (g.punch) { g.punch.t -= dt; if (g.punch.t <= 0) g.punch = null; }
     if (g.react) { g.react.t -= dt; if (g.react.t <= 0) g.react = null; }
     const S = spiritStats(g.lvl), u = g.from, own = u && u.alive && !u.enter ? u : null;
@@ -4081,11 +4082,10 @@ function updateSpirits(dt) {
     else { g.attached = true; g.x = bx; g.y = by; g.face = own.face; }
     if (!g.phobia) {
       const low = own.hp / own.maxhp < .3, enemyNear = nearestEnemyTo(own, 300);
-      if (g.react) mood = g.react.k === "pat" || g.react.k === "cheer" ? "happy" : g.react.k === "flinch" ? "shock" : "normal";
+      if (g.react) mood = { pat: "happy", bats: "happy", tomb: "focus", wolf: "happy", rage: "angry", flinch: "shock" }[g.react.k] || "normal";
       else if (low) mood = "worry";
       else if (own.reload > 0 && !enemyNear) mood = "read";
-      if (g.patT <= 0 && !enemyNear && !low && !g.react) { g.patT = rand(9, 14); g.react = { k: "pat", t: 2.2, max: 2.2 }; fobiFeel(own, "happy", 2.4); }
-      if (g.react && g.react.k === "pat") fight = false;
+      if (g.react && g.react.k !== "flinch") fight = false;
     }
     g.mood = mood;
     if (fight && g.attached && g.atkT <= 0) {
@@ -4153,7 +4153,7 @@ function updatePhobicSpirit(g, dt) {
     // after the last level it keeps tearing apart, ducks pouring out until nothing is left
     g.hp -= g.maxhp * DRAIN * dt; P.duckT -= dt;
     if (P.duckT <= 0) { P.duckT = DRAIN_DUCK; spawnRunDuck(g, 0); }
-    if (g.hp <= 0) { g.dead = true; burst(g.x, g.y, "#c9fbf3", 20, 180); burst(g.x, g.y, "#fff4c8", 14, 160); text(g.x, g.y - 40, "El fantasma se deshizo…", "#a6f4e8", 13); }
+    if (g.hp <= 0) { g.dead = true; burst(g.x, g.y, "#c9fbf3", 20, 180); burst(g.x, g.y, "#fff4c8", 14, 160); text(g.x, g.y - 40, "El " + SPIRIT_NAME + " se deshizo…", "#a6f4e8", 13); }
   }
 }
 function spawnRunDuck(g, delay) {
@@ -4213,7 +4213,7 @@ function drawRunDuck(d) {
 }
 
 // ================= ghost art: moods, little gestures with Fobi, and the duck-swarmed state =================
-function drawSpirit(g) {
+function drawSpirit(g, part) {
   const y = g.y + Math.sin(g.bob) * 4, t = T(), f = g.face, sway = Math.sin(g.bob * .7) * .06, mood = g.mood || "normal";
   const P = g.phobia, shake = P ? Math.sin(t * 40) * 1.6 : 0;
   if (!g.attached) ell(g.x, g.y + 42, 14, 4, "rgba(120,240,230,.18)");
@@ -4222,6 +4222,7 @@ function drawSpirit(g) {
   const droop = mood === "sad" ? 6 : 0;
   ctx.translate(g.x + shake + (hk > 0 ? Math.sin(t * 70) * 3 * hk : 0), y + droop - (1 - app) * 20); ctx.scale(f * sc, sc);
   ctx.rotate((g.attached ? sway * .4 : sway) + hk * .25 + (mood === "sad" ? .12 : 0) + (mood === "read" ? .25 : 0));
+  if (part !== "front") {
   // boots
   [-6, 6].forEach((x, i) => { const by = 30 + Math.sin(t * 6 + i * 2) * 2; ctx.beginPath(); ctx.moveTo(x - 4, by - 8); ctx.lineTo(x + 2, by - 8); ctx.lineTo(x + 2, by - 1); ctx.lineTo(x + 7, by); ctx.quadraticCurveTo(x + 8, by + 4, x + 5, by + 4); ctx.lineTo(x - 4, by + 4); ctx.closePath(); S("#3a2a22", 1.4); });
   // trench coat (bulging and wriggling when it's full of ducks)
@@ -4254,7 +4255,9 @@ function drawSpirit(g) {
   const glow = .7 + Math.sin(t * 4) * .3;
   ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.fillStyle = `rgba(166,244,232,${.35 * glow})`; ctx.beginPath(); ctx.arc(-2.6 + ex, ey, 3.2, 0, TAU); ctx.arc(2.6 + ex, ey, 3.2, 0, TAU); ctx.fill(); ctx.restore();
   ctx.strokeStyle = "#d6fff8"; ctx.fillStyle = "#d6fff8"; ctx.lineWidth = 1.2; ctx.lineCap = "round";
-  if (mood === "happy") { [-2.6, 2.6].forEach(dx => { ctx.beginPath(); ctx.arc(dx + ex, ey + 1, 1.6, Math.PI * 1.1, Math.PI * 1.9); ctx.stroke(); }); }
+  if (mood === "angry") { ctx.strokeStyle = "#ff9a8a"; [-2.6, 2.6].forEach(dx => circ(dx + ex, ey + .5, 1.5, "#ffb0a0")); ctx.beginPath(); ctx.moveTo(-4.8 + ex, ey - 4.2); ctx.lineTo(-1 + ex, ey - 2.6); ctx.moveTo(4.8 + ex, ey - 4.2); ctx.lineTo(1 + ex, ey - 2.6); ctx.stroke(); }
+  else if (mood === "focus") { [-2.6, 2.6].forEach(dx => { ctx.beginPath(); ctx.moveTo(dx + ex - 1.6, ey); ctx.lineTo(dx + ex + 1.6, ey); ctx.stroke(); }); circ(2.6 + ex + 1, ey, 1, "#d6fff8"); }
+  else if (mood === "happy") { [-2.6, 2.6].forEach(dx => { ctx.beginPath(); ctx.arc(dx + ex, ey + 1, 1.6, Math.PI * 1.1, Math.PI * 1.9); ctx.stroke(); }); }
   else if (mood === "shock") { [-2.8, 2.8].forEach(dx => { ctx.beginPath(); ctx.arc(dx + ex, ey, 2.1, 0, TAU); ctx.stroke(); }); }
   else {
     const r = mood === "worry" ? 1.1 : 1.5;
@@ -4267,6 +4270,7 @@ function drawSpirit(g) {
   ctx.save(); ctx.translate(P ? 3 : 0, -31 - (mood === "shock" ? 2 : 0)); ctx.rotate(P ? .5 : mood === "sad" ? -.05 : -.2);
   ctx.beginPath(); ctx.ellipse(0, 0, 11, 4.5, 0, 0, TAU); S("#6a1a2a", 1.6); ctx.beginPath(); ctx.ellipse(1, -2, 9, 4, 0, Math.PI, TAU); S("#6a1a2a", 1.4); rrS(0, -7, 2, 3, 1, "#6a1a2a", 1);
   ctx.restore();
+  }
   // gloves: where they go depends on what he's doing with Fobi
   const R = g.react, rk = R ? 1 - R.t / R.max : 0, sw = g.swing > 0 ? 10 : 0, A = g.attached;
   const glove = s => {
@@ -4274,7 +4278,10 @@ function drawSpirit(g) {
     if (A) { hx = s === 1 ? 12 : -13; hy = s === 1 ? 18 : 10 + Math.sin(t * 4) * 1.5; }      // holding on to his shoulders
     if (s === 1 && g.punch) { hx = 15; hy = 4; }                                               // the punching glove flies out (drawn below)
     if (P) { hx = s * 9; hy = 6 + Math.sin(t * 30 + s) * 1.5; }                                   // hugging the coat shut
-    else if (R && R.k === "cheer") { hx = s * 15; hy = -30 - Math.abs(Math.sin(rk * Math.PI * 3)) * 6; } // arms up, proud
+    else if (R && R.k === "bats") { const up = Math.sin(Math.min(1, rk * 1.3) * Math.PI) * 9; hx = s === 1 ? 20 : 9; hy = -2 - up; }   // lifts his son's pail so the bats can get out
+    else if (R && R.k === "tomb") { if (s === 1) { const k2 = Math.min(1, rk * 1.6); hx = 16 + k2 * 10; hy = -6 - k2 * 4; } else { hx = -10; hy = 4; } } // points where the tomb goes
+    else if (R && R.k === "wolf") { hx = 14 + s * 6; hy = 20 + Math.sin(rk * Math.PI) * 8; }  // helps set the scared man down gently
+    else if (R && R.k === "rage") { hx = s * 13; hy = -18 + Math.sin(t * 40 + s) * 2.5; }       // fists up, shaking
     else if (R && R.k === "pat" && s === 1) { hx = A ? 14 : 6; hy = (A ? -14 : 26) + Math.abs(Math.sin(rk * Math.PI * 4)) * 5; } // patting the pail
     else if (R && R.k === "flinch") { hx = s * 6 + 6; hy = -6; }                                // reaching out
     else if (mood === "worry") { hx = A ? 13 + s * 5 : 14 + s * 4; hy = (A ? 20 : 6) + Math.sin(t * 9 + s) * 2; } // clinging to him
@@ -4285,9 +4292,14 @@ function drawSpirit(g) {
     ctx.beginPath(); ctx.ellipse(hx, hy, 4.5, 4, 0, 0, TAU); S("#f4f4f0", 1.3);
     for (let i = 0; i < 3; i++) rrS(hx + s * 2.5, hy - 3 + i * 2.2, 3.4, 1.8, .9, "#f4f4f0", .8);
   };
-  glove(-1); glove(1);
-  if (R && R.k === "cheer") { for (let i = 0; i < 3; i++) { const a = t * 4 + i * 2.1; circ(Math.cos(a) * 20, -36 + Math.sin(a) * 6, 1.4, "#fff6b0"); } }
+  if (part !== "back") { glove(-1); glove(1); }
+  if (part !== "back") {
+  if (R && R.k === "bats") { for (let i = 0; i < 3; i++) { const a = t * 4 + i * 2.1; circ(16 + Math.cos(a) * 10, -14 + Math.sin(a) * 4, 1.4, "#a6f4e8"); } }
+  if (R && R.k === "tomb") { ctx.strokeStyle = "rgba(166,244,232,.6)"; ctx.setLineDash([3, 4]); ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(30, -10); ctx.lineTo(48, -16); ctx.stroke(); ctx.setLineDash([]); }
+  if (R && R.k === "rage") { ctx.globalAlpha = .5; ctx.fillStyle = "#ff5a46"; for (let i = 0; i < 3; i++) { const p = (t * 1.5 + i / 3) % 1; ctx.beginPath(); ctx.arc(-8 + i * 8, -30 - p * 14, 2.2 * (1 - p), 0, TAU); ctx.fill(); } ctx.globalAlpha = 1; }
+  }
   ctx.restore();
+  if (part === "back") return;
   if (g.punch) {
     // stretchy sleeve shooting out to the enemy, glove first
     const k = g.punch.t / .25, reach = Math.sin(Math.min(1, k) * Math.PI), sx = g.x + f * 12 * sc, sy = y - 8 * sc;
@@ -4362,6 +4374,8 @@ function finishObjective() {
 }
 function endWave() {
   finishObjective();
+  // horde cleared: the Señor Ghonzalo pats his son on the pail
+  festis().forEach(u => { spiritReact(u, "pat", 2.4); if (spiritOf(u)) fobiFeel(u, "happy", 2.6); });
   G.velas.forEach(v => v.dead = true);
   G.mausOpen = false;
   if (G.wave >= MAX_WAVE) { startEscape(); return; }
@@ -5014,7 +5028,7 @@ function render() {
   if (G.monster) { const M = G.monster; list.push({ y: M.y, f: () => drawMonster(M) }); }
   G.bigbats.forEach(b => { if (b.state === "decoy") list.push({ y: b.y + 18, f: () => drawBat(b, true) }); });
   G.allies.forEach(a => list.push({ y: a.y, f: () => drawFobi(a) }));
-  G.spirits.forEach(g => { if (g.attached && g.from) list.push({ y: g.from.y - .5, f: () => drawSpirit(g) }); });
+  G.spirits.forEach(g => { if (g.attached && g.from) { list.push({ y: g.from.y - .5, f: () => drawSpirit(g, "back") }); list.push({ y: g.from.y + .5, f: () => drawSpirit(g, "front") }); } });
   list.sort((a, b) => a.y - b.y).forEach(o => o.f());
   drawAim();
   G.cleavers.forEach(drawCleaver); G.shots.forEach(drawShot); G.eshots.forEach(drawEShot); G.bubbles.forEach(drawBubble); G.duckFalls.forEach(drawDuckFall); G.tombFly.forEach(drawTombFly); G.shadows.forEach(drawShadow);

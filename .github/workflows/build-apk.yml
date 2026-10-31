@@ -29,6 +29,11 @@ jobs:
       - name: Renombrar APK
         run: cp app/build/outputs/apk/debug/app-debug.apk Festilocos.apk
 
+      - uses: actions/upload-artifact@v4
+        with:
+          name: apk
+          path: Festilocos.apk
+
       - name: Publicar en Releases
         uses: softprops/action-gh-release@v2
         with:
@@ -36,3 +41,46 @@ jobs:
           name: Festilocos (versión ${{ github.run_number }})
           body: Tocá Festilocos.apk para descargarlo e instalarlo en el celular.
           files: Festilocos.apk
+
+  # opens the APK on an Android emulator and saves screenshots and logs, to catch problems before the phone does
+  probar:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: apk
+
+      - name: Activar KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Probar en emulador
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 31
+          arch: x86_64
+          target: google_apis
+          disable-animations: true
+          script: |
+            adb install -r Festilocos.apk
+            adb logcat -c
+            adb shell am start -n com.festilocos.juego/.MainActivity
+            sleep 20
+            adb exec-out screencap -p > pantalla1.png
+            adb shell input tap 1200 650
+            sleep 8
+            adb exec-out screencap -p > pantalla2.png
+            adb logcat -d > logcat.txt || true
+            adb logcat -d -s FESTI chromium AndroidRuntime ActivityManager > resumen.txt || true
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: prueba
+          path: |
+            pantalla*.png
+            logcat.txt
+            resumen.txt

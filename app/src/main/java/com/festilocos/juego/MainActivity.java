@@ -3,9 +3,12 @@ package com.festilocos.juego;
 import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.webkit.ConsoleMessage;
+import android.webkit.RenderProcessGoneDetail;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -13,6 +16,7 @@ import android.webkit.WebViewClient;
 
 // The whole game lives in assets/index.html; this activity just shows it full screen, offline.
 public class MainActivity extends Activity {
+    private static final String TAG = "FESTI";
     private WebView web;
 
     @Override
@@ -20,19 +24,34 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        if (Build.VERSION.SDK_INT >= 28) {
-            getWindow().getAttributes().layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
-        }
+        WebView.setWebContentsDebuggingEnabled(true);
+        createWebView();
+    }
+
+    private void createWebView() {
         web = new WebView(this);
         WebSettings s = web.getSettings();
         s.setJavaScriptEnabled(true);
         s.setDomStorageEnabled(true);   // keeps coins, stickers and cosmetics between sessions
         s.setAllowFileAccess(true);
         s.setMediaPlaybackRequiresUserGesture(false);
-        s.setLoadWithOverviewMode(true);
-        s.setUseWideViewPort(true);
-        web.setWebViewClient(new WebViewClient());
-        web.setWebChromeClient(new WebChromeClient());
+        web.setWebViewClient(new WebViewClient() {
+            // if the page's renderer dies, rebuild it instead of taking the whole app down
+            @Override
+            public boolean onRenderProcessGone(WebView view, RenderProcessGoneDetail detail) {
+                Log.e(TAG, "renderer gone, crashed=" + (Build.VERSION.SDK_INT >= 26 && detail.didCrash()));
+                if (web != null) { ((android.view.ViewGroup) web.getParent()).removeView(web); web.destroy(); web = null; }
+                createWebView();
+                return true;
+            }
+        });
+        web.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onConsoleMessage(ConsoleMessage m) {
+                Log.i(TAG, m.messageLevel() + " " + m.message() + " @" + m.lineNumber());
+                return true;
+            }
+        });
         web.setBackgroundColor(0xFF120A1A);
         setContentView(web);
         hideBars();
@@ -40,6 +59,7 @@ public class MainActivity extends Activity {
     }
 
     private void hideBars() {
+        if (web == null) return;
         web.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
             | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
             | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
@@ -54,12 +74,12 @@ public class MainActivity extends Activity {
     // the Android back button acts like Escape in the game (closes menus / pauses)
     @Override
     public void onBackPressed() {
-        web.evaluateJavascript("window.dispatchEvent(new KeyboardEvent('keydown',{code:'Escape',key:'Escape'}));", null);
+        if (web != null) web.evaluateJavascript("window.dispatchEvent(new KeyboardEvent('keydown',{code:'Escape',key:'Escape'}));", null);
     }
 
     @Override
-    protected void onPause() { super.onPause(); web.onPause(); }
+    protected void onPause() { super.onPause(); if (web != null) web.onPause(); }
 
     @Override
-    protected void onResume() { super.onResume(); web.onResume(); hideBars(); }
+    protected void onResume() { super.onResume(); if (web != null) { web.onResume(); hideBars(); } }
 }

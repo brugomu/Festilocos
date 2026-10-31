@@ -3449,7 +3449,7 @@ function cleanup() {
 
 // ================= skill animations: things come out of the keyhole =================
 const CAST_DUR = { bats: 1.05, tomb: .95, wolf: 1.05, rage: .6, ult: .65 };
-function startCast(u, kind, pt) { u.cast = { kind, t: 0, dur: CAST_DUR[kind], pt, spawned: 0, kicked: false }; if (kind !== "ult") spiritReact(u, kind, CAST_DUR[kind] + .2); }
+function startCast(u, kind, pt) { u.cast = { kind, t: 0, dur: CAST_DUR[kind], pt, spawned: 0, kicked: false }; if (kind !== "ult") spiritReact(u, kind, kind === "wolf" ? 2.4 : CAST_DUR[kind] + .2); }
 function keyholePos(u) { return { x: u.x + u.face * 1.5, y: u.y - 70 }; }
 function handsPos(u) { return { x: u.x + u.face * 24, y: u.y - 37 }; }
 function updateCasts(dt) {
@@ -4082,7 +4082,7 @@ function updateSpirits(dt) {
     else { g.attached = true; g.x = bx; g.y = by; g.face = own.face; }
     if (!g.phobia) {
       const low = own.hp / own.maxhp < .3, enemyNear = nearestEnemyTo(own, 300);
-      if (g.react) mood = { pat: "happy", bats: "happy", tomb: "focus", wolf: "happy", rage: "angry", flinch: "shock" }[g.react.k] || "normal";
+      if (g.react) mood = { pat: "happy", bats: "happy", tomb: "focus", wolf: "ponder", rage: "angry", flinch: "shock" }[g.react.k] || "normal";
       else if (low) mood = "worry";
       else if (own.reload > 0 && !enemyNear) mood = "read";
       if (g.react && g.react.k !== "flinch") fight = false;
@@ -4221,7 +4221,8 @@ function drawSpirit(g, part) {
   ctx.save(); ctx.globalAlpha = app * (.85 + .15 * Math.sin(t * 3));
   const droop = mood === "sad" ? 6 : 0;
   ctx.translate(g.x + shake + (hk > 0 ? Math.sin(t * 70) * 3 * hk : 0), y + droop - (1 - app) * 20); ctx.scale(f * sc, sc);
-  ctx.rotate((g.attached ? sway * .4 : sway) + hk * .25 + (mood === "sad" ? .12 : 0) + (mood === "read" ? .25 : 0));
+  const pk = g.react && g.react.k === "wolf" ? 1 - g.react.t / g.react.max : -1;
+  ctx.rotate((pk >= 0 ? (pk < .72 ? -.18 : -.18 + Math.sin((pk - .72) / .28 * Math.PI * 2) * .12) : 0) + (g.attached ? sway * .4 : sway) + hk * .25 + (mood === "sad" ? .12 : 0) + (mood === "read" ? .25 : 0));
   if (part !== "front") {
   // boots
   [-6, 6].forEach((x, i) => { const by = 30 + Math.sin(t * 6 + i * 2) * 2; ctx.beginPath(); ctx.moveTo(x - 4, by - 8); ctx.lineTo(x + 2, by - 8); ctx.lineTo(x + 2, by - 1); ctx.lineTo(x + 7, by); ctx.quadraticCurveTo(x + 8, by + 4, x + 5, by + 4); ctx.lineTo(x - 4, by + 4); ctx.closePath(); S("#3a2a22", 1.4); });
@@ -4256,6 +4257,11 @@ function drawSpirit(g, part) {
   ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.fillStyle = `rgba(166,244,232,${.35 * glow})`; ctx.beginPath(); ctx.arc(-2.6 + ex, ey, 3.2, 0, TAU); ctx.arc(2.6 + ex, ey, 3.2, 0, TAU); ctx.fill(); ctx.restore();
   ctx.strokeStyle = "#d6fff8"; ctx.fillStyle = "#d6fff8"; ctx.lineWidth = 1.2; ctx.lineCap = "round";
   if (mood === "angry") { ctx.strokeStyle = "#ff9a8a"; [-2.6, 2.6].forEach(dx => circ(dx + ex, ey + .5, 1.5, "#ffb0a0")); ctx.beginPath(); ctx.moveTo(-4.8 + ex, ey - 4.2); ctx.lineTo(-1 + ex, ey - 2.6); ctx.moveTo(4.8 + ex, ey - 4.2); ctx.lineTo(1 + ex, ey - 2.6); ctx.stroke(); }
+  else if (mood === "ponder") {
+    // eyes up at the sky while thinking, then a little nod
+    const rk2 = g.react ? 1 - g.react.t / g.react.max : 1, up = rk2 < .72 ? -2 : 0;
+    [-2.6, 2.6].forEach(dx => circ(dx + ex + .6, ey + up, 1.4, "#d6fff8"));
+  }
   else if (mood === "focus") { [-2.6, 2.6].forEach(dx => { ctx.beginPath(); ctx.moveTo(dx + ex - 1.6, ey); ctx.lineTo(dx + ex + 1.6, ey); ctx.stroke(); }); circ(2.6 + ex + 1, ey, 1, "#d6fff8"); }
   else if (mood === "happy") { [-2.6, 2.6].forEach(dx => { ctx.beginPath(); ctx.arc(dx + ex, ey + 1, 1.6, Math.PI * 1.1, Math.PI * 1.9); ctx.stroke(); }); }
   else if (mood === "shock") { [-2.8, 2.8].forEach(dx => { ctx.beginPath(); ctx.arc(dx + ex, ey, 2.1, 0, TAU); ctx.stroke(); }); }
@@ -4280,22 +4286,32 @@ function drawSpirit(g, part) {
     if (P) { hx = s * 9; hy = 6 + Math.sin(t * 30 + s) * 1.5; }                                   // hugging the coat shut
     else if (R && R.k === "bats") { const up = Math.sin(Math.min(1, rk * 1.3) * Math.PI) * 9; hx = s === 1 ? 20 : 9; hy = -2 - up; }   // lifts his son's pail so the bats can get out
     else if (R && R.k === "tomb") { if (s === 1) { const k2 = Math.min(1, rk * 1.6); hx = 16 + k2 * 10; hy = -6 - k2 * 4; } else { hx = -10; hy = 4; } } // points where the tomb goes
-    else if (R && R.k === "wolf") { hx = 14 + s * 6; hy = 20 + Math.sin(rk * Math.PI) * 8; }  // helps set the scared man down gently
+    else if (R && R.k === "wolf") { if (s === 1) { hx = 9; hy = -15 + (rk < .75 ? Math.sin(t * 14) * 1.2 : 0); } else { hx = -9; hy = 6; } } // hand on the chin, looking up, thinking it over
     else if (R && R.k === "rage") { hx = s * 13; hy = -18 + Math.sin(t * 40 + s) * 2.5; }       // fists up, shaking
     else if (R && R.k === "pat" && s === 1) { hx = A ? 14 : 6; hy = (A ? -14 : 26) + Math.abs(Math.sin(rk * Math.PI * 4)) * 5; } // patting the pail
     else if (R && R.k === "flinch") { hx = s * 6 + 6; hy = -6; }                                // reaching out
     else if (mood === "worry") { hx = A ? 13 + s * 5 : 14 + s * 4; hy = (A ? 20 : 6) + Math.sin(t * 9 + s) * 2; } // clinging to him
     else if (mood === "read" && s === 1) { hx = 13; hy = 22; }                                   // hand on his shoulder, reading along
     else if (mood === "sad") { hy = 14; hx = s * 12; }
-    ctx.beginPath(); ctx.moveTo(s * 11, -10); ctx.quadraticCurveTo(s * 15, -4, s * 14, 2); ctx.lineTo(s * 9, 2); ctx.closePath(); S(P ? "#6a5a3a" : "#7a6644", 1.3);
     if (s === 1 && g.punch) return;
+    // the sleeve goes from his shoulder all the way to the glove, so the arm wraps over Fobi instead of passing through him
+    const shx = s * 10, shy = -9, mx = (shx + hx) / 2 + s * 3, my = Math.min(shy, hy) - 3;
+    ctx.lineCap = "round"; ctx.strokeStyle = OL; ctx.lineWidth = 7.5; ctx.beginPath(); ctx.moveTo(shx, shy); ctx.quadraticCurveTo(mx, my, hx - s * 2.5, hy); ctx.stroke();
+    ctx.strokeStyle = P ? "#6a5a3a" : "#7a6644"; ctx.lineWidth = 5; ctx.stroke(); ctx.lineCap = "butt";
     ctx.beginPath(); ctx.ellipse(hx, hy, 4.5, 4, 0, 0, TAU); S("#f4f4f0", 1.3);
     for (let i = 0; i < 3; i++) rrS(hx + s * 2.5, hy - 3 + i * 2.2, 3.4, 1.8, .9, "#f4f4f0", .8);
   };
-  if (part !== "back") { glove(-1); glove(1); }
+  // on his back, the far arm stays behind Fobi and the near arm goes in front of him
+  if (!A) { if (part !== "back") { glove(-1); glove(1); } }
+  else { if (part === "back") glove(-1); if (part === "front") glove(1); }
   if (part !== "back") {
   if (R && R.k === "bats") { for (let i = 0; i < 3; i++) { const a = t * 4 + i * 2.1; circ(16 + Math.cos(a) * 10, -14 + Math.sin(a) * 4, 1.4, "#a6f4e8"); } }
   if (R && R.k === "tomb") { ctx.strokeStyle = "rgba(166,244,232,.6)"; ctx.setLineDash([3, 4]); ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(30, -10); ctx.lineTo(48, -16); ctx.stroke(); ctx.setLineDash([]); }
+  if (R && R.k === "wolf") {
+    // a little thought bubble: was that a good move? ... yes.
+    if (rk < .72) { for (let i = 0; i < 3; i++) circS(-4 + i * 4, -40 - i * 4, 1 + i * .5, "rgba(214,255,248,.85)", .6); ctx.beginPath(); ctx.ellipse(8, -56, 7, 5.5, 0, 0, TAU); S("rgba(214,255,248,.9)", .8); label("?", 8, -53, 8, OL); }
+    else { ctx.beginPath(); ctx.ellipse(8, -52, 7, 5.5, 0, 0, TAU); S("rgba(214,255,248,.9)", .8); label("!", 8, -49, 8, OL); }
+  }
   if (R && R.k === "rage") { ctx.globalAlpha = .5; ctx.fillStyle = "#ff5a46"; for (let i = 0; i < 3; i++) { const p = (t * 1.5 + i / 3) % 1; ctx.beginPath(); ctx.arc(-8 + i * 8, -30 - p * 14, 2.2 * (1 - p), 0, TAU); ctx.fill(); } ctx.globalAlpha = 1; }
   }
   ctx.restore();

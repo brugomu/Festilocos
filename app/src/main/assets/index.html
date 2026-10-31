@@ -96,6 +96,12 @@ button{font:inherit;color:inherit}
   text-shadow:0 0 12px rgba(0,0,0,.9),0 0 2px #000}
 #ultTxt .caret{opacity:.8;animation:blink .6s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
+.netbadge{font-size:11px;font-weight:900;padding:6px 10px;color:#9fe8ff;white-space:nowrap}
+.netrow{display:flex;flex-direction:column;gap:6px;margin-top:4px;padding-top:10px;border-top:2px solid rgba(255,255,255,.08)}
+.netrow b{font-size:13px;color:var(--ember)}
+.netlist{display:flex;flex-direction:column;gap:6px;max-height:34vh;overflow:auto}
+.netlist .opt{width:100%}
+.netaddr{flex:1;min-width:0;padding:10px 12px;border-radius:12px;border:2px solid rgba(255,255,255,.18);background:rgba(0,0,0,.3);color:var(--ink);font:inherit;font-weight:800;touch-action:manipulation;user-select:text;-webkit-user-select:text}
 .inv.locked canvas{filter:grayscale(1) brightness(.45)}
 .stk.special{animation-duration:.9s;box-shadow:0 0 0 3px #ffd34a,0 0 28px 6px rgba(255,211,74,.55)}
 #bQ{right:124px;bottom:4px}#bE{right:116px;bottom:98px}#bR{right:34px;bottom:128px}
@@ -271,6 +277,7 @@ details ul{margin:6px 0 0;padding-left:16px;display:flex;flex-direction:column;g
         <div class="bosses matchonly" id="bossBox"></div>
       </div>
       <div class="right">
+        <div class="panel netbadge matchonly" id="netBadge" hidden></div>
         <div class="panel coins"><span class="coin"></span><span id="coinTxt">0</span></div>
         <button class="panel iconbtn" id="pauseBtn" aria-label="Pausa"><svg width="14" height="14" viewBox="0 0 14 14"><rect x="2" y="1" width="3.5" height="12" rx="1" fill="#f8f0e3"/><rect x="8.5" y="1" width="3.5" height="12" rx="1" fill="#f8f0e3"/></svg></button>
       </div>
@@ -359,6 +366,16 @@ details ul{margin:6px 0 0;padding-left:16px;display:flex;flex-direction:column;g
   </div>
 </div>
 
+<div class="overlay" id="netOv" hidden>
+  <div class="panel card">
+    <div class="eyebrow">Wi-Fi local</div>
+    <h2>Unirse a un amigo</h2>
+    <p id="netStatus" class="fine">Buscando partidas en tu Wi-Fi…</p>
+    <div class="netlist" id="netList"></div>
+    <div class="row"><input id="netAddr" class="netaddr" placeholder="O escribí la dirección del anfitrión (ej. 192.168.0.12)" inputmode="decimal"><button class="cta" id="netGo">Unirse</button></div>
+    <div class="row"><button class="cta ghost" id="netBack">Volver</button></div>
+  </div>
+</div>
 <div class="overlay" id="baseOv" hidden>
   <div class="panel card">
     <span class="eyebrow">Defensa del Corazón</span>
@@ -378,6 +395,11 @@ details ul{margin:6px 0 0;padding-left:16px;display:flex;flex-direction:column;g
     <p>10 hordas, con objetivos en la 3, 6 y 9 y tragaperras en la 5 y la 10. Aparecés junto al teléfono: llamá ayuda si querés y después llevá el Corazón a uno de los tres lugares marcados con flechas.</p>
     <p class="fine" id="bringTxt"></p>
     <div class="row"><button class="cta" id="goBtn">Entrar al cementerio</button><button class="cta ghost" id="baseBack">Volver</button></div>
+    <div class="netrow">
+      <b>Con amigos en el mismo Wi-Fi</b>
+      <div class="row"><button class="cta ghost" id="goNetBtn">Crear partida con amigos</button><button class="cta ghost" id="joinBtn">Unirse a un amigo</button></div>
+      <span class="fine">Hasta 4 festilocos. Si no hay Wi-Fi, el anfitrión puede compartir datos (punto de acceso) y los demás se conectan a esa red: no gasta datos.</span>
+    </div>
   </div>
 </div>
 
@@ -1338,7 +1360,7 @@ function drawFobi(u) {
   if (u.enter) drawEnterPortal(u);
   ctx.save(); ctx.translate(u.x, u.y);
   if (u.enter) { ctx.beginPath(); ctx.rect(-90, -240, 180, 243); ctx.clip(); ctx.translate(0, enterOffset(u)); ctx.globalAlpha = 0; }
-  ctx.strokeStyle = u.ai ? u.cos.lining : "#ff8a1f"; ctx.globalAlpha = .75; ctx.lineWidth = 3;
+  ctx.strokeStyle = u === G.player || !G ? "#ff8a1f" : u.cos.lining; ctx.globalAlpha = .75; ctx.lineWidth = 3;
   ctx.beginPath(); ctx.ellipse(0, 2, 20, 7.5, 0, 0, TAU); ctx.stroke(); ctx.globalAlpha = 1;
   shadowE(0, 2, 17); ctx.globalAlpha = 1;
   if ((u.slowStack || 0) > .05) { ctx.globalAlpha = Math.min(.8, u.slowStack); ell(0, 2, 22, 8, "#f4efe4"); ctx.globalAlpha = 1; }
@@ -1354,7 +1376,7 @@ function drawFobi(u) {
   if (u.stun > 0) stunStars(u.x, u.y - 88);
   if (G && G.mode === "match") {
     if (!u.ai && u.reload > 0) { ctx.strokeStyle = "rgba(166,244,232,.85)"; ctx.lineWidth = 3; ctx.beginPath(); ctx.ellipse(u.x, u.y + 2, 24, 9, 0, -Math.PI / 2, -Math.PI / 2 + TAU * (1 - u.reload / RELOAD)); ctx.stroke(); }
-    else { hpBar(u.x, u.y - 86, 36, u.hp / u.maxhp, u.cos.lining, 4); ctx.font = "900 9px Nunito, sans-serif"; ctx.textAlign = "center"; ctx.fillStyle = u.cos.lining; if (u.ai) ctx.fillText("IA", u.x, u.y - 92); }
+    else { hpBar(u.x, u.y - 86, 36, u.hp / u.maxhp, u.cos.lining, 4); ctx.font = "900 9px Nunito, sans-serif"; ctx.textAlign = "center"; ctx.fillStyle = u.cos.lining; if (u.ai) ctx.fillText("IA", u.x, u.y - 92); else if (u !== G.player) ctx.fillText(u.netName || (u.host ? "Anfitrión" : ""), u.x, u.y - 92); }
   }
 }
 function stunStars(x, y) {
@@ -1479,7 +1501,7 @@ function drawDecoBase(d) {
     if (d.caramel) { ctx.fillStyle = "#c9761f"; [-14, -6, 4, 12].forEach((x, i) => { ctx.beginPath(); ctx.ellipse(x, -12 + (i % 2) * 3, 2.6, 5, 0, 0, TAU); ctx.fill(); }); rrS(-2, -62, 4, 22, 1.5, "#e8dcc4", 1.2); }
     rrS(-1.8, -52, 3.6, 10, 1.5, "#3d2814", 1.2); ctx.beginPath(); ctx.ellipse(7, -50, 8, 3.8, -.5, 0, TAU); S("#4f8a3a", 1.2);
     // carved face, like a jack-o'-lantern but not hollow: the cuts show the pale apple flesh
-    const home = cl.every(c => c.home !== d);
+    const home = cl.every(c => c.home !== d && !(c.home && d._id && c.home._id === d._id));
     const flesh = d.caramel ? "#fbe7b0" : "#f8edc8", rim = d.caramel ? "#9a5a14" : "#8e1a24", juice = d.caramel ? "#e7a246" : "#ffe9a8";
     const cut = pts => { poly(pts); ctx.fillStyle = flesh; ctx.fill(); ctx.strokeStyle = rim; ctx.lineWidth = 1.6; ctx.lineJoin = "round"; ctx.stroke(); };
     cut([-14, -24, -4, -24, -9, -33]); ell(-9, -26.5, 2.6, 1, "rgba(160,110,60,.25)");
@@ -2010,6 +2032,8 @@ function makeFobi(x, y, cos, ai) {
 function setMode(m) { document.body.classList.remove("mode-title", "mode-lobby", "mode-match"); document.body.classList.add("mode-" + m); }
 function centerCam(x, y) { const vw = VW / SCALE, vh = VH / SCALE; cam.x = clamp(x - vw / 2, 0, Math.max(0, W.w - vw)); cam.y = clamp(y - vh / 2, 0, Math.max(0, W.h - vh)); }
 function newLobby() {
+  if (NET.role === "host") netHostStop();
+  if (NET.role === "guest" || NET.ws) { NET.role = null; try { NET.ws && NET.ws.close(); } catch (e) {} NET.ws = null; updateNetBadge(); }
   W = LB; G = blankState("lobby");
   G.player = makeFobi(600, 960, playerCos(), false);
   const npcTypes = ["emp", "cafe", "manitas", "emp", "friki", "cafe"];
@@ -2042,7 +2066,7 @@ function nearMarker() {
   return null;
 }
 function placeHeart(key) {
-  if (!key || G.phase !== "setup") return;
+  if (!key || G.phase !== "setup" || isGuest()) return;
   const B = BASES[key];
   G.base = key; G.B = B;
   G.core = { kind: "core", x: B.core.x, y: B.core.y, r: 64, hp: 500, maxhp: 500, flash: 0 };
@@ -2062,10 +2086,10 @@ function ring(x, y, r0, r1, color, life) { G.rings.push({ x, y, r0, r1, color, l
 function burst(x, y, color, n, spd, size) { for (let i = 0; i < n; i++) { const a = rand(0, TAU), s = rand(spd * .3, spd); G.parts.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 30, life: rand(.3, .7), max: .7, color, size: size || rand(2, 4) }); } }
 function stars(x, y) { for (let i = 0; i < 4; i++) { const a = rand(0, TAU); G.parts.push({ x, y, vx: Math.cos(a) * 140, vy: Math.sin(a) * 140, life: .25, max: .25, color: "#fff7d0", size: 3, star: true }); } }
 let toastT = 0;
-function toast(msg, secs) { const t = $("toast"); t.textContent = msg; t.hidden = false; toastT = secs || 2.4; }
+function toast(msg, secs, local) { const t = $("toast"); t.textContent = msg; t.hidden = false; toastT = secs || 2.4; if (!local && isHost()) netBroadcast({ t: "ev", e: "toast", msg, secs }); }
 function festis() { const a = G.allies.filter(x => x.alive); if (G.player && G.player.alive) a.push(G.player); return a; }
 function nearPhone() { const p = G.player; return G.mode === "match" && G.phase === "setup" && p.alive && dist(p, G.phone) < 110; }
-function nearSlot() { const p = G.player; let best = null, bd = 70; for (const s of G.slots) { const d = dist(s, p); if (d < bd) { bd = d; best = s; } } return best; }
+function nearSlot(who) { const p = who || G.player; let best = null, bd = 70; for (const s of G.slots) { const d = dist(s, p); if (d < bd) { bd = d; best = s; } } return best; }
 function nearSpot() { if (!G || G.mode !== "lobby") return null; const p = G.player; let best = null, bd = 1e9; for (const s of LB.spots) { const d = dist(s, p); if (d < s.r && d < bd) { bd = d; best = s; } } return best; }
 function nearestEnemy(from, range) { let best = null, bd = range; for (const e of G.enemies) { if (e.dead || e.hidden) continue; const d = dist(from, e); if (d < bd) { bd = d; best = e; } } return best; }
 function autoTarget(u, range) { const e = nearestEnemy(u, range); if (e) return { x: e.x, y: e.y - 14 }; return { x: u.x + u.lastMove.x * 200, y: u.y - 22 + u.lastMove.y * 200 }; }
@@ -2100,9 +2124,10 @@ const keys = new Set();
 let lastInput = "mouse";
 const mouse = { x: 0, y: 0, down: false };
 const joy = { id: null, ox: 0, oy: 0, x: 0, y: 0, active: false };
-const MODALS = ["startOv", "baseOv", "kioskOv", "closetOv", "pauseOv", "endOv"];
+const MODALS = ["startOv", "baseOv", "kioskOv", "closetOv", "pauseOv", "endOv", "netOv"];
 const modalOpen = () => MODALS.some(id => !$(id).hidden);
 window.addEventListener("keydown", e => {
+  if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) return;
   if (["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Backspace"].includes(e.code) && !(e.target && e.target.tagName === "BUTTON" && e.code === "Space")) e.preventDefault();
   if (e.repeat) return;
   keys.add(e.code); lastInput = "mouse";
@@ -2197,7 +2222,7 @@ function hurtEnemy(e, amt, opts) {
   if (e.tremble > 0) amt *= .4;
   if (e.shield > 0) { const ab = Math.min(e.shield, amt); e.shield -= ab; amt -= ab; e.flash = .1; if (e.shield <= 0) { burst(e.x, e.y - 60, "#ffd34a", 8, 120); text(e.x, e.y - 80, "¡Casco roto!", "#ffd34a", 12); } if (amt <= 0) return; }
   e.hp -= amt; e.flash = .1;
-  if (opts.from === G.player && !G.monster) G.player.ult = Math.min(100, G.player.ult + amt / 22);
+  if (opts.from && (opts.from === G.player || opts.from.remote) && !G.monster) opts.from.ult = Math.min(100, opts.from.ult + amt / 22);
   if (opts.slow) e.slow = Math.max(e.slow, opts.slow);
   if (amt >= 8 && Math.random() < .5) text(e.x + rand(-10, 10), e.y - 70 * (BOSS_SCALE[e.type] || 1), String(Math.round(amt)), "#fff2d6", 12);
   if (e.hp <= 0) killEnemy(e);
@@ -2254,7 +2279,7 @@ function hurtAlly(t, amt) {
   t.hp = 0;
   switch (t.kind) {
     case "player": t.alive = false; t.respawnT = 5; t.stun = 0; t.slowStack = 0; burst(t.x, t.y - 20, "#ff8a1f", 26, 230); text(t.x, t.y - 60, "¡Fobi cayó!", "#ffb06a", 16); break;
-    case "ally": { const n = allyCount(); t.alive = false; t.dead = true; rescaleTeam(n, n - 1); } burst(t.x, t.y - 20, t.cos.lining, 22, 220); text(t.x, t.y - 60, "Aliado fuera", "#ffd7a8", 13); break;
+    case "ally": if (t.remote) { t.alive = false; t.respawnT = 6; t.stun = 0; burst(t.x, t.y - 20, t.cos.lining, 22, 220); text(t.x, t.y - 60, "¡" + (t.netName || "Tu amigo") + " cayó!", "#ffd7a8", 14); break; } { const n = allyCount(); t.alive = false; t.dead = true; rescaleTeam(n, n - 1); } burst(t.x, t.y - 20, t.cos.lining, 22, 220); text(t.x, t.y - 60, "Aliado fuera", "#ffd7a8", 13); break;
     case "core": endGame(false); break;
     case "spirit": fobiFeel(t.from, "sad", 5); t.dead = true; burst(t.x, t.y, "#c9fbf3", 20, 180); text(t.x, t.y - 50, "El " + SPIRIT_NAME + " se deshizo", "#a6f4e8", 13); break;
     case "vela": t.dead = true; burst(t.x, t.y - 40, "#ffcf57", 18, 160); text(t.x, t.y - 70, "¡Se apagó una vela!", "#ffcf57", 13); break;
@@ -2273,6 +2298,7 @@ function dropCandy(x, y, type) { G.pickups.push({ kind: "candy", type, x: clamp(
 // ================= festiloco actions =================
 function canAct(u) { return u.alive && !(u.stun > 0) && !G.over && !u.cast && !u.enter; }
 function tryAttack(u, target) {
+  if (u === G.player && netIntercept("atk", { pt: { x: Math.round(target.x), y: Math.round(target.y) } })) return;
   if (!u || !canAct(u) || u.reload > 0 || u.ammo < 1 || u.fireCd > 0) return;
   u.ammo -= 1; u.fireCd = .2; u.lift = 1; u.idleFire = 0;
   if (u.ammo <= 0) u.reload = RELOAD;
@@ -2281,6 +2307,7 @@ function tryAttack(u, target) {
   if (Math.abs(Math.cos(a)) > .2) u.face = Math.sign(Math.cos(a));
 }
 function useSkill(k, pt, who) {
+  if (!who && isGuest()) { netIntercept("skill", { k, pt: pt || aimPoint(k === "bats" ? 380 : 260) }); return true; }
   const u = who || G.player;
   if (G.mode !== "match" || !canAct(u)) return false;
   if (!who) { const M = G.monster; if (M && !M.used) { ultVariant(k, pt); return true; } }
@@ -2318,13 +2345,13 @@ function ultVariant(k, pt) {
 }
 function makeSkeleton(x, y, hx, hy, big, from) { return { kind: "skeleton", x, y, hx, hy, r: big ? 18 : 11, hp: big ? 40 : 6, maxhp: big ? 40 : 6, dmg: big ? 26 : 11, spd: big ? 105 : 125, atkCd: big ? .9 : .8, atkT: .3, life: big ? 22 : 12, big, flash: 0, rise: .4, face: 1, wander: rand(0, TAU), swing: 0, from }; }
 function addPick(who) {
-  if (!G || G.phase !== "setup") return;
+  if (!G || G.phase !== "setup" || isGuest()) return;
   if (G.picks.length + G.allies.filter(a => a.alive).length >= 3) { text(G.phone.x, G.phone.y - 90, "Máximo 4 jugadores", "#ff9a8a", 13); return; }
   G.picks.push(who); G.phone.ring = .3;
 }
 function removePick(i) { if (G && G.phase === "setup" && i >= 0 && i < G.picks.length) G.picks.splice(i, 1); }
 function callTeam() {
-  if (!G || G.phase !== "setup" || !G.picks.length || !nearPhone()) return;
+  if (!G || isGuest() || G.phase !== "setup" || !G.picks.length || !nearPhone()) return;
   const ph = G.phone, before = allyCount(), k = G.picks.length;
   G.picks.forEach((who, i) => {
     const used = G.allies.filter(a => a.alive).map(a => a.cos.lining), col = ALLY_COLORS.find(c => !used.includes(c)) || ALLY_COLORS[0];
@@ -3015,9 +3042,10 @@ function drawKameCharge(e) {
 }
 
 // ================= decorations: building, special ones with cooldown =================
-function build(what) {
-  const p = G.player; if (G.mode !== "match" || !p.alive || G.over) return;
-  const s = nearSlot(); if (!s || s.deco || !DECO[what]) return;
+function build(what) { if (netIntercept("build", { k: what })) return; buildFor(G.player, what); }
+function buildFor(p, what) {
+  if (G.mode !== "match" || !p.alive || G.over) return;
+  const s = nearSlot(p); if (!s || s.deco || !DECO[what]) return;
   const def = DECO[what];
   if (def.special && !SAVE.specials.includes(what)) { text(s.x, s.y - 50, "Todavía no la conseguiste", "#ff9a8a", 13); return; }
   if (def.special) {
@@ -3034,8 +3062,8 @@ function build(what) {
 }
 
 // ================= potions: puddles that weaken enemies, or feed the cauldron =================
-function usePotion() {
-  const p = G.player;
+function usePotion() { if (netIntercept("pot", { pt: aimPoint(220) })) return; usePotionFor(G.player); }
+function usePotionFor(p, pt) {
   if (G.mode !== "match" || !canAct(p) || !p.potion) return;
   const P = POTIONS[p.potion];
   const cal = G.decos.find(d => !d.dead && d.type === "caldero" && dist(d, p) < 125);
@@ -3043,7 +3071,7 @@ function usePotion() {
     cal.bubbleT = 8; cal.bubbleType = p.potion; cal.bubbleTick = 0;
     text(cal.x, cal.y - 80, "¡Burbujas de efecto " + P.bubble + "!", P.color, 15); ring(cal.x, cal.y, 10, 90, P.color, .5);
   } else {
-    const c = aimPoint(220);
+    const c = pt || (p === G.player ? aimPoint(220) : autoPoint(p, 220));
     G.puddles.push({ x: c.x, y: c.y, r: 80, type: "pot", pot: p.potion, life: 7, max: 7 });
     ring(c.x, c.y, 10, 80, P.color, .5); burst(c.x, c.y - 10, P.color, 18, 160);
     text(c.x, c.y - 50, "Charco " + P.bubble, P.color, 14);
@@ -3117,6 +3145,7 @@ function nearestEnemyTo(pt, r) { let best = null, bd = r; for (const e of G.enem
 function updateAllies(dt) {
   const p = G.player;
   for (const a of G.allies) {
+    if (a.remote) { updateRemote(a, dt); continue; }
     if (!a.alive) continue;
     tickFesti(a, dt);
     if (a.stun > 0 || a.enter) continue;
@@ -3442,7 +3471,7 @@ function updateFx(dt) {
 function cleanup() {
   const keep = a => a.filter(x => !x.dead);
   for (const k of ["runDucks", "shadows", "tombFly", "portals", "duckFalls", "bubbles", "ducks", "ladders", "drops", "spirits", "wolves", "enemies", "shots", "eshots", "bats", "tombs", "skeletons", "ghosts", "decos", "cleavers", "pickups", "bigbats", "velas", "puddles"]) G[k] = keep(G[k]);
-  G.allies = G.allies.filter(a => a.alive);
+  G.allies = G.allies.filter(a => a.alive || a.remote);
   G.parts = G.parts.filter(q => q.life > 0); G.rings = G.rings.filter(r => r.life > 0); G.texts = G.texts.filter(t => t.life > 0);
   if (G.parts.length > 1100) G.parts.splice(0, G.parts.length - 1100);
 }
@@ -3726,7 +3755,7 @@ function drawPortalDoor(d) {
 }
 function drawBrokenDoor(d) {
   const th = d.end === "a" ? "orange" : "blue";
-  drawBlueDoor(d.x, d.y, 1, undefined, d.portal.glow, th, true);
+  drawBlueDoor(d.x, d.y, 1, undefined, d.portal ? d.portal.glow : 0, th, true);
   label("rota · se rearma en " + Math.max(0, Math.ceil(d.rebuild === undefined ? PORTAL.rebuild : d.rebuild)) + " s", d.x, d.y - 80, 10, th === "orange" ? "#ffc58a" : "#9fd4ff");
 }
 function drawPortalLinks() {
@@ -4003,7 +4032,7 @@ function updateEscape(dt) {
   if (E.t <= 0) {
     const inZone = u => u.alive && Math.hypot(u.x - E.x, (u.y - E.y) / .6) < E.r;
     const saved = festis().filter(inZone).length;
-    G.escaped = inZone(G.player); G.escapeSaved = saved;
+    G.escaped = inZone(G.player); G.escapedNet = G.allies.filter(a => a.remote && inZone(a)).map(a => a.netId); G.escapeSaved = saved;
     if (G.escaped) G.earn.obj += 300;
     endGame(true);
   }
@@ -4105,11 +4134,11 @@ function updateSpirits(dt) {
 const ULT_MSG = { fobi: "Sientes cómo las miradas te apuñalan desde abajo. La falta de la mano que te acogía es enorme." };
 const DUCK_LEVEL_T = 1.6, DUCKS_PER_LEVEL = 5, DRAIN = .11, DRAIN_DUCK = .4, DUCK = { spd: 185, peck: 1.3, mark: .5, r: 70, stun: 1.6, fragile: 5, life: 11 };
 function spiritPhobic(u) { const g = spiritOf(u); return !!(g && g.phobia); }
-function useUlt() {
-  const p = G.player;
+function useUlt() { if (netIntercept("ult")) return; useUltFor(G.player); }
+function useUltFor(p) {
   if (G.mode !== "match" || !canAct(p) || p.ult < 100 || spiritPhobic(p)) return;
   p.ult = 0;
-  showUltMsg(ULT_MSG.fobi);
+  if (p === G.player) showUltMsg(ULT_MSG.fobi); else if (p.netId) netSendTo(p.netId, { t: "ev", e: "ultmsg", msg: ULT_MSG.fobi });
   const g = spiritOf(p) || summonSpirit(p, p.x - p.face * 40, p.y - 60);
   startCast(p, "ult", null); p.cast.target = g;
 }
@@ -4330,6 +4359,292 @@ function drawSpirit(g, part) {
   if (g.hp < g.maxhp || P) hpBar(g.x, top - 8, 34, g.hp / g.maxhp, P ? "#fff4c8" : "#a6f4e8", 4);
 }
 
+// ================= local Wi-Fi co-op =================
+// The host runs the real game. Friends ("guests") join over the same Wi-Fi: they send their movement and
+// button presses, and get back a picture of the whole match about 12 times per second.
+// On Android the host side goes through the app's FestiNet bridge (a small WebSocket server + network discovery);
+// guests connect with a plain WebSocket from the page.
+const NET_PORT = 47777, SNAP_HZ = 12, IN_HZ = 20, MAX_PLAYERS = 4;
+const NET = { role: null, ws: null, myId: null, clients: new Map(), snapT: 0, inT: 0, atkT: 0, found: new Map(), lastSnap: null, ids: 0, tp: 0, prevHp: null, endShown: false };
+const netBridge = () => window.FestiNet || null;
+const isGuest = () => !!(G && G.net === "guest");
+const isHost = () => NET.role === "host";
+
+// ---------- packing the match into plain data ----------
+const NET_SKIP = new Set(["path", "fn", "gaps", "candies", "learned2"]);
+const LISTS = ["enemies", "shots", "eshots", "bats", "bigbats", "tombs", "skeletons", "ghosts", "decos", "cleavers", "pickups", "velas", "puddles", "wolves", "ladders", "drops", "duckFalls", "bubbles", "runDucks", "tombFly", "shadows", "spirits", "ducks"];
+function nid(o) { return o._id || (o._id = ++NET.ids); }
+const isEnt = v => v && typeof v === "object" && typeof v.x === "number" && typeof v.y === "number" && (v.kind !== undefined || v.type !== undefined || v.hp !== undefined);
+const rnd = v => Math.round(v * 100) / 100;
+function packRef(o) { const r = { _id: nid(o), x: rnd(o.x), y: rnd(o.y) }; for (const k of ["dead", "end", "rebuild", "r", "alive", "kind", "type", "state"]) if (o[k] !== undefined) r[k] = typeof o[k] === "number" ? rnd(o[k]) : o[k]; return r; }
+function pack(o, depth) {
+  const out = {};
+  for (const k in o) {
+    if (NET_SKIP.has(k) || k[0] === "_" && k !== "_id") continue;
+    const v = o[k], t = typeof v;
+    if (t === "number") out[k] = rnd(v);
+    else if (t === "string" || t === "boolean") out[k] = v;
+    else if (v === null) out[k] = null;
+    else if (t === "object") {
+      if (depth > 0 && isEnt(v)) out[k] = packRef(v);
+      else if (Array.isArray(v)) { if (v.length < 24 && v.every(x => typeof x !== "object" || x === null)) out[k] = v.slice(); }
+      else if (depth < 3) out[k] = pack(v, depth + 1);
+    }
+  }
+  if (depth === 0) out._id = nid(o);
+  return out;
+}
+const SCALARS = ["t", "phase", "wave", "prepT", "diffKey", "hIdx", "hKilled", "hTotal", "hTimer", "over", "won", "kills", "mausOpen", "mausK", "base", "nextObj"];
+function makeSnap() {
+  const s = { t: "snap", S: {}, L: {} };
+  for (const k of SCALARS) s.S[k] = typeof G[k] === "number" ? rnd(G[k]) : G[k];
+  s.S.earn = G.earn; s.S.specialCd = G.specialCd; s.S.free = G.free; s.S.obj = G.obj ? pack(G.obj, 1) : null;
+  s.S.hParts = G.hParts ? G.hParts.map(p => ({ size: p.size, icons: p.icons, kind: p.kind, boss: p.boss, ql: p.q.length })) : null;
+  s.S.core = G.core ? pack(G.core, 0) : null; s.S.phone = G.phone ? pack(G.phone, 0) : null; s.S.escape = G.escape ? pack(G.escape, 0) : null;
+  s.S.slots = G.slots.map(sl => pack(sl, 0)); s.S.mtombs = G.mtombs ? G.mtombs.map(t => pack(t, 0)) : null;
+  s.S.portals = G.portals.map(P => ({ glow: rnd(P.glow), a: packRef(P.a), b: packRef(P.b) }));
+  s.S.monster = G.monster ? pack(G.monster, 0) : null;
+  s.F = [G.player, ...G.allies].map(u => { const o = pack(u, 0); o.host = u === G.player; o.netId = u.netId || 0; o.tpN = u.tpN || 0; return o; });
+  for (const k of LISTS) s.L[k] = G[k].filter(o => !o.dead || k === "decos").map(o => pack(o, 0));
+  // effects that appeared since the last picture
+  const fresh = arr => { const out = []; for (const q of arr) if (!q._s) { q._s = 1; out.push(pack(q, 1)); } return out; };
+  s.P = fresh(G.parts).slice(-160); s.R = fresh(G.rings); s.T = fresh(G.texts);
+  return s;
+}
+
+// ---------- host ----------
+window.__festiNet = (type, a, b) => {
+  if (type === "join") netHostJoin(+a);
+  else if (type === "leave") netHostLeave(+a);
+  else if (type === "msg") { if (NET.role === "host") netHostMsg(+a, b); }
+  else if (type === "found") { NET.found.set(a, b); renderFound(); }
+  else if (type === "lost") { NET.found.delete(a); renderFound(); }
+  else if (type === "hosting") { NET.ips = a; updateNetBadge(); }
+  else if (type === "error") toast("Red: " + a, 3);
+};
+function netHostStart() {
+  const B = netBridge();
+  if (!B) { toast("El modo con amigos funciona en la app de Android", 3.2); return false; }
+  const name = "Partida de " + (B.deviceName ? B.deviceName() : "Festilocos");
+  NET.ips = B.hostStart(name) || ""; NET.role = "host"; NET.clients.clear();
+  toast("Partida abierta en tu Wi-Fi. Tus amigos tocan «Unirse a un amigo»", 4);
+  updateNetBadge(); return true;
+}
+function netHostStop() { const B = netBridge(); if (B && NET.role === "host") B.hostStop(); NET.role = null; NET.clients.clear(); updateNetBadge(); }
+function netSendTo(id, obj) { const B = netBridge(); if (B) B.send(id, typeof obj === "string" ? obj : JSON.stringify(obj)); }
+function netBroadcast(obj) { const B = netBridge(); if (B && NET.clients.size) B.broadcast(typeof obj === "string" ? obj : JSON.stringify(obj)); }
+function netHostJoin(id) { NET.clients.set(id, { id, u: null, hello: false }); }
+function netHostLeave(id) {
+  const c = NET.clients.get(id); NET.clients.delete(id);
+  if (c && c.u && G) { const n = allyCount(); c.u.alive = false; c.u.dead = true; c.u.remote = false; rescaleTeam(n, allyCount()); toast((c.name || "Un amigo") + " se desconectó", 2.6); }
+  updateNetBadge();
+}
+const REMOTE_COLORS = ["#ffd34a", "#7ad3ff", "#ff7a9a"];
+function netHostMsg(id, raw) {
+  let m; try { m = JSON.parse(raw); } catch (e) { return; }
+  const c = NET.clients.get(id); if (!c) return;
+  if (m.t === "hello") {
+    if (!G || G.mode !== "match") { netSendTo(id, { t: "full", why: "El anfitrión todavía no empezó la partida" }); return; }
+    if (1 + G.allies.filter(a => a.alive || a.remote).length >= MAX_PLAYERS) { netSendTo(id, { t: "full", why: "La partida ya tiene 4 festilocos" }); return; }
+    const before = allyCount(), used = G.allies.map(a => a.cos.lining);
+    const col = (m.cos && m.cos.lining && !used.includes(m.cos.lining)) ? m.cos.lining : (REMOTE_COLORS.find(x => !used.includes(x)) || REMOTE_COLORS[0]);
+    const home = G.core ? { x: G.core.x + G.B.start[0], y: G.core.y + G.B.start[1] } : { x: G.player.x + rand(-60, 60), y: G.player.y + 50 };
+    const u = makeFobi(home.x + rand(-40, 40), home.y + rand(-20, 30), { lining: col, pail: (m.cos && m.cos.pail) || "clasica" }, true);
+    u.ai = false; u.remote = true; u.netId = id; u.netName = String(m.name || "Amigo").slice(0, 16); u.tpN = 1; u.role = "friend";
+    collideWorld(u); G.allies.push(u); startEnter(u, 1.6, .2);
+    c.u = u; c.name = u.netName; c.hello = true;
+    rescaleTeam(before, allyCount());
+    netSendTo(id, { t: "welcome", id, diffKey: G.diffKey });
+    toast("¡" + u.netName + " se unió a la partida!", 3); updateNetBadge();
+  } else if (c.u) {
+    const u = c.u;
+    if (m.t === "in") {
+      if (u.alive && !u.enter && !(u.stun > 0) && typeof m.x === "number") { const px = u.x; u.x = m.x; u.y = m.y; collideWorld(u, px); }
+      if (typeof m.f === "number") u.face = m.f; if (typeof m.w === "number") u.walk = m.w;
+      if (m.lm) u.lastMove = m.lm;
+    } else if (m.t === "act") netDoAct(u, m);
+  }
+}
+function netDoAct(u, m) {
+  if (!G || G.mode !== "match" || G.over) return;
+  if (m.a === "atk" && m.pt) tryAttack(u, m.pt);
+  else if (m.a === "skill" && ["bats", "tomb", "ghost"].includes(m.k)) useSkill(m.k, m.pt || autoPoint(u, RANGES[m.k] || 260), u);
+  else if (m.a === "ult") useUltFor(u);
+  else if (m.a === "pot") usePotionFor(u, m.pt);
+  else if (m.a === "build" && DECO[m.k]) buildFor(u, m.k);
+}
+// remote festilocos on the host: they move where their phone says, and come back after falling
+function updateRemote(a, dt) {
+  if (!a.alive) {
+    a.respawnT -= dt;
+    if (a.respawnT <= 0 && G.core) { a.alive = true; a.hp = a.maxhp; a.x = G.core.x + G.B.start[0] + rand(-30, 30); a.y = G.core.y + G.B.start[1]; a.ammo = MAG; a.reload = 0; a.tpN = (a.tpN || 0) + 1; startEnter(a, 1.2); }
+    return;
+  }
+  tickFesti(a, dt);
+  if (!G.monster) a.ult = Math.min(100, a.ult + dt * .7);
+}
+function netHostTick(dt) {
+  if (!NET.clients.size) return;
+  NET.snapT -= dt;
+  if (NET.snapT <= 0) { NET.snapT = 1 / SNAP_HZ; netBroadcast(makeSnap()); }
+}
+function updateNetBadge() {
+  const el = $("netBadge"); if (!el) return;
+  if (NET.role === "host") { const n = [...NET.clients.values()].filter(c => c.hello).length; el.hidden = false; el.textContent = "Wi-Fi · " + n + (n === 1 ? " amigo" : " amigos") + (NET.ips ? " · " + NET.ips.split(",")[0] : ""); }
+  else if (NET.role === "guest") { el.hidden = false; el.textContent = "Wi-Fi · jugando con un amigo"; }
+  else el.hidden = true;
+}
+
+// ---------- guest ----------
+function netJoin(addr) {
+  addr = String(addr || "").trim(); if (!addr) return;
+  if (!/:\d+$/.test(addr)) addr += ":" + NET_PORT;
+  let ws;
+  try { ws = new WebSocket("ws://" + addr); } catch (e) { setText("netStatus", "No se pudo conectar a " + addr); return; }
+  NET.ws = ws; setText("netStatus", "Conectando con " + addr + "…");
+  ws.onopen = () => ws.send(JSON.stringify({ t: "hello", name: (netBridge() && netBridge().deviceName ? netBridge().deviceName() : "Amigo"), cos: playerCos() }));
+  ws.onmessage = ev => netGuestMsg(ev.data);
+  ws.onerror = () => setText("netStatus", "No se pudo conectar. ¿Están en el mismo Wi-Fi?");
+  ws.onclose = () => { if (NET.role === "guest") { NET.role = null; NET.ws = null; updateNetBadge(); if (G && G.net === "guest" && !G.over) { toast("Se cortó la conexión con el anfitrión", 3.5); newLobby(); } } };
+}
+function netGuestSend(obj) { if (NET.ws && NET.ws.readyState === 1) NET.ws.send(JSON.stringify(obj)); }
+function netGuestMsg(raw) {
+  let m; try { m = JSON.parse(raw); } catch (e) { return; }
+  if (m.t === "welcome") enterGuestMatch(m);
+  else if (m.t === "full") { setText("netStatus", m.why); try { NET.ws.close(); } catch (e) {} }
+  else if (m.t === "snap") { if (isGuest()) applySnap(m); }
+  else if (m.t === "ev") {
+    if (m.e === "toast") toast(m.msg, m.secs);
+    else if (m.e === "ultmsg") showUltMsg(m.msg);
+    else if (m.e === "end") guestEnd(m);
+  }
+}
+function enterGuestMatch(m) {
+  closeNetOv(); $("baseOv").hidden = true;
+  if (!GY.bg) buildGraveyard();
+  W = GY; G = blankState("match");
+  Object.assign(G, { net: "guest", phone: { x: PHONE_POS.x, y: PHONE_POS.y, cd: 0, ring: 0 }, diff: DIFFS[m.diffKey] || DIFFS.normal, diffKey: m.diffKey, base: null, B: null, core: null, picks: [], slots: [], free: {}, specialCd: { caramel: 0 }, wave: 0, phase: "setup", prepT: 0, queue: [], obj: null, nextObj: null });
+  G.player = makeFobi(PHONE_POS.x, PHONE_POS.y + 60, playerCos(), false); G.player.kind = "ally";
+  NET.role = "guest"; NET.myId = m.id; NET.tp = 0; NET.prevHp = null; NET.endShown = false; NET.ids = 0;
+  setMode("match"); centerCam(G.player.x, G.player.y); updateNetBadge();
+  toast("¡Te uniste! Ayudá a defender el Corazón", 3);
+}
+// rebuild the guest's world from a picture, reusing objects so movement can be smoothed
+const keepXY = new Set(["x", "y"]);
+function mergeList(prev, items) {
+  const map = new Map(); for (const o of prev) if (o._id) map.set(o._id, o);
+  return items.map(p => {
+    const o = map.get(p._id), had = !!o, obj = o || {};
+    const px = obj.x, py = obj.y;
+    for (const k in obj) if (!(k in p) && k[0] !== "_") delete obj[k];
+    Object.assign(obj, p);
+    obj._tx = p.x; obj._ty = p.y;
+    if (had && px !== undefined && Math.hypot(p.x - px, p.y - py) < 260) { obj.x = px; obj.y = py; }
+    return obj;
+  });
+}
+function applySnap(s) {
+  const S = s.S;
+  for (const k of SCALARS) if (k !== "t") G[k] = S[k];
+  G.t = S.t; G.diff = DIFFS[S.diffKey] || G.diff;
+  G.earn = S.earn; G.specialCd = S.specialCd; G.free = S.free; G.obj = S.obj;
+  G.hParts = S.hParts ? S.hParts.map(p => ({ ...p, q: new Array(p.ql) })) : null;
+  G.core = S.core ? Object.assign(G.core || {}, S.core) : null;
+  G.phone = S.phone || G.phone; G.escape = S.escape; G.mtombs = S.mtombs; G.monster = S.monster;
+  G.slots = S.slots.map(sl => sl);
+  G.portals = S.portals;
+  if (S.base && !G.B) G.B = BASES[S.base];
+  for (const k of LISTS) G[k] = mergeList(G[k] || [], s.L[k] || []);
+  // the cleaver's home must point at the same decoration object as on the host
+  const decoById = new Map(G.decos.map(d => [d._id, d])); G.cleavers.forEach(c => { if (c.home && decoById.has(c.home._id)) c.home = decoById.get(c.home._id); });
+  // festilocos: my own one keeps its locally predicted position
+  const me = G.player, mine = s.F.find(f => f.netId === NET.myId && !f.host);
+  const others = s.F.filter(f => f !== mine);
+  G.allies = mergeList(G.allies.filter(a => a !== me), others);
+  if (mine) {
+    const keepX = me.x, keepY = me.y, keepFace = me.face, keepWalk = me.walk, keepLM = me.lastMove;
+    for (const k in mine) me[k] = mine[k];
+    me.kind = "ally";
+    if ((mine.tpN || 0) !== NET.tp || !me.alive) { NET.tp = mine.tpN || 0; }
+    else { me.x = keepX; me.y = keepY; me.face = keepFace; me.walk = keepWalk; me.lastMove = keepLM; }
+    if (NET.prevHp !== null && me.hp < NET.prevHp - .5 && me.alive) feelHurt(NET.prevHp - me.hp);
+    if (NET.prevHp !== null && me.hp > NET.prevHp + 3 && me.alive) feelHeal();
+    NET.prevHp = me.hp;
+  }
+  G.spirits.forEach(g => { if (g.from && g.from._id === me._id) g.from = me; else if (g.from) { const a = G.allies.find(x => x._id === g.from._id); if (a) g.from = a; } });
+  G.wolves.forEach(w => { if (w.from && w.from._id === me._id) w.from = me; });
+  for (const q of s.P) G.parts.push(q); for (const r of s.R) G.rings.push(r); for (const t of s.T) G.texts.push(t);
+  if (G.parts.length > 900) G.parts.splice(0, G.parts.length - 900);
+}
+// the guest doesn't simulate the match: it moves its own festiloco, smooths the rest and sends input
+function guestUpdate(dt) {
+  G.t += dt;
+  if (G.fx) { G.fx.hurt = Math.max(0, G.fx.hurt - dt * 1.6); G.fx.heal = Math.max(0, G.fx.heal - dt * 1.4); }
+  const p = G.player, k = Math.min(1, dt * 14);
+  for (const key of LISTS) for (const o of G[key]) if (o._tx !== undefined) { o.x += (o._tx - o.x) * k; o.y += (o._ty - o.y) * k; }
+  for (const a of G.allies) if (a._tx !== undefined) { a.x += (a._tx - a.x) * k; a.y += (a._ty - a.y) * k; }
+  if (p.alive && !(p.stun > 0) && !p.enter) {
+    let mx = 0, my = 0;
+    if (keys.has("KeyA") || keys.has("ArrowLeft")) mx -= 1;
+    if (keys.has("KeyD") || keys.has("ArrowRight")) mx += 1;
+    if (keys.has("KeyW") || keys.has("ArrowUp")) my -= 1;
+    if (keys.has("KeyS") || keys.has("ArrowDown")) my += 1;
+    if (joy.active) { const dx = joy.x - joy.ox, dy = joy.y - joy.oy, d = Math.hypot(dx, dy); if (d > 8) { const kk = Math.min(1, d / 60); mx = dx / d * kk; my = dy / d * kk; } }
+    const m = Math.hypot(mx, my); if (m > 1) { mx /= m; my /= m; }
+    if (m > 0) { const px = p.x; p.x += mx * festiSpeed(p, 205) * dt; p.y += my * festiSpeed(p, 205) * dt; if (Math.abs(mx) > .1) p.face = Math.sign(mx); p.lastMove = { x: mx / m, y: my / m }; p.walk += dt * 11 * Math.min(1, m); collideWorld(p, px); if (G.core) pushFromCore(p); }
+    if (mouse.down && lastInput === "mouse") tryAttack(p, mouseWorld());
+  }
+  // my ghost rides on my back right where I am now
+  for (const g of G.spirits) if (g.attached && g.from === p) { g.x = p.x - p.face * 15; g.y = p.y - 70; g.face = p.face; g._tx = g.x; g._ty = g.y; }
+  NET.inT -= dt; NET.atkT -= dt;
+  if (NET.inT <= 0) { NET.inT = 1 / IN_HZ; netGuestSend({ t: "in", x: Math.round(p.x), y: Math.round(p.y), f: p.face, w: rnd(p.walk), lm: p.lastMove }); }
+  updateFx(dt); tickUltMsg(dt);
+  G.parts = G.parts.filter(q => q.life > 0); G.rings = G.rings.filter(r => r.life > 0); G.texts = G.texts.filter(t => t.life > 0);
+}
+// button presses on the guest become messages to the host
+function netIntercept(a, data) {
+  if (!isGuest()) return false;
+  if (a === "atk") { if (NET.atkT > 0) return true; NET.atkT = .12; }
+  netGuestSend(Object.assign({ t: "act", a }, data || {}));
+  return true;
+}
+function guestEnd(m) {
+  if (NET.endShown) return; NET.endShown = true;
+  G.over = true; G.won = m.won;
+  SAVE.coins += m.total || 0; persist();
+  $("endEyebrow").textContent = m.eyebrow; $("endTitle").textContent = m.title; $("endText").textContent = m.text;
+  if (m.won && m.escapeEnd) {
+    // whether *I* made it to the heart is my own story, not the host's
+    const ok = (m.escapedNet || []).includes(NET.myId);
+    $("endTitle").textContent = ok ? "¡El Corazón Festivo sigue latiendo!" : "El Corazón se salvó… pero te quedaste atrás";
+    $("endText").textContent = ok ? "Las 10 hordas volvieron a la oficina y llegaste a tiempo al Corazón con tu equipo." : "Las 10 hordas cayeron, pero no llegaste a tiempo al Corazón y la oficina te atrapó.";
+  }
+  $("earnBox").innerHTML = m.earnHtml; $("stWave").textContent = m.wave; $("stKills").textContent = m.kills; $("stTime").textContent = m.time;
+  setTimeout(() => { $("endOv").hidden = false; }, 800);
+  try { NET.ws.close(); } catch (e) {}
+}
+
+// ---------- join screen ----------
+function openNetOv() {
+  $("baseOv").hidden = true; $("netOv").hidden = false; keys.clear(); NET.found.clear(); renderFound();
+  const B = netBridge();
+  setText("netStatus", B ? "Buscando partidas en tu Wi-Fi…" : "En el navegador no se puede buscar partidas. Usá la app de Android, o escribí la dirección del anfitrión.");
+  if (B) B.discoverStart();
+}
+function closeNetOv() { $("netOv").hidden = true; const B = netBridge(); if (B) B.discoverStop(); }
+function renderFound() {
+  const el = $("netList"); if (!el) return; el.innerHTML = "";
+  if (!NET.found.size) { el.innerHTML = '<p class="fine">Todavía no aparece ninguna. El anfitrión tiene que entrar con «Crear partida con amigos».</p>'; return; }
+  for (const [name, addr] of NET.found) {
+    const b = document.createElement("button"); b.className = "opt"; b.innerHTML = `<b>${name.replace(/</g, "")}</b><span>${addr}</span>`;
+    b.addEventListener("click", () => netJoin(addr)); el.appendChild(b);
+  }
+}
+$("joinBtn").addEventListener("click", openNetOv);
+$("goNetBtn").addEventListener("click", () => { $("baseOv").hidden = true; newMatch(chosenDiff); portraitHint(); netHostStart(); });
+$("netBack").addEventListener("click", () => { closeNetOv(); try { if (NET.ws) NET.ws.close(); } catch (e) {} });
+$("netGo").addEventListener("click", () => netJoin($("netAddr").value));
+
 // ================= waves, objectives, slot machine =================
 const OBJ_INFO = {
   auditor: { title: "Atrapá al Auditor", desc: "Un auditor viene a llevarse los papeles del feriado. Derribalo antes de que vuelva a su furgoneta." },
@@ -4483,6 +4798,7 @@ function endGame(won) {
   $("stWave").textContent = G.wave + "/" + MAX_WAVE; $("stKills").textContent = G.kills;
   const s = Math.floor(G.t); $("stTime").textContent = Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
   $("slotOv").hidden = true;
+  if (isHost()) netBroadcast({ t: "ev", e: "end", won, total, escapeEnd: G.escaped !== undefined, escapedNet: G.escapedNet || [], eyebrow: $("endEyebrow").textContent, title: $("endTitle").textContent, text: $("endText").textContent, earnHtml: $("earnBox").innerHTML, wave: $("stWave").textContent, kills: $("stKills").textContent, time: $("stTime").textContent });
   setTimeout(() => { $("endOv").hidden = false; }, 1000);
 }
 
@@ -4508,13 +4824,14 @@ function useSpot() {
 
 // ================= main update =================
 function update(dt) {
+  if (G.net === "guest") { guestUpdate(dt); return; }
   G.t += dt;
   if (G.fx) { G.fx.hurt = Math.max(0, G.fx.hurt - dt * 1.6); G.fx.heal = Math.max(0, G.fx.heal - dt * 1.4); }
   if (G.mode === "lobby") { updatePlayer(dt); updateShots(dt); updateLobby(dt); updateFx(dt); cleanup(); return; }
   G.targets = allyTargets();
   updateWaves(dt);
   if (G.phase === "slot") { updateFx(dt); return; }
-  updatePlayer(dt); updateAllies(dt); updateCasts(dt); updateEnemies(dt); updatePortals(dt); updateMTombs(dt); updateShadows(dt); updateRunDucks(dt); tickUltMsg(dt); updateShots(dt); updateEShots(dt); updatePuddles(dt); updateDrops(dt); updateSpirits(dt); updateWolves(dt); updateLadders(dt); updateBubbles(dt); updateDucks(dt); updatePotionPuddles(); G.specialCd.caramel = Math.max(0, G.specialCd.caramel - dt); updateBats(dt); updateTombs(dt);
+  updatePlayer(dt); updateAllies(dt); updateCasts(dt); updateEnemies(dt); updatePortals(dt); updateMTombs(dt); updateShadows(dt); updateRunDucks(dt); tickUltMsg(dt); if (NET.role === "host") netHostTick(dt); updateShots(dt); updateEShots(dt); updatePuddles(dt); updateDrops(dt); updateSpirits(dt); updateWolves(dt); updateLadders(dt); updateBubbles(dt); updateDucks(dt); updatePotionPuddles(); G.specialCd.caramel = Math.max(0, G.specialCd.caramel - dt); updateBats(dt); updateTombs(dt);
   updateSkeletons(dt); updateGhosts(dt); updateDecos(dt); updateCleavers(dt); updateMonster(dt); updateBigBats(dt); updatePickups(dt); updateFx(dt); cleanup();
 }
 
@@ -4586,7 +4903,7 @@ function updateHUD() {
   const bk = POT_KEYS.filter(k => p.buff[k] > 0).map(k => k + Math.ceil(p.buff[k])).join() + (p.slowStack > .1 ? "m" + Math.round(p.slowStack * 10) : "");
   if (hc.buffs !== bk) { hc.buffs = bk; $("buffs").innerHTML = POT_KEYS.filter(k => p.buff[k] > 0).map(k => `<b style="background:${POTIONS[k].color}">${POTIONS[k].name} ${Math.ceil(p.buff[k])}s</b>`).join("") + (p.slowStack > .1 ? `<b style="background:#f4efe4">Lento ${Math.round(p.slowStack * 100)}%</b>` : ""); }
   const ak = G.allies.map(a => a.cos.lining + Math.ceil(a.hp)).join();
-  if (hc.allies !== ak) { hc.allies = ak; $("allyList").innerHTML = G.allies.map(a => `<div class="panel ally"><span class="dot" style="background:${a.cos.lining}"></span>Fobi IA · ${ROLE_NAME[a.role] || ""}<span class="mini"><i style="width:${(100 * a.hp / a.maxhp) | 0}%;background:${a.cos.lining}"></i></span></div>`).join(""); }
+  if (hc.allies !== ak) { hc.allies = ak; $("allyList").innerHTML = G.allies.map(a => `<div class="panel ally"><span class="dot" style="background:${a.cos.lining}"></span>${a.remote || a.netName ? a.netName || "Amigo" : a.host ? "Anfitrión" : "Fobi IA · " + (ROLE_NAME[a.role] || "")}<span class="mini"><i style="width:${(100 * a.hp / a.maxhp) | 0}%;background:${a.cos.lining}"></i></span></div>`).join(""); }
   setText("waveTxt", G.phase === "setup" ? "Preparación · " + G.diff.name : G.phase === "escape" ? "¡Huida! · " + Math.max(0, Math.ceil(G.escape.t)) + " s" : "Oleada " + G.wave + "/" + MAX_WAVE + " · " + G.diff.name);
   let st;
   if (G.phase === "setup") st = G.allies.length ? "Llevá el Corazón a uno de los 3 lugares marcados" : "Llamá ayuda en el teléfono o andá directo a un lugar marcado";
@@ -4630,7 +4947,7 @@ function updateHUD() {
   $("bP").style.setProperty("--potc", p.potion ? POTIONS[p.potion].color : "#bdb0d2"); setClass("bP", "disabled", !p.potion);
   setClass("bA", "disabled", !p.alive || p.stun > 0);
   setText("ammoTxt", p.reload > 0 ? "…" : p.ammo + "/" + MAG); setCd("bA", p.reload > 0 ? p.reload / RELOAD : 0); setText("ammoLbl", p.reload > 0 ? "Recargando" : "Ataque");
-  const ph = nearPhone() && !G.over;
+  const ph = nearPhone() && !G.over && !isGuest();
   setHidden("phonePanel", !ph);
   if (ph) {
     const alive = G.allies.filter(a => a.alive).length, key = G.picks.join() + "|" + alive;
@@ -4648,7 +4965,7 @@ function updateHUD() {
       $("addFobi").disabled = G.picks.length + alive >= 3;
     }
   }
-  const mk = !ph && !G.over ? nearMarker() : null;
+  const mk = !ph && !G.over && !isGuest() ? nearMarker() : null;
   setHidden("heartPanel", !mk);
   if (mk) { const B = BASES[mk]; setText("heartTtl", B.name); setText("heartSub", { foso: "Te atacan desde tres lados, pero el barro los frena · 6 cajas", mausoleo: "Todos llegan de frente · 6 cajas", porton: "Un solo portón de entrada, patio chico · 4 cajas" }[mk]); }
   const s = !ph && p.alive ? nearSlot() : null;

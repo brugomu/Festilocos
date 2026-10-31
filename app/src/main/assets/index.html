@@ -4,7 +4,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;800;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;800;900&family=Special+Elite&display=swap">
 <style>
 /* Layout: full-screen world canvas; HUD pinned to edges; modal overlays centered.
    One committed look: festive night, so a single dark palette on purpose. */
@@ -85,10 +85,16 @@ button{font:inherit;color:inherit}
 .skill.rage::before{content:"";position:absolute;inset:-8px;border-radius:50%;pointer-events:none;z-index:0;background:radial-gradient(circle,rgba(255,80,50,0) 52%,rgba(255,80,50,.55) 62%,rgba(255,140,60,0) 74%);animation:rageFlame .45s linear infinite}
 @keyframes rageGlow{from{box-shadow:0 0 6px 2px rgba(255,70,50,.55),inset 0 0 10px rgba(255,60,40,.5)}to{box-shadow:0 0 18px 6px rgba(255,90,40,.85),inset 0 0 18px rgba(255,80,40,.75)}}
 @keyframes rageFlame{0%{transform:scale(.92) rotate(0)}50%{transform:scale(1.06) rotate(8deg)}100%{transform:scale(.92) rotate(0)}}
-#ultMsg{position:fixed;left:50%;top:22%;transform:translateX(-50%);z-index:6;max-width:min(560px,86vw);text-align:center;pointer-events:none;
-  font-family:var(--display);font-size:clamp(15px,2.4vw,22px);line-height:1.35;color:#e9e0ff;text-shadow:0 2px 0 #000,0 0 18px rgba(120,80,190,.8);padding:10px 16px;border-radius:14px;background:rgba(18,10,30,.55)}
-#ultMsg.show{animation:ultIn 5.5s ease forwards}
-@keyframes ultIn{0%{opacity:0;transform:translate(-50%,8px)}10%{opacity:1;transform:translate(-50%,0)}80%{opacity:1}100%{opacity:0}}
+#ultCine{position:fixed;inset:0;z-index:6;pointer-events:none;display:grid;place-items:end center;padding-bottom:13vh;
+  background:radial-gradient(ellipse at 50% 45%,rgba(4,2,8,0) 18%,rgba(4,2,8,.72) 58%,rgba(2,1,4,.96) 100%);opacity:0}
+#ultCine.in{animation:cineIn .45s ease forwards}
+#ultCine.out{animation:cineOut .7s ease forwards}
+@keyframes cineIn{from{opacity:0}to{opacity:1}}
+@keyframes cineOut{from{opacity:1}to{opacity:0}}
+#ultTxt{max-width:min(620px,84vw);text-align:center;color:#f4efe6;font-family:"Special Elite","Courier New",Courier,serif;font-size:clamp(16px,2.6vw,24px);line-height:1.6;letter-spacing:.02em;
+  text-shadow:0 0 12px rgba(0,0,0,.9),0 0 2px #000}
+#ultTxt .caret{opacity:.8;animation:blink .6s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
 .inv.locked canvas{filter:grayscale(1) brightness(.45)}
 .stk.special{animation-duration:.9s;box-shadow:0 0 0 3px #ffd34a,0 0 28px 6px rgba(255,211,74,.55)}
 #bQ{right:124px;bottom:4px}#bE{right:116px;bottom:98px}#bR{right:34px;bottom:128px}
@@ -459,7 +465,7 @@ details ul{margin:6px 0 0;padding-left:16px;display:flex;flex-direction:column;g
     <div class="row"><button class="cta" id="againBtn">Volver a la plaza</button></div>
   </div>
 </div>
-<div id="ultMsg" hidden></div>
+<div id="ultCine" hidden><div id="ultTxt"></div></div>
 <div id="errBox" hidden style="position:fixed;left:8px;right:8px;bottom:8px;z-index:99;background:#3a0e1a;color:#ffd6d6;border:2px solid #ff6b6b;border-radius:10px;padding:8px 10px;font:12px/1.35 monospace;white-space:pre-wrap;max-height:40vh;overflow:auto"></div>
 <script>
 // if something breaks, show the error on screen so it can be photographed and fixed
@@ -1261,8 +1267,13 @@ function drawFobiBody(u) {
     ctx.restore();
   }
   // eyes
-  const ey = hy + 1.5, look = reading ? 1.3 : 0, M = fobiMood(u), ouch = M.hurt > .15 && !stun, worried = M.low > 0 && !stun;
-  if (ouch) {
+  const ey = hy + 1.5, look = reading ? 1.3 : 0, M = fobiMood(u), ouch = M.hurt > .15 && !stun, glad = !ouch && !stun && (M.dad === "happy" || M.dad === "proud"), sad = !ouch && !stun && M.dad === "sad", worried = (M.low > 0 || M.dad === "worried") && !stun && !glad;
+  if (glad) {
+    // eyes closed in a happy ^ ^ when his ghost pats him or does something cool
+    ctx.strokeStyle = "#2a1f33"; ctx.lineWidth = 1.5; ctx.lineCap = "round";
+    [-4.2, 4.2].forEach(dx => { ctx.beginPath(); ctx.arc(hx + dx + fo, ey + 1.2, 2.2, Math.PI * 1.1, Math.PI * 1.9); ctx.stroke(); }); ctx.lineCap = "butt";
+    ell(hx - 6.8 + fo, hy + 5.6, 2.6, 1.4, "rgba(240,110,140,.55)"); ell(hx + 6.8 + fo, hy + 5.6, 2.6, 1.4, "rgba(240,110,140,.55)");
+  } else if (ouch) {
     // squeezed shut: > <
     ctx.strokeStyle = "#2a1f33"; ctx.lineWidth = 1.5; ctx.lineCap = "round";
     ctx.beginPath(); ctx.moveTo(hx - 6.2 + fo, ey - 2); ctx.lineTo(hx - 3 + fo, ey); ctx.lineTo(hx - 6.2 + fo, ey + 2);
@@ -1283,6 +1294,11 @@ function drawFobiBody(u) {
   ell(hx - 6.5 + fo, hy + 6, 2, 1.1, "rgba(240,120,140,.35)"); ell(hx + 6.5 + fo, hy + 6, 2, 1.1, "rgba(240,120,140,.35)");
   ctx.fillStyle = "rgba(160,100,90,.55)"; ctx.fillRect(hx + fo - .5, hy + 4.4, 1.2, 1.2);
   // worried brows over the glasses, and a drop of sweat
+  if (sad) {
+    // droopy brows and a tear: his ghost is gone
+    ctx.strokeStyle = "#2a1f33"; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(hx - 7.5 + fo, ey - 4.6); ctx.lineTo(hx - 2 + fo, ey - 6.8); ctx.moveTo(hx + 7.5 + fo, ey - 4.6); ctx.lineTo(hx + 2 + fo, ey - 6.8); ctx.stroke();
+    const ph = (t * .6) % 1; ctx.globalAlpha = 1 - ph; ctx.beginPath(); ctx.ellipse(hx - 4.2 + fo, ey + 4 + ph * 6, 1.1, 1.8, 0, 0, TAU); S("#9fd8ff", .6); ctx.globalAlpha = 1;
+  }
   if (worried || ouch) {
     ctx.strokeStyle = "#2a1f33"; ctx.lineWidth = 1.4; ctx.beginPath();
     ctx.moveTo(hx - 7.5 + fo, ey - 5.2 + (ouch ? 1 : 0)); ctx.lineTo(hx - 2 + fo, ey - 7); ctx.moveTo(hx + 7.5 + fo, ey - 5.2 + (ouch ? 1 : 0)); ctx.lineTo(hx + 2 + fo, ey - 7); ctx.stroke();
@@ -1293,6 +1309,8 @@ function drawFobiBody(u) {
   }
   ctx.strokeStyle = "#7a3a3a"; ctx.lineWidth = 1.2; ctx.beginPath();
   if (ouch) { ctx.ellipse(hx + fo, hy + 7.8, 2.6, 2, 0, 0, TAU); ctx.fillStyle = "#5a1f2a"; ctx.fill(); }
+  else if (glad) { ctx.arc(hx + fo, hy + 6.6, 2.8, .15, Math.PI - .15); }
+  else if (sad) { ctx.arc(hx + fo, hy + 10, 2.4, Math.PI * 1.15, Math.PI * 1.85); }
   else if (worried && !(L > .2)) { ctx.moveTo(hx + fo - 2.6, hy + 8.4); ctx.quadraticCurveTo(hx + fo - 1.3, hy + 7, hx + fo, hy + 8.2); ctx.quadraticCurveTo(hx + fo + 1.3, hy + 9.4, hx + fo + 2.6, hy + 8); }
   else if (stun) { ctx.ellipse(hx + fo, hy + 8, 1.6, 1.2, 0, 0, TAU); } else if (L > .2) { ctx.arc(hx + fo, hy + 7.2, 2.2, .2, Math.PI - .2); } else { ctx.moveTo(hx + fo - 2, hy + 7.8); ctx.quadraticCurveTo(hx + fo, hy + 8.6, hx + fo + 2, hy + 7.8); }
   ctx.stroke();
@@ -2237,7 +2255,7 @@ function hurtAlly(t, amt) {
     case "player": t.alive = false; t.respawnT = 5; t.stun = 0; t.slowStack = 0; burst(t.x, t.y - 20, "#ff8a1f", 26, 230); text(t.x, t.y - 60, "¡Fobi cayó!", "#ffb06a", 16); break;
     case "ally": { const n = allyCount(); t.alive = false; t.dead = true; rescaleTeam(n, n - 1); } burst(t.x, t.y - 20, t.cos.lining, 22, 220); text(t.x, t.y - 60, "Aliado fuera", "#ffd7a8", 13); break;
     case "core": endGame(false); break;
-    case "spirit": t.dead = true; burst(t.x, t.y, "#c9fbf3", 20, 180); text(t.x, t.y - 50, "El fantasma se deshizo", "#a6f4e8", 13); break;
+    case "spirit": fobiFeel(t.from, "sad", 5); t.dead = true; burst(t.x, t.y, "#c9fbf3", 20, 180); text(t.x, t.y - 50, "El fantasma se deshizo", "#a6f4e8", 13); break;
     case "vela": t.dead = true; burst(t.x, t.y - 40, "#ffcf57", 18, 160); text(t.x, t.y - 70, "¡Se apagó una vela!", "#ffcf57", 13); break;
     case "deco":
       t.dead = true; G.slots[t.slot].deco = null; burst(t.x, t.y - 10, "#e57a24", 20, 200);
@@ -3765,7 +3783,7 @@ function buffSpirit(g, cx, cy) {
     g.lvl++; const s = spiritStats(g.lvl); g.maxhp = s.hp; g.hp = Math.min(g.maxhp, g.hp + (g.maxhp - before) + g.maxhp * .25);
     text(g.x, g.y - 60, "¡Fantasma nivel " + g.lvl + "!", "#a6f4e8", 16);
   } else { g.hp = Math.min(g.maxhp, g.hp + g.maxhp * .4); text(g.x, g.y - 60, "¡Fantasma al máximo!", "#a6f4e8", 14); }
-  g.flash = .3; g.pump = .5;
+  g.flash = .3; g.pump = .5; fobiFeel(g.from, "happy", 1.4);
   ring(cx, cy, 10, DROP_R * 1.4, "rgba(166,244,232,.8)", .5);
   for (let i = 0; i < 10; i++) G.parts.push({ x: cx + rand(-30, 30), y: cy + rand(-10, 10), vx: (g.x - cx) * 1.8, vy: (g.y - cy) * 1.8, life: .5, max: .5, color: "#c9fbf3", size: 3 });
 }
@@ -3813,7 +3831,7 @@ function drawTell(e, k) {
 }
 
 // ---------- festiloco faces: wince when hit, worried when low ----------
-function fobiMood(u) { return { hurt: hurtK(u), low: G && G.mode === "match" ? lowK(u) : 0 }; }
+function fobiMood(u) { return { hurt: hurtK(u), low: G && G.mode === "match" ? lowK(u) : 0, dad: u.dadMood ? u.dadMood.k : null }; }
 
 // ---------- decorations: shake and flash when hit, cracked and sweating when low ----------
 function crackLines(cx, cy, s, seed, lw) {
@@ -4040,38 +4058,46 @@ function enrageWolf(w) {
 
 // ================= the reunited ghost: Fobi's companion (never said out loud: it's his dad) =================
 function spiritReact(u, k, t) { const g = u && spiritOf(u); if (g && !g.phobia) g.react = { k, t: t || .9, max: t || .9 }; }
+// Fobi reacts to what his ghost does
+function fobiFeel(u, k, t) { if (u) u.dadMood = { k, t: t || 1.2 }; }
+const PUNCH_R = 150;
+// the ghost rides on Fobi's back like a companion, and throws stretchy punches at whoever gets close
 function updateSpirits(dt) {
   for (const g of G.spirits) {
     if (g.dead) continue;
     if (g.from && g.from.kind === "ally" && g.from.dead) { g.dead = true; burst(g.x, g.y, "#c9fbf3", 14, 140); continue; }
     g.atkT -= dt; g.bob += dt * 4; g.swing = Math.max(0, g.swing - dt); g.flash = Math.max(0, (g.flash || 0) - dt); g.pump = Math.max(0, (g.pump || 0) - dt); g.appear = Math.min(1, g.appear + dt * 1.6);
     g.patT = (g.patT ?? rand(6, 10)) - dt;
+    if (g.punch) { g.punch.t -= dt; if (g.punch.t <= 0) g.punch = null; }
     if (g.react) { g.react.t -= dt; if (g.react.t <= 0) g.react = null; }
-    const S = spiritStats(g.lvl), u = g.from, own = u && u.alive ? u : null;
-    let tx = null, ty = null, spd = S.spd * .85, mood = "normal", fight = true;
-    if (g.phobia) { updatePhobicSpirit(g, dt); if (g.dead) continue; mood = "shock"; fight = false; if (own) { tx = own.x - own.face * 46; ty = own.y - 66; } }
-    else if (!own) { mood = "sad"; fight = false; }
-    else {
+    const S = spiritStats(g.lvl), u = g.from, own = u && u.alive && !u.enter ? u : null;
+    let mood = "normal", fight = true;
+    if (g.phobia) { updatePhobicSpirit(g, dt); if (g.dead) { if (u) fobiFeel(u, "sad", 5); continue; } mood = "shock"; fight = false; }
+    if (!own) { if (!g.phobia) mood = "sad"; g.attached = false; g.mood = mood; continue; }
+    // stick to his back (it glides over first if it was far away)
+    const bx = own.x - own.face * 15, by = own.y - 70, d = Math.hypot(bx - g.x, by - g.y);
+    if (!g.attached && d > 30) { const st = Math.min(d, 420 * dt); g.x += (bx - g.x) / d * st; g.y += (by - g.y) / d * st; g.face = bx >= g.x ? 1 : -1; }
+    else { g.attached = true; g.x = bx; g.y = by; g.face = own.face; }
+    if (!g.phobia) {
       const low = own.hp / own.maxhp < .3, enemyNear = nearestEnemyTo(own, 300);
-      if (g.react && g.react.k === "pat") { tx = own.x - own.face * 4; ty = own.y - 112; mood = "happy"; fight = false; }
-      else if (g.react && g.react.k === "cheer") { mood = "happy"; }
-      else if (g.react && g.react.k === "flinch") { mood = "shock"; tx = own.x - own.face * 34; ty = own.y - 70; spd *= 1.6; fight = false; }
-      else if (low) { mood = "worry"; tx = own.x - own.face * 30; ty = own.y - 70; spd *= 1.4; }
-      else if (own.reload > 0 && !enemyNear) { mood = "read"; tx = own.x - own.face * 24; ty = own.y - 84; fight = false; }
-      if (g.patT <= 0 && !enemyNear && !low && !g.react) { g.patT = rand(9, 14); g.react = { k: "pat", t: 2.2, max: 2.2 }; }
-      // when Fobi is low it only fights what gets right next to him
-      const e = fight ? nearestEnemyTo(own, low ? 170 : 380) : null;
-      if (e && g.appear >= 1) {
-        const k = BOSS_SCALE[e.type] || 1, ex = e.x, ey = e.y - 26 * k, d = Math.hypot(ex - g.x, ey - g.y);
-        g.face = ex >= g.x ? 1 : -1;
-        if (d > e.r + 14) { tx = ex; ty = ey; spd = S.spd; }
-        else { tx = null; if (g.atkT <= 0) { g.atkT = .5; g.swing = .2; hurtEnemy(e, S.dmg * dmgMul(u), { from: u }); stars(g.x + g.face * 10, g.y); } }
-      } else if (tx === null) { tx = own.x - own.face * 40; ty = own.y - 60; }
+      if (g.react) mood = g.react.k === "pat" || g.react.k === "cheer" ? "happy" : g.react.k === "flinch" ? "shock" : "normal";
+      else if (low) mood = "worry";
+      else if (own.reload > 0 && !enemyNear) mood = "read";
+      if (g.patT <= 0 && !enemyNear && !low && !g.react) { g.patT = rand(9, 14); g.react = { k: "pat", t: 2.2, max: 2.2 }; fobiFeel(own, "happy", 2.4); }
+      if (g.react && g.react.k === "pat") fight = false;
     }
     g.mood = mood;
-    if (tx !== null) { const d = Math.hypot(tx - g.x, ty - g.y); if (d > 6) { const st = Math.min(d, spd * dt); g.x += (tx - g.x) / d * st; g.y += (ty - g.y) / d * st; if (d > 20) g.face = tx >= g.x ? 1 : -1; } }
-    if (own && (mood === "read" || mood === "worry" || (g.react && g.react.k !== "cheer"))) g.face = own.x >= g.x ? 1 : -1;
+    if (fight && g.attached && g.atkT <= 0) {
+      const e = nearestEnemyTo(own, PUNCH_R);
+      if (e) {
+        const k = BOSS_SCALE[e.type] || 1;
+        g.atkT = .6; g.punch = { x: e.x, y: e.y - 26 * k, t: .25 };
+        hurtEnemy(e, S.dmg * dmgMul(u), { from: u }); stars(e.x, e.y - 30 * k);
+        if (Math.random() < .25) fobiFeel(own, "proud", .8);
+      }
+    }
   }
+  for (const u of festis()) if (u.dadMood) { u.dadMood.t -= dt; if (u.dadMood.t <= 0) u.dadMood = null; }
 }
 
 // ================= ultimate: anatidaefobia (the ghost gets swarmed by ducks) =================
@@ -4086,16 +4112,28 @@ function useUlt() {
   const g = spiritOf(p) || summonSpirit(p, p.x - p.face * 40, p.y - 60);
   startCast(p, "ult", null); p.cast.target = g;
 }
-let ultMsgT = 0;
+// the screen darkens at the edges and the line types itself out, like on an old typewriter
+const ULT_SHOW = 6.2;
+let ultMsg = null;
 function showUltMsg(msg) {
-  const el = $("ultMsg"); el.textContent = msg; el.hidden = false; el.classList.remove("show"); void el.offsetWidth; el.classList.add("show"); ultMsgT = 5.5;
+  ultMsg = { msg, t: 0, shown: -1 };
+  const el = $("ultCine"); el.hidden = false; el.classList.remove("out"); el.classList.remove("in"); void el.offsetWidth; el.classList.add("in");
+  $("ultTxt").textContent = "";
 }
-function tickUltMsg(dt) { if (ultMsgT > 0) { ultMsgT -= dt; if (ultMsgT <= 0) $("ultMsg").hidden = true; } }
+function tickUltMsg(dt) {
+  if (!ultMsg) return;
+  ultMsg.t += dt;
+  const n = Math.min(ultMsg.msg.length, Math.floor(Math.max(0, ultMsg.t - .35) * 34));
+  if (n !== ultMsg.shown) { ultMsg.shown = n; $("ultTxt").innerHTML = ultMsg.msg.slice(0, n).replace(/\. /g, ".<br>") + (n < ultMsg.msg.length ? '<span class="caret">|</span>' : ""); }
+  if (ultMsg.t > ULT_SHOW - .7) $("ultCine").classList.add("out");
+  if (ultMsg.t > ULT_SHOW) { $("ultCine").hidden = true; ultMsg = null; }
+}
 // the shadow reaches the ghost: it swells to level 5, crammed with ducks, and starts falling apart
 function castPhobia(g) {
   if (!g || g.kind !== "spirit" || g.dead) return;
   g.lvl = SPIRIT_MAX; g.maxhp = spiritStats(SPIRIT_MAX).hp; g.hp = g.maxhp; g.react = null;
   g.phobia = { t: 0, lvlT: DUCK_LEVEL_T, drain: false, duckT: 0 };
+  fobiFeel(g.from, "worried", 30);
   text(g.x, g.y - 60, "¡" + PHOBIAS.fobi.name + "!", "#fff6b0", 18); ring(g.x, g.y + 40, 10, 110, "rgba(255,246,176,.85)", .6);
   for (let i = 0; i < 12; i++) G.parts.push({ x: g.x + rand(-14, 14), y: g.y + rand(-20, 20), vx: rand(-80, 80), vy: rand(-90, -20), life: .9, max: .9, color: "#fff4c8", size: 3 });
 }
@@ -4119,7 +4157,7 @@ function updatePhobicSpirit(g, dt) {
 }
 function spawnRunDuck(g, delay) {
   if (G.runDucks.filter(d => !d.dead).length > 45) return;
-  G.runDucks.push({ x: g.x + rand(-6, 6), y: g.y + 6, gy: g.y + 60 + rand(-14, 14), z: 0, vx: rand(-110, 110), state: "drop", t: -delay, life: DUCK.life, target: null, face: 1, walk: rand(0, TAU), flap: 0, from: g.from });
+  G.runDucks.push({ x: g.x + rand(-6, 6), y: g.y + 6, gy: (g.attached && g.from ? g.from.y : g.y + 60) + rand(-14, 14), z: 0, vx: rand(-110, 110), state: "drop", t: -delay, life: DUCK.life, target: null, face: 1, walk: rand(0, TAU), flap: 0, from: g.from });
 }
 function updateRunDucks(dt) {
   for (const d of G.runDucks) {
@@ -4177,12 +4215,12 @@ function drawRunDuck(d) {
 function drawSpirit(g) {
   const y = g.y + Math.sin(g.bob) * 4, t = T(), f = g.face, sway = Math.sin(g.bob * .7) * .06, mood = g.mood || "normal";
   const P = g.phobia, shake = P ? Math.sin(t * 40) * 1.6 : 0;
-  ell(g.x, g.y + 42, 14, 4, "rgba(120,240,230,.18)");
+  if (!g.attached) ell(g.x, g.y + 42, 14, 4, "rgba(120,240,230,.18)");
   const sc = 1.15 * (1 + (g.lvl - 1) * .07) * (1 + (g.pump || 0) * .3), hk = hurtK(g), app = g.appear === undefined ? 1 : g.appear;
   ctx.save(); ctx.globalAlpha = app * (.85 + .15 * Math.sin(t * 3));
   const droop = mood === "sad" ? 6 : 0;
   ctx.translate(g.x + shake + (hk > 0 ? Math.sin(t * 70) * 3 * hk : 0), y + droop - (1 - app) * 20); ctx.scale(f * sc, sc);
-  ctx.rotate(sway + hk * .25 + (mood === "sad" ? .12 : 0) + (mood === "read" ? .18 : 0));
+  ctx.rotate((g.attached ? sway * .4 : sway) + hk * .25 + (mood === "sad" ? .12 : 0) + (mood === "read" ? .25 : 0));
   // boots
   [-6, 6].forEach((x, i) => { const by = 30 + Math.sin(t * 6 + i * 2) * 2; ctx.beginPath(); ctx.moveTo(x - 4, by - 8); ctx.lineTo(x + 2, by - 8); ctx.lineTo(x + 2, by - 1); ctx.lineTo(x + 7, by); ctx.quadraticCurveTo(x + 8, by + 4, x + 5, by + 4); ctx.lineTo(x - 4, by + 4); ctx.closePath(); S("#3a2a22", 1.4); });
   // trench coat (bulging and wriggling when it's full of ducks)
@@ -4229,23 +4267,34 @@ function drawSpirit(g) {
   ctx.beginPath(); ctx.ellipse(0, 0, 11, 4.5, 0, 0, TAU); S("#6a1a2a", 1.6); ctx.beginPath(); ctx.ellipse(1, -2, 9, 4, 0, Math.PI, TAU); S("#6a1a2a", 1.4); rrS(0, -7, 2, 3, 1, "#6a1a2a", 1);
   ctx.restore();
   // gloves: where they go depends on what he's doing with Fobi
-  const R = g.react, rk = R ? 1 - R.t / R.max : 0, sw = g.swing > 0 ? 10 : 0;
+  const R = g.react, rk = R ? 1 - R.t / R.max : 0, sw = g.swing > 0 ? 10 : 0, A = g.attached;
   const glove = s => {
     let hx = s * 18 + (s === 1 ? sw : 0), hy = 4 + Math.sin(t * 5 + s) * 2;
+    if (A) { hx = s === 1 ? 12 : -13; hy = s === 1 ? 18 : 10 + Math.sin(t * 4) * 1.5; }      // holding on to his shoulders
+    if (s === 1 && g.punch) { hx = 15; hy = 4; }                                               // the punching glove flies out (drawn below)
     if (P) { hx = s * 9; hy = 6 + Math.sin(t * 30 + s) * 1.5; }                                   // hugging the coat shut
     else if (R && R.k === "cheer") { hx = s * 15; hy = -30 - Math.abs(Math.sin(rk * Math.PI * 3)) * 6; } // arms up, proud
-    else if (R && R.k === "pat" && s === 1) { hx = 6; hy = 26 + Math.abs(Math.sin(rk * Math.PI * 4)) * 5; } // patting the pail
+    else if (R && R.k === "pat" && s === 1) { hx = A ? 14 : 6; hy = (A ? -14 : 26) + Math.abs(Math.sin(rk * Math.PI * 4)) * 5; } // patting the pail
     else if (R && R.k === "flinch") { hx = s * 6 + 6; hy = -6; }                                // reaching out
-    else if (mood === "worry") { hx = 14 + s * 4; hy = 6 + Math.sin(t * 9 + s) * 2; }
-    else if (mood === "read" && s === 1) { hx = 10; hy = 22; }                                   // hand on his shoulder
+    else if (mood === "worry") { hx = A ? 13 + s * 5 : 14 + s * 4; hy = (A ? 20 : 6) + Math.sin(t * 9 + s) * 2; } // clinging to him
+    else if (mood === "read" && s === 1) { hx = 13; hy = 22; }                                   // hand on his shoulder, reading along
     else if (mood === "sad") { hy = 14; hx = s * 12; }
     ctx.beginPath(); ctx.moveTo(s * 11, -10); ctx.quadraticCurveTo(s * 15, -4, s * 14, 2); ctx.lineTo(s * 9, 2); ctx.closePath(); S(P ? "#6a5a3a" : "#7a6644", 1.3);
+    if (s === 1 && g.punch) return;
     ctx.beginPath(); ctx.ellipse(hx, hy, 4.5, 4, 0, 0, TAU); S("#f4f4f0", 1.3);
     for (let i = 0; i < 3; i++) rrS(hx + s * 2.5, hy - 3 + i * 2.2, 3.4, 1.8, .9, "#f4f4f0", .8);
   };
   glove(-1); glove(1);
   if (R && R.k === "cheer") { for (let i = 0; i < 3; i++) { const a = t * 4 + i * 2.1; circ(Math.cos(a) * 20, -36 + Math.sin(a) * 6, 1.4, "#fff6b0"); } }
   ctx.restore();
+  if (g.punch) {
+    // stretchy sleeve shooting out to the enemy, glove first
+    const k = g.punch.t / .25, reach = Math.sin(Math.min(1, k) * Math.PI), sx = g.x + f * 12 * sc, sy = y - 8 * sc;
+    const gx = sx + (g.punch.x - sx) * reach, gy = sy + (g.punch.y - sy) * reach;
+    ctx.save(); ctx.lineCap = "round"; ctx.strokeStyle = OL; ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(sx, sy); ctx.quadraticCurveTo((sx + gx) / 2, Math.min(sy, gy) - 18, gx, gy); ctx.stroke();
+    ctx.strokeStyle = P ? "#6a5a3a" : "#7a6644"; ctx.lineWidth = 4.5; ctx.stroke(); ctx.restore();
+    ctx.save(); ctx.translate(gx, gy); ctx.scale(f * 1.4, 1.4); ctx.beginPath(); ctx.ellipse(0, 0, 4.8, 4.2, 0, 0, TAU); S("#f4f4f0", 1.3); for (let i = 0; i < 3; i++) rrS(2.5, -3 + i * 2.2, 3.4, 1.8, .9, "#f4f4f0", .8); ctx.restore();
+  }
   if (g.lvl === undefined) return;
   const top = y - 50 * sc / 1.15;
   for (let i = 0; i < SPIRIT_MAX; i++) circS(g.x - 16 + i * 8, top, 2.6, i < g.lvl ? (P ? "#fff4c8" : "#a6f4e8") : "rgba(40,30,60,.8)", 1);
@@ -4964,12 +5013,13 @@ function render() {
   if (G.monster) { const M = G.monster; list.push({ y: M.y, f: () => drawMonster(M) }); }
   G.bigbats.forEach(b => { if (b.state === "decoy") list.push({ y: b.y + 18, f: () => drawBat(b, true) }); });
   G.allies.forEach(a => list.push({ y: a.y, f: () => drawFobi(a) }));
+  G.spirits.forEach(g => { if (g.attached && g.from) list.push({ y: g.from.y - .5, f: () => drawSpirit(g) }); });
   list.sort((a, b) => a.y - b.y).forEach(o => o.f());
   drawAim();
   G.cleavers.forEach(drawCleaver); G.shots.forEach(drawShot); G.eshots.forEach(drawEShot); G.bubbles.forEach(drawBubble); G.duckFalls.forEach(drawDuckFall); G.tombFly.forEach(drawTombFly); G.shadows.forEach(drawShadow);
   G.bats.forEach(b => { if (b.delay <= 0) drawBat(b, false); });
   G.bigbats.forEach(b => { if (b.state === "fly") drawBat(b, true); });
-  G.ghosts.forEach(drawGhost); G.spirits.forEach(drawSpirit);
+  G.ghosts.forEach(drawGhost); G.spirits.forEach(g => { if (!g.attached) drawSpirit(g); });
   drawParts(); drawRings();
   for (const f of W.fog) { if (!inView(f.x, f.y, f.rx)) continue; const g = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, f.rx); g.addColorStop(0, "rgba(180,190,230,.09)"); g.addColorStop(1, "rgba(180,190,230,0)"); ctx.fillStyle = g; ctx.save(); ctx.translate(f.x, f.y); ctx.scale(1, f.ry / f.rx); ctx.translate(-f.x, -f.y); ctx.beginPath(); ctx.arc(f.x, f.y, f.rx, 0, TAU); ctx.fill(); ctx.restore(); }
   if (G.core) dyn.push({ x: G.core.x, y: G.core.y - 40 - (G.core.alt || 0), r: 340, c: "255,150,50", g: .22 });

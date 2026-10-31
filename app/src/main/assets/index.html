@@ -1,4 +1,5 @@
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Festilocos</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -103,6 +104,10 @@ button{font:inherit;color:inherit}
 .overlay{position:fixed;inset:0;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 30%,rgba(40,24,64,.55),rgba(8,5,14,.88));z-index:5;overflow:auto;
   padding-block:calc(env(safe-area-inset-top,0px) + 16px) calc(env(safe-area-inset-bottom,0px) + 16px);
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.overlay{touch-action:pan-y;place-items:start center;-webkit-overflow-scrolling:touch}
+.overlay>*{margin-block:auto}
+.overlay *{touch-action:pan-y}
+@media (max-height:480px){.card{padding:14px 16px;gap:10px}.hero canvas{width:96px!important;height:96px!important}.card h1{font-size:34px}.card .row{position:sticky;bottom:0}}
 .overlay.soft{background:rgba(8,5,14,.45)}
 .card{max-width:780px;width:100%;padding:22px 24px;display:flex;flex-direction:column;gap:14px;border-radius:22px}
 .hero{display:flex;gap:18px;align-items:center;flex-wrap:wrap}

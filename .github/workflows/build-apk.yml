@@ -73,11 +73,11 @@ jobs:
             sleep 20
             adb exec-out screencap -p > pantalla1.png
             SIZE=$(adb shell wm size | tail -1 | sed 's/.*: //'); W=${SIZE%x*}; H=${SIZE#*x}; if [ $W -lt $H ]; then T=$W; W=$H; H=$T; fi
-            adb shell input tap $((W*20/100)) $((H*92/100))
-            sleep 6
+            adb shell input swipe $((W*50/100)) $((H*85/100)) $((W*50/100)) $((H*10/100)) 400
+            sleep 2
             adb exec-out screencap -p > pantalla2.png
-            adb shell input swipe $((W*15/100)) $((H*70/100)) $((W*15/100)) $((H*95/100)) 1500
-            sleep 3
+            adb shell input tap $((W*20/100)) $((H*80/100))
+            sleep 6
             adb exec-out screencap -p > pantalla3.png
             adb logcat -d > logcat.txt || true
 

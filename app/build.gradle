@@ -13,8 +13,16 @@ android {
     buildTypes {
         release { minifyEnabled false }
     }
+    packaging {
+        resources { excludes += ["META-INF/*"] }
+    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
+}
+
+dependencies {
+    // tiny WebSocket server so friends on the same Wi-Fi can join the host's game
+    implementation "org.java-websocket:Java-WebSocket:1.5.7"
 }

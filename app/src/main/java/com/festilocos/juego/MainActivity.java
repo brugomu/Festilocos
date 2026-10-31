@@ -19,6 +19,7 @@ public class MainActivity extends Activity {
     private static final String TAG = "FESTI";
     private WebView web;
     private int crashes = 0;
+    private FestiNet net;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +58,8 @@ public class MainActivity extends Activity {
                 return true;
             }
         });
+        if (net == null) net = new FestiNet(this, web); else net.setWebView(web);
+        web.addJavascriptInterface(net, "FestiNet");
         web.setBackgroundColor(0xFF120A1A);
         setContentView(web);
         hideBars();
@@ -81,6 +84,9 @@ public class MainActivity extends Activity {
     public void onBackPressed() {
         if (web != null) web.evaluateJavascript("window.dispatchEvent(new KeyboardEvent('keydown',{code:'Escape',key:'Escape'}));", null);
     }
+
+    @Override
+    protected void onDestroy() { if (net != null) net.shutdown(); super.onDestroy(); }
 
     @Override
     protected void onPause() { super.onPause(); if (web != null) web.onPause(); }

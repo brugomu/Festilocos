@@ -46,6 +46,8 @@ jobs:
   probar:
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -74,13 +76,11 @@ jobs:
             sleep 8
             adb exec-out screencap -p > pantalla2.png
             adb logcat -d > logcat.txt || true
-            adb logcat -d -s FESTI chromium AndroidRuntime ActivityManager > resumen.txt || true
 
-      - uses: actions/upload-artifact@v4
+      - name: Guardar resultados de la prueba
         if: always()
-        with:
-          name: prueba
-          path: |
-            pantalla*.png
-            logcat.txt
-            resumen.txt
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          grep -E "FESTI|AndroidRuntime|FATAL|chromium|renderer|WebView" logcat.txt | tail -300 > resumen.txt || true
+          gh release upload build-${{ github.run_number }} pantalla1.png pantalla2.png resumen.txt --clobber -R ${{ github.repository }}

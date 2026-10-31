@@ -42,13 +42,13 @@ body.mode-lobby .matchonly,body.mode-match .lobbyonly,body.mode-title .matchonly
 .ally .mini i{display:block;height:100%}
 .dot{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--outline);flex:none}
 .center{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:0;max-width:52vw}
-.wave{font-family:var(--display);font-size:20px;padding:4px 16px;line-height:1.2;text-align:center}
-.status{font-size:12px;font-weight:800;color:var(--muted);text-align:center;text-shadow:0 1px 3px #000;min-height:16px}
+.wave{font-family:var(--display);font-size:14px;padding:2px 10px;line-height:1.2;text-align:center}
+.status{font-size:10px;font-weight:800;color:var(--muted);text-align:center;text-shadow:0 1px 3px #000;min-height:16px}
 .obj{font-size:12px;font-weight:800;padding:5px 10px;text-align:center;max-width:100%}
 .obj b{color:var(--ember)}
 .obj.ok{border-color:#6fd37a}.obj.fail{border-color:#d9505a;opacity:.85}
-#hordeBar{width:min(320px,52vw);height:auto;aspect-ratio:640/68}
-.bosses{display:flex;flex-direction:column;gap:4px;width:min(320px,52vw)}
+#hordeBar{width:min(200px,36vw);height:auto;aspect-ratio:640/68}
+.bosses{display:flex;flex-direction:column;gap:3px;width:min(220px,40vw)}
 .boss{padding:4px 8px;display:flex;flex-direction:column;gap:3px}
 .boss .bn{font-size:11px;font-weight:900;display:flex;justify-content:space-between;gap:6px}
 .boss .bn em{font-style:normal;color:var(--leg);font-size:9px;letter-spacing:.1em;text-transform:uppercase}
@@ -69,27 +69,31 @@ button{font:inherit;color:inherit}
 .wcard.on{border-color:var(--ember);background:rgba(255,138,31,.12)}.wcard.off{opacity:.45}
 .bottom{display:flex;justify-content:space-between;align-items:flex-end}
 .movehint{width:120px;height:120px;border-radius:50%;border:2px dashed rgba(255,255,255,.14);display:grid;place-items:center;font-size:10px;font-weight:900;letter-spacing:.1em;color:rgba(255,255,255,.3);text-transform:uppercase}
-.pad{position:relative;width:250px;height:190px;pointer-events:none;transform-origin:100% 100%;flex:none;margin-left:auto}
-.skill{position:absolute;width:62px;height:62px;border-radius:50%;pointer-events:auto;cursor:pointer;touch-action:none;padding:0;
-  background:radial-gradient(circle at 50% 30%,#4a3470,#21163a 70%);border:3px solid var(--outline);box-shadow:0 3px 0 var(--outline),inset 0 0 0 2px rgba(255,190,120,.35);display:grid;place-items:center;overflow:hidden}
-.skill svg{width:28px;height:28px;fill:none;stroke:var(--ink);stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;position:relative;z-index:1}
-.skill .key{position:absolute;top:5px;right:0;left:0;text-align:center;font-size:8px;font-weight:900;color:var(--ember);z-index:1;line-height:1}
-.skill .nm{position:absolute;bottom:6px;left:0;right:0;text-align:center;font-size:7px;font-weight:900;text-transform:uppercase;z-index:1;color:var(--muted);line-height:1}
+.pad{position:relative;width:320px;height:240px;pointer-events:none;transform-origin:100% 100%;flex:none;margin-left:auto}
+.skill{position:absolute;width:78px;height:78px;border-radius:50%;pointer-events:auto;cursor:pointer;touch-action:none;padding:0;
+  background:radial-gradient(circle at 50% 30%,rgba(74,52,112,.55),rgba(33,22,58,.5) 70%);border:3px solid rgba(18,10,26,.55);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);box-shadow:0 3px 0 var(--outline),inset 0 0 0 2px rgba(255,190,120,.35);display:grid;place-items:center;overflow:hidden}
+.skill svg{width:32px;height:32px;fill:none;stroke:var(--ink);stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;position:relative;z-index:1}
+.skill .key{position:absolute;top:6px;right:0;left:0;text-align:center;font-size:9px;font-weight:900;color:var(--ember);z-index:1;line-height:1}
+.skill .nm{position:absolute;bottom:8px;left:0;right:0;text-align:center;font-size:8px;font-weight:900;text-transform:uppercase;z-index:1;color:var(--muted);line-height:1}
 .skill::after{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(rgba(6,4,10,.8) calc(var(--cd,0) * 360deg),transparent 0);z-index:2;pointer-events:none}
 .skill .cdn{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--display);font-size:18px;z-index:3;text-shadow:0 2px 0 #000}
-.skill.atk{width:88px;height:88px;right:0;bottom:0;background:radial-gradient(circle at 50% 30%,#3d6f6a,#173533 70%);box-shadow:0 3px 0 var(--outline),inset 0 0 0 2px rgba(166,244,232,.45)}
-.skill.atk svg{width:36px;height:36px;stroke:var(--ghost)}
+.skill.atk{width:110px;height:110px;right:0;bottom:0;background:radial-gradient(circle at 50% 30%,rgba(61,111,106,.6),rgba(23,53,51,.5) 70%);box-shadow:0 3px 0 var(--outline),inset 0 0 0 2px rgba(166,244,232,.45)}
+.skill.atk svg{width:42px;height:42px;stroke:var(--ghost)}
 .skill .ammo{position:absolute;top:20px;right:6px;z-index:3;font-family:var(--display);font-size:13px;color:var(--ghost);text-shadow:0 2px 0 #000}
 .skill.rage{border-color:#ff5a46!important;animation:rageGlow .7s ease-in-out infinite alternate}
 .skill.rage svg{stroke:#ffb0a0}
 .skill.rage::before{content:"";position:absolute;inset:-8px;border-radius:50%;pointer-events:none;z-index:0;background:radial-gradient(circle,rgba(255,80,50,0) 52%,rgba(255,80,50,.55) 62%,rgba(255,140,60,0) 74%);animation:rageFlame .45s linear infinite}
 @keyframes rageGlow{from{box-shadow:0 0 6px 2px rgba(255,70,50,.55),inset 0 0 10px rgba(255,60,40,.5)}to{box-shadow:0 0 18px 6px rgba(255,90,40,.85),inset 0 0 18px rgba(255,80,40,.75)}}
 @keyframes rageFlame{0%{transform:scale(.92) rotate(0)}50%{transform:scale(1.06) rotate(8deg)}100%{transform:scale(.92) rotate(0)}}
+#ultMsg{position:fixed;left:50%;top:22%;transform:translateX(-50%);z-index:6;max-width:min(560px,86vw);text-align:center;pointer-events:none;
+  font-family:var(--display);font-size:clamp(15px,2.4vw,22px);line-height:1.35;color:#e9e0ff;text-shadow:0 2px 0 #000,0 0 18px rgba(120,80,190,.8);padding:10px 16px;border-radius:14px;background:rgba(18,10,30,.55)}
+#ultMsg.show{animation:ultIn 5.5s ease forwards}
+@keyframes ultIn{0%{opacity:0;transform:translate(-50%,8px)}10%{opacity:1;transform:translate(-50%,0)}80%{opacity:1}100%{opacity:0}}
 .inv.locked canvas{filter:grayscale(1) brightness(.45)}
 .stk.special{animation-duration:.9s;box-shadow:0 0 0 3px #ffd34a,0 0 28px 6px rgba(255,211,74,.55)}
-#bQ{right:100px;bottom:4px}#bE{right:94px;bottom:80px}#bR{right:30px;bottom:104px}
-#bF{right:172px;bottom:96px;width:66px;height:66px;background:radial-gradient(circle at 50% 30%,#3e5c30,#1b2a16 70%);box-shadow:0 3px 0 var(--outline),inset 0 0 0 2px rgba(155,227,122,.4)}
-#bP{right:176px;bottom:14px;width:56px;height:56px}
+#bQ{right:124px;bottom:4px}#bE{right:116px;bottom:98px}#bR{right:34px;bottom:128px}
+#bF{right:212px;bottom:116px;width:82px;height:82px;background:radial-gradient(circle at 50% 30%,rgba(62,92,48,.6),rgba(27,42,22,.5) 70%);box-shadow:0 3px 0 var(--outline),inset 0 0 0 2px rgba(155,227,122,.4)}
+#bP{right:216px;bottom:14px;width:68px;height:68px}
 .skill.ready{box-shadow:0 3px 0 var(--outline),inset 0 0 0 2px #c9f5b3,0 0 18px rgba(155,227,122,.75)}
 .skill.ultmode{background:radial-gradient(circle at 50% 30%,#4f7a3a,#1f3317 70%)}
 .skill.pot svg{stroke:var(--potc,var(--muted))}
@@ -227,10 +231,10 @@ details ul{margin:6px 0 0;padding-left:16px;display:flex;flex-direction:column;g
   .wardrobe canvas.pv{max-width:160px;justify-self:center}
 }
 @media (max-height:520px){
-  .pad{transform:scale(.82)}.movehint{width:96px;height:96px}.use{height:80px;min-width:80px}
+  .pad{transform:scale(.9)}.movehint{width:96px;height:96px}.use{height:80px;min-width:80px}
   .ctx{margin-top:4px;padding:6px}.bosses{display:none}
 }
-@media (max-height:400px){.pad{transform:scale(.7)}.skill .nm{display:none}}
+@media (max-height:400px){.pad{transform:scale(.8)}.skill .nm{display:none}}
 @media (pointer:fine){.movehint{display:none}}
 </style>
 
@@ -455,6 +459,7 @@ details ul{margin:6px 0 0;padding-left:16px;display:flex;flex-direction:column;g
     <div class="row"><button class="cta" id="againBtn">Volver a la plaza</button></div>
   </div>
 </div>
+<div id="ultMsg" hidden></div>
 <div id="errBox" hidden style="position:fixed;left:8px;right:8px;bottom:8px;z-index:99;background:#3a0e1a;color:#ffd6d6;border:2px solid #ff6b6b;border-radius:10px;padding:8px 10px;font:12px/1.35 monospace;white-space:pre-wrap;max-height:40vh;overflow:auto"></div>
 <script>
 // if something breaks, show the error on screen so it can be photographed and fixed
@@ -1330,7 +1335,7 @@ function drawFobi(u) {
   if (u.stun > 0) stunStars(u.x, u.y - 88);
   if (G && G.mode === "match") {
     if (!u.ai && u.reload > 0) { ctx.strokeStyle = "rgba(166,244,232,.85)"; ctx.lineWidth = 3; ctx.beginPath(); ctx.ellipse(u.x, u.y + 2, 24, 9, 0, -Math.PI / 2, -Math.PI / 2 + TAU * (1 - u.reload / RELOAD)); ctx.stroke(); }
-    else { hpBar(u.x, u.y - 86, 36, u.hp / u.maxhp, u.cos.lining, 4); ctx.font = "900 9px Nunito, sans-serif"; ctx.textAlign = "center"; ctx.fillStyle = u.cos.lining; ctx.fillText("IA", u.x, u.y - 92); }
+    else { hpBar(u.x, u.y - 86, 36, u.hp / u.maxhp, u.cos.lining, 4); ctx.font = "900 9px Nunito, sans-serif"; ctx.textAlign = "center"; ctx.fillStyle = u.cos.lining; if (u.ai) ctx.fillText("IA", u.x, u.y - 92); }
   }
 }
 function stunStars(x, y) {
@@ -1975,7 +1980,7 @@ const teamSpd = () => 1 + .07 * allyCount();
 function rescaleTeam(oldN, newN) { const k = teamHp(newN) / teamHp(oldN); for (const e of G.enemies) { if (e.dead) continue; e.hp *= k; e.maxhp *= k; } }
 function blankState(mode) {
   return { mode, t: 0, paused: false, over: false, kills: 0, fx: { hurt: 0, heal: 0 }, earn: { kills: 0, obj: 0, slot: 0 },
-    allies: [], enemies: [], shots: [], bubbles: [], ducks: [], duckFalls: [], ladders: [], drops: [], spirits: [], wolves: [], tombFly: [], shadows: [], portals: [], eshots: [], bats: [], tombs: [], skeletons: [], ghosts: [], decos: [], cleavers: [], pickups: [], bigbats: [], velas: [], puddles: [],
+    allies: [], enemies: [], shots: [], bubbles: [], ducks: [], duckFalls: [], ladders: [], drops: [], spirits: [], wolves: [], tombFly: [], shadows: [], runDucks: [], portals: [], eshots: [], bats: [], tombs: [], skeletons: [], ghosts: [], decos: [], cleavers: [], pickups: [], bigbats: [], velas: [], puddles: [],
     monster: null, parts: [], rings: [], texts: [], fireflies: [], npcs: [], slots: [], aim: null, targets: [] };
 }
 function makeFobi(x, y, cos, ai) {
@@ -2092,7 +2097,6 @@ window.addEventListener("keydown", e => {
   if (e.code === "KeyE") useSkill("tomb");
   if (e.code === "KeyR") useSkill("ghost");
   if (e.code === "KeyF") useUlt();
-  if (!$("phobiaPanel").hidden) { const n = { Digit1: 0, Digit2: 1, Digit3: 2, Digit4: 3 }[e.code]; if (n !== undefined) { pickPhobia(n); return; } }
   if (G.phase === "setup") {
     if (nearPhone()) { if (e.code === "Digit1") addPick("fobi"); if (e.code === "Backspace") removePick(G.picks.length - 1); if (e.code === "Enter") callTeam(); }
     if (e.code === "Space") placeHeart(nearMarker());
@@ -2142,7 +2146,8 @@ function aimButton(id, kind) {
   el.addEventListener("pointercancel", e => { if (st && e.pointerId === st.id) { st = null; if (G) G.aim = null; } });
   el.addEventListener("keydown", e => { if (e.key === "Enter" && G && !G.paused && !G.over) { e.preventDefault(); fireKind(kind, null); } });
 }
-aimButton("bA", "atk"); aimButton("bQ", "bats"); aimButton("bE", "tomb"); aimButton("bR", "ghost");
+aimButton("bA", "atk"); aimButton("bQ", "bats"); aimButton("bE", "tomb");
+tapBtn("bR", () => useSkill("ghost")); // the werewolf always appears next to Fobi: nothing to aim
 function tapBtn(id, fn) {
   $(id).addEventListener("pointerdown", e => { e.preventDefault(); e.stopPropagation(); if (e.pointerType !== "mouse") lastInput = "touch"; if (G && !G.paused && !G.over) fn(); });
   $(id).addEventListener("keydown", e => { if (e.key === "Enter" && G && !G.paused && !G.over) { e.preventDefault(); fn(); } });
@@ -2223,6 +2228,7 @@ function hurtAlly(t, amt) {
   if (isFesti(t) && t.buff.resistencia > 0) amt *= .5;
   t.hp -= amt; t.flash = .12;
   if (t === G.player) feelHurt(amt);
+  if (isFesti(t) && amt >= 3 && !(spiritOf(t) && spiritOf(t).react)) spiritReact(t, "flinch", .5);
   if (t.kind === "core") { G.core.flash = .12; if (G.obj && G.obj.type === "intacto" && G.obj.status === "active") { G.obj.taken += amt; if (G.obj.taken > 50) failObjective(); } }
   ghostWatch(t);
   if (t.hp > 0) return;
@@ -2706,44 +2712,6 @@ function drawDuckFall(f) {
   ctx.restore();
 }
 // the reunited ghost: a fancy trench coat, painter's beret, gloves and boots, with nobody inside
-function drawSpirit(g) {
-  const y = g.y + Math.sin(g.bob) * 4, t = T(), f = g.face, sway = Math.sin(g.bob * .7) * .06;
-  ell(g.x, g.y + 42, 14, 4, "rgba(120,240,230,.18)");
-  const sc = 1.15 * (1 + (g.lvl - 1) * .07) * (1 + (g.pump || 0) * .3), hk = hurtK(g);
-  ctx.save(); ctx.globalAlpha = (g.appear === undefined ? 1 : g.appear) * (.85 + .15 * Math.sin(t * 3));
-  ctx.translate(g.x + (hk > 0 ? Math.sin(t * 70) * 3 * hk : 0), y - (1 - (g.appear === undefined ? 1 : g.appear)) * 20); ctx.scale(f * sc, sc); ctx.rotate(sway + hk * .25);
-  // boots, floating apart from the coat
-  [-6, 6].forEach((x, i) => { const by = 30 + Math.sin(t * 6 + i * 2) * 2; ctx.beginPath(); ctx.moveTo(x - 4, by - 8); ctx.lineTo(x + 2, by - 8); ctx.lineTo(x + 2, by - 1); ctx.lineTo(x + 7, by); ctx.quadraticCurveTo(x + 8, by + 4, x + 5, by + 4); ctx.lineTo(x - 4, by + 4); ctx.closePath(); S("#3a2a22", 1.4); });
-  // long trench coat, collar up, empty inside
-  ctx.beginPath(); ctx.moveTo(-11, -14); ctx.quadraticCurveTo(-14, 6, -16, 22); ctx.lineTo(-4, 20); ctx.lineTo(0, 24); ctx.lineTo(4, 20); ctx.lineTo(16, 22); ctx.quadraticCurveTo(14, 6, 11, -14); ctx.closePath();
-  S(lg(0, -14, 0, 24, ["#8a7650", "#5e4e32"]), 1.8);
-  poly([-3, -12, 3, -12, 2, 20, -2, 20]); F("rgba(12,8,20,.85)");
-  ctx.strokeStyle = "rgba(30,20,10,.45)"; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(-12, 4); ctx.lineTo(12, 4); ctx.stroke();
-  [-6, 6].forEach(x => { circS(x, -4, 1.3, "#c9a24a", .8); circS(x, 10, 1.3, "#c9a24a", .8); });
-  poly([-11, -14, -4, -12, -6, -2]); S("#9a8660", 1.4); poly([11, -14, 4, -12, 6, -2]); S("#9a8660", 1.4);
-  // nothing between the beret and the coat: just two glowing dots floating in the air
-  const glow = .7 + Math.sin(t * 4) * .3;
-  ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.fillStyle = `rgba(166,244,232,${.35 * glow})`; ctx.beginPath(); ctx.arc(-2.6 + f * .5, -24, 3.2, 0, TAU); ctx.arc(2.6 + f * .5, -24, 3.2, 0, TAU); ctx.fill(); ctx.restore();
-  circ(-2.6 + f * .5, -24, 1.5, "#d6fff8"); circ(2.6 + f * .5, -24, 1.5, "#d6fff8");
-  // painter's beret, tilted, resting on nothing
-  ctx.save(); ctx.translate(0, -31); ctx.rotate(-.2);
-  ctx.beginPath(); ctx.ellipse(0, 0, 11, 4.5, 0, 0, TAU); S("#6a1a2a", 1.6); ctx.beginPath(); ctx.ellipse(1, -2, 9, 4, 0, Math.PI, TAU); S("#6a1a2a", 1.4); rrS(0, -7, 2, 3, 1, "#6a1a2a", 1);
-  ctx.restore();
-  // white gloves floating at the end of the empty sleeves
-  const sw = g.swing > 0 ? 10 : 0;
-  [-1, 1].forEach(s => {
-    const hx = s * 18 + (s === 1 ? sw : 0), hy = 4 + Math.sin(t * 5 + s) * 2;
-    ctx.beginPath(); ctx.moveTo(s * 11, -10); ctx.quadraticCurveTo(s * 15, -4, s * 14, 2); ctx.lineTo(s * 9, 2); ctx.closePath(); S("#7a6644", 1.3);
-    ctx.beginPath(); ctx.ellipse(hx, hy, 4.5, 4, 0, 0, TAU); S("#f4f4f0", 1.3);
-    for (let i = 0; i < 3; i++) rrS(hx + s * 2.5, hy - 3 + i * 2.2, 3.4, 1.8, .9, "#f4f4f0", .8);
-  });
-  ctx.restore();
-  if (g.lvl === undefined) return;
-  // level pips and health
-  const top = y - 50 * sc / 1.15;
-  for (let i = 0; i < SPIRIT_MAX; i++) circS(g.x - 16 + i * 8, top, 2.6, i < g.lvl ? "#a6f4e8" : "rgba(40,30,60,.8)", 1);
-  if (g.hp < g.maxhp) hpBar(g.x, top - 8, 34, g.hp / g.maxhp, "#a6f4e8", 4);
-}
 function drawWolf(w) {
   const t = T();
   ctx.save(); ctx.translate(w.x, w.y);
@@ -3176,39 +3144,6 @@ function updateAllies(dt) {
 // ================= ultimate: Fobia ajena (phobia of a teammate) =================
 const PHOBIA_TIME = 9;
 const PHOBIAS = { fobi: { name: "Anatidaefobia", desc: "el miedo a que un pato te esté mirando" } };
-function useUlt() {
-  const p = G.player;
-  if (G.mode !== "match" || !canAct(p) || p.ult < 100 || festis().some(f => f.phobiaT > 0)) return;
-  const mates = G.allies.filter(a => a.alive);
-  if (!mates.length) { beginPhobia(p); return; }
-  openPhobiaPanel([p, ...mates]);
-}
-let phobiaChoices = [];
-function openPhobiaPanel(list) {
-  phobiaChoices = list;
-  const box = $("phobiaList"); box.innerHTML = "";
-  list.forEach((u, i) => {
-    const b = document.createElement("button"); b.className = "opt";
-    b.innerHTML = `<b>${i + 1} · ${u === G.player ? "Fobi (vos)" : "Fobi IA · " + ROLE_NAME[u.role]}</b><span>${PHOBIAS.fobi.name}</span>`;
-    b.addEventListener("pointerdown", ev => { ev.preventDefault(); ev.stopPropagation(); pickPhobia(i); });
-    box.appendChild(b);
-  });
-  $("phobiaPanel").hidden = false;
-}
-function pickPhobia(i) { const u = phobiaChoices[i]; $("phobiaPanel").hidden = true; if (u && u.alive) beginPhobia(u); }
-// Fobi lifts the pail and a shadow flies out of the keyhole toward the chosen festiloco
-function beginPhobia(u) {
-  const p = G.player; if (p.ult < 100 || !canAct(p)) return;
-  p.ult = 0; startCast(p, "ult", null); p.cast.target = u;
-}
-function castPhobia(u) {
-  const p = G.player;
-  // anatidaefobia: for a while, every hand and boot that hits the ground calls a duck down from the sky
-  u.phobiaT = PHOBIA_TIME; u.lift = 1;
-  ring(u.x, u.y, 10, 120, "rgba(255,246,176,.85)", .6);
-  text(u.x, u.y - 110, "¡" + PHOBIAS.fobi.name + "!", "#fff6b0", 18);
-  toast("Anatidaefobia: durante " + PHOBIA_TIME + " s, las manos y botas de " + (u === p ? "Fobi" : "tu aliado") + " llaman patos que caen del cielo y aterrorizan a los empleados.", 4.5);
-}
 function placeDuck(d) {
   // the duck watches from far away, hiding in a bush in the middle of the employees
   const u = d.target;
@@ -3487,7 +3422,7 @@ function updateFx(dt) {
 }
 function cleanup() {
   const keep = a => a.filter(x => !x.dead);
-  for (const k of ["shadows", "tombFly", "portals", "duckFalls", "bubbles", "ducks", "ladders", "drops", "spirits", "wolves", "enemies", "shots", "eshots", "bats", "tombs", "skeletons", "ghosts", "decos", "cleavers", "pickups", "bigbats", "velas", "puddles"]) G[k] = keep(G[k]);
+  for (const k of ["runDucks", "shadows", "tombFly", "portals", "duckFalls", "bubbles", "ducks", "ladders", "drops", "spirits", "wolves", "enemies", "shots", "eshots", "bats", "tombs", "skeletons", "ghosts", "decos", "cleavers", "pickups", "bigbats", "velas", "puddles"]) G[k] = keep(G[k]);
   G.allies = G.allies.filter(a => a.alive);
   G.parts = G.parts.filter(q => q.life > 0); G.rings = G.rings.filter(r => r.life > 0); G.texts = G.texts.filter(t => t.life > 0);
   if (G.parts.length > 1100) G.parts.splice(0, G.parts.length - 1100);
@@ -3495,7 +3430,7 @@ function cleanup() {
 
 // ================= skill animations: things come out of the keyhole =================
 const CAST_DUR = { bats: 1.05, tomb: .95, wolf: 1.05, rage: .6, ult: .65 };
-function startCast(u, kind, pt) { u.cast = { kind, t: 0, dur: CAST_DUR[kind], pt, spawned: 0, kicked: false }; }
+function startCast(u, kind, pt) { u.cast = { kind, t: 0, dur: CAST_DUR[kind], pt, spawned: 0, kicked: false }; if (kind !== "ult") spiritReact(u, "cheer", .9); }
 function keyholePos(u) { return { x: u.x + u.face * 1.5, y: u.y - 70 }; }
 function handsPos(u) { return { x: u.x + u.face * 24, y: u.y - 37 }; }
 function updateCasts(dt) {
@@ -3834,26 +3769,6 @@ function buffSpirit(g, cx, cy) {
   ring(cx, cy, 10, DROP_R * 1.4, "rgba(166,244,232,.8)", .5);
   for (let i = 0; i < 10; i++) G.parts.push({ x: cx + rand(-30, 30), y: cy + rand(-10, 10), vx: (g.x - cx) * 1.8, vy: (g.y - cy) * 1.8, life: .5, max: .5, color: "#c9fbf3", size: 3 });
 }
-function updateSpirits(dt) {
-  for (const g of G.spirits) {
-    if (g.dead) continue;
-    if (g.from && g.from.kind === "ally" && g.from.dead) { g.dead = true; burst(g.x, g.y, "#c9fbf3", 14, 140); continue; }
-    g.atkT -= dt; g.bob += dt * 4; g.swing = Math.max(0, g.swing - dt); g.flash = Math.max(0, (g.flash || 0) - dt); g.pump = Math.max(0, (g.pump || 0) - dt); g.appear = Math.min(1, g.appear + dt * 1.6);
-    const S = spiritStats(g.lvl), own = g.from && g.from.alive ? g.from : null;
-    // it only goes after enemies near its festiloco, so it doesn't wander off alone
-    const anchor = own || g, e = nearestEnemyTo(anchor, 380);
-    if (e && g.appear >= 1) {
-      const k = BOSS_SCALE[e.type] || 1, tx = e.x, ty = e.y - 26 * k, d = Math.hypot(tx - g.x, ty - g.y);
-      g.face = tx >= g.x ? 1 : -1;
-      if (d > e.r + 14) { g.x += (tx - g.x) / d * S.spd * dt; g.y += (ty - g.y) / d * S.spd * dt; }
-      else if (g.atkT <= 0) { g.atkT = .5; g.swing = .2; hurtEnemy(e, S.dmg * dmgMul(g.from), { from: g.from }); stars(g.x + g.face * 10, g.y); }
-    } else if (own) {
-      const tx = own.x - own.face * 40, ty = own.y - 60, d = Math.hypot(tx - g.x, ty - g.y);
-      if (d > 20) { g.x += (tx - g.x) / d * S.spd * .85 * dt; g.y += (ty - g.y) / d * S.spd * .85 * dt; g.face = tx >= g.x ? 1 : -1; }
-    }
-  }
-}
-
 // ---------- entrances: Fobi climbs out of a giant keyhole in the ground ----------
 function startEnter(u, dur, delay) { u.enter = { t: -(delay || 0), dur: dur || 1.8 }; }
 function tickEnter(u, dt) {
@@ -4040,14 +3955,14 @@ function spawnPointFor(type, sp) {
 }
 
 // ================= the getaway after the last horde =================
-const ESCAPE_TIME = 70;
+const ESCAPE_TIME = 40;
 function startEscape() {
   const c = G.core;
   // the heart floats off to the farthest of the other two marked spots
   const opts = Object.values(BASES).map(B => B.core).filter(p => dist(p, c) > 300).sort((a, b) => dist(b, c) - dist(a, c));
   const z = opts[0] || { x: PHONE_POS.x, y: PHONE_POS.y };
   G.phase = "escape";
-  G.escape = { x: z.x, y: z.y, r: 170, t: ESCAPE_TIME, sx: c.x, sy: c.y, fly: 0, spawnT: 2, bosses: [52, 34, 18] };
+  G.escape = { x: z.x, y: z.y, r: 170, t: ESCAPE_TIME, sx: c.x, sy: c.y, fly: 0, spawnT: 3, bosses: [26, 12] };
   c.alt = 0; G.mausOpen = false;
   toast("¡El Corazón se va volando! Llegá con tu equipo a donde aterriza y aguantá " + ESCAPE_TIME + " s", 4.5);
 }
@@ -4059,8 +3974,8 @@ function updateEscape(dt) {
   // employees keep pouring in, and a few bosses show up just to scare you
   E.spawnT -= dt;
   if (E.spawnT <= 0) {
-    E.spawnT = rand(1.1, 1.8);
-    const sp = pick(G.B.spawns), n = 2 + randi(3);
+    E.spawnT = rand(2.4, 3.4);
+    const sp = pick(G.B.spawns), n = 1 + randi(2);
     for (let i = 0; i < n; i++) { const e = spawnEnemy(weighted([["emp", 50], ["cafe", 20], ["friki", 12], ["manitas", 10], ["memo", 5]]), sp); e.path = []; }
   }
   while (E.bosses.length && E.t <= E.bosses[0]) { E.bosses.shift(); const e = spawnEnemy(Math.random() < .5 ? "mocha" : "becario", pick(G.B.spawns)); e.path = []; }
@@ -4102,7 +4017,7 @@ function updateShadows(dt) {
     s.t += dt;
     const tgt = s.to, alive = tgt && !tgt.dead && tgt.alive !== false;
     if (!alive) { s.dead = true; continue; }
-    const ty = tgt.y - (s.kind === "rage" ? 50 : 60), dx = tgt.x - s.x, dy = ty - s.y, d = Math.hypot(dx, dy);
+    const ty = tgt.kind === "spirit" ? tgt.y : tgt.y - (s.kind === "rage" ? 50 : 60), dx = tgt.x - s.x, dy = ty - s.y, d = Math.hypot(dx, dy);
     if (s.t > .25) { const sp = 560; s.vx += (dx / (d || 1) * sp - s.vx) * Math.min(1, dt * 8); s.vy += (dy / (d || 1) * sp - s.vy) * Math.min(1, dt * 8); }
     else s.vy += 600 * dt;
     s.x += s.vx * dt; s.y += s.vy * dt;
@@ -4110,7 +4025,7 @@ function updateShadows(dt) {
     if (d < 20 && s.t > .3) {
       s.dead = true;
       if (s.kind === "rage") enrageWolf(tgt);
-      else { burst(tgt.x, tgt.y - 50, "#b48ae0", 18, 160); castPhobia(tgt); }
+      else { burst(tgt.x, tgt.y, "#b48ae0", 18, 160); castPhobia(tgt); }
     }
   }
 }
@@ -4121,6 +4036,220 @@ function enrageWolf(w) {
   w.rageLv = Math.min(3, w.rageLv + 1); w.rageT = Math.min(24, w.rageT + 8);
   const heal = w.maxhp * .2; w.hp = Math.min(w.maxhp, w.hp + heal);
   text(w.x, w.y - 120, "¡Ataque de furia! +" + Math.round(heal), "#ff6b5a", 17); ring(w.x, w.y, 10, 90, "rgba(255,90,70,.8)", .5); burst(w.x, w.y - 40, "#ff6b5a", 20, 180);
+}
+
+// ================= the reunited ghost: Fobi's companion (never said out loud: it's his dad) =================
+function spiritReact(u, k, t) { const g = u && spiritOf(u); if (g && !g.phobia) g.react = { k, t: t || .9, max: t || .9 }; }
+function updateSpirits(dt) {
+  for (const g of G.spirits) {
+    if (g.dead) continue;
+    if (g.from && g.from.kind === "ally" && g.from.dead) { g.dead = true; burst(g.x, g.y, "#c9fbf3", 14, 140); continue; }
+    g.atkT -= dt; g.bob += dt * 4; g.swing = Math.max(0, g.swing - dt); g.flash = Math.max(0, (g.flash || 0) - dt); g.pump = Math.max(0, (g.pump || 0) - dt); g.appear = Math.min(1, g.appear + dt * 1.6);
+    g.patT = (g.patT ?? rand(6, 10)) - dt;
+    if (g.react) { g.react.t -= dt; if (g.react.t <= 0) g.react = null; }
+    const S = spiritStats(g.lvl), u = g.from, own = u && u.alive ? u : null;
+    let tx = null, ty = null, spd = S.spd * .85, mood = "normal", fight = true;
+    if (g.phobia) { updatePhobicSpirit(g, dt); if (g.dead) continue; mood = "shock"; fight = false; if (own) { tx = own.x - own.face * 46; ty = own.y - 66; } }
+    else if (!own) { mood = "sad"; fight = false; }
+    else {
+      const low = own.hp / own.maxhp < .3, enemyNear = nearestEnemyTo(own, 300);
+      if (g.react && g.react.k === "pat") { tx = own.x - own.face * 4; ty = own.y - 112; mood = "happy"; fight = false; }
+      else if (g.react && g.react.k === "cheer") { mood = "happy"; }
+      else if (g.react && g.react.k === "flinch") { mood = "shock"; tx = own.x - own.face * 34; ty = own.y - 70; spd *= 1.6; fight = false; }
+      else if (low) { mood = "worry"; tx = own.x - own.face * 30; ty = own.y - 70; spd *= 1.4; }
+      else if (own.reload > 0 && !enemyNear) { mood = "read"; tx = own.x - own.face * 24; ty = own.y - 84; fight = false; }
+      if (g.patT <= 0 && !enemyNear && !low && !g.react) { g.patT = rand(9, 14); g.react = { k: "pat", t: 2.2, max: 2.2 }; }
+      // when Fobi is low it only fights what gets right next to him
+      const e = fight ? nearestEnemyTo(own, low ? 170 : 380) : null;
+      if (e && g.appear >= 1) {
+        const k = BOSS_SCALE[e.type] || 1, ex = e.x, ey = e.y - 26 * k, d = Math.hypot(ex - g.x, ey - g.y);
+        g.face = ex >= g.x ? 1 : -1;
+        if (d > e.r + 14) { tx = ex; ty = ey; spd = S.spd; }
+        else { tx = null; if (g.atkT <= 0) { g.atkT = .5; g.swing = .2; hurtEnemy(e, S.dmg * dmgMul(u), { from: u }); stars(g.x + g.face * 10, g.y); } }
+      } else if (tx === null) { tx = own.x - own.face * 40; ty = own.y - 60; }
+    }
+    g.mood = mood;
+    if (tx !== null) { const d = Math.hypot(tx - g.x, ty - g.y); if (d > 6) { const st = Math.min(d, spd * dt); g.x += (tx - g.x) / d * st; g.y += (ty - g.y) / d * st; if (d > 20) g.face = tx >= g.x ? 1 : -1; } }
+    if (own && (mood === "read" || mood === "worry" || (g.react && g.react.k !== "cheer"))) g.face = own.x >= g.x ? 1 : -1;
+  }
+}
+
+// ================= ultimate: anatidaefobia (the ghost gets swarmed by ducks) =================
+const ULT_MSG = { fobi: "Sientes cómo las miradas te apuñalan desde abajo. La falta de la mano que te acogía es enorme." };
+const DUCK_LEVEL_T = 1.6, DUCKS_PER_LEVEL = 5, DRAIN = .11, DRAIN_DUCK = .4, DUCK = { spd: 185, peck: 1.3, mark: .5, r: 70, stun: 1.6, fragile: 5, life: 11 };
+function spiritPhobic(u) { const g = spiritOf(u); return !!(g && g.phobia); }
+function useUlt() {
+  const p = G.player;
+  if (G.mode !== "match" || !canAct(p) || p.ult < 100 || spiritPhobic(p)) return;
+  p.ult = 0;
+  showUltMsg(ULT_MSG.fobi);
+  const g = spiritOf(p) || summonSpirit(p, p.x - p.face * 40, p.y - 60);
+  startCast(p, "ult", null); p.cast.target = g;
+}
+let ultMsgT = 0;
+function showUltMsg(msg) {
+  const el = $("ultMsg"); el.textContent = msg; el.hidden = false; el.classList.remove("show"); void el.offsetWidth; el.classList.add("show"); ultMsgT = 5.5;
+}
+function tickUltMsg(dt) { if (ultMsgT > 0) { ultMsgT -= dt; if (ultMsgT <= 0) $("ultMsg").hidden = true; } }
+// the shadow reaches the ghost: it swells to level 5, crammed with ducks, and starts falling apart
+function castPhobia(g) {
+  if (!g || g.kind !== "spirit" || g.dead) return;
+  g.lvl = SPIRIT_MAX; g.maxhp = spiritStats(SPIRIT_MAX).hp; g.hp = g.maxhp; g.react = null;
+  g.phobia = { t: 0, lvlT: DUCK_LEVEL_T, drain: false, duckT: 0 };
+  text(g.x, g.y - 60, "¡" + PHOBIAS.fobi.name + "!", "#fff6b0", 18); ring(g.x, g.y + 40, 10, 110, "rgba(255,246,176,.85)", .6);
+  for (let i = 0; i < 12; i++) G.parts.push({ x: g.x + rand(-14, 14), y: g.y + rand(-20, 20), vx: rand(-80, 80), vy: rand(-90, -20), life: .9, max: .9, color: "#fff4c8", size: 3 });
+}
+function updatePhobicSpirit(g, dt) {
+  const P = g.phobia; P.t += dt;
+  if (!P.drain) {
+    P.lvlT -= dt;
+    if (P.lvlT <= 0) {
+      P.lvlT = DUCK_LEVEL_T;
+      for (let i = 0; i < DUCKS_PER_LEVEL; i++) spawnRunDuck(g, i * .08);
+      g.lvl--; g.pump = .35; text(g.x, g.y - 50, "Nivel " + Math.max(1, g.lvl), "#fff6b0", 12);
+      if (g.lvl <= 1) { g.lvl = 1; P.drain = true; }
+      g.maxhp = spiritStats(Math.max(1, g.lvl)).hp; g.hp = Math.min(g.hp, g.maxhp);
+    }
+  } else {
+    // after the last level it keeps tearing apart, ducks pouring out until nothing is left
+    g.hp -= g.maxhp * DRAIN * dt; P.duckT -= dt;
+    if (P.duckT <= 0) { P.duckT = DRAIN_DUCK; spawnRunDuck(g, 0); }
+    if (g.hp <= 0) { g.dead = true; burst(g.x, g.y, "#c9fbf3", 20, 180); burst(g.x, g.y, "#fff4c8", 14, 160); text(g.x, g.y - 40, "El fantasma se deshizo…", "#a6f4e8", 13); }
+  }
+}
+function spawnRunDuck(g, delay) {
+  if (G.runDucks.filter(d => !d.dead).length > 45) return;
+  G.runDucks.push({ x: g.x + rand(-6, 6), y: g.y + 6, gy: g.y + 60 + rand(-14, 14), z: 0, vx: rand(-110, 110), state: "drop", t: -delay, life: DUCK.life, target: null, face: 1, walk: rand(0, TAU), flap: 0, from: g.from });
+}
+function updateRunDucks(dt) {
+  for (const d of G.runDucks) {
+    if (d.dead) continue;
+    d.t += dt; if (d.t < 0) continue;
+    d.life -= dt; d.walk += dt * 18;
+    if (d.state === "drop") {
+      // tumbles out of the coat and lands on the ground
+      d.x += d.vx * dt; d.y += 260 * dt; if (d.y >= d.gy) { d.y = d.gy; d.state = "run"; }
+    } else if (d.state === "run") {
+      if (!d.target || d.target.dead || d.target.hidden) d.target = nearestEnemyTo(d, 650);
+      const e = d.target;
+      if (!e || d.life <= 0) { d.state = "fly"; d.t = 0; continue; }
+      const dx = e.x - d.x, dy = e.y - d.y, dd = Math.hypot(dx, dy);
+      d.face = dx >= 0 ? 1 : -1;
+      if (dd < e.r + 14) { d.state = "peck"; d.t = 0; }
+      else { d.x += dx / dd * DUCK.spd * dt; d.y += dy / dd * DUCK.spd * dt; }
+    } else if (d.state === "peck") {
+      const e = d.target;
+      if (e && !e.dead) { d.x += (e.x - d.face * 12 - d.x) * Math.min(1, dt * 8); d.y += (e.y + 4 - d.y) * Math.min(1, dt * 8); }
+      if (d.t >= DUCK.peck) { d.state = "mark"; d.t = 0; }
+    } else if (d.state === "mark") {
+      if (d.t >= DUCK.mark) {
+        // it flies off, and everyone in the marked area feels watched: frozen, guard down
+        let n = 0;
+        for (const e of G.enemies) { if (e.dead || e.hidden) continue; if (Math.hypot((e.x - d.x) / (DUCK.r + e.r), (e.y - d.y) / ((DUCK.r + e.r) * .55)) <= 1) { e.stun = Math.max(e.stun, e.boss ? DUCK.stun * .5 : DUCK.stun); e.paranoid = DUCK.stun; e.fragile = Math.max(e.fragile, DUCK.fragile); e.prep = null; e.action = null; n++; } }
+        ring(d.x, d.y, 6, DUCK.r, "rgba(255,246,176,.9)", .4); burst(d.x, d.y - 10, "#fffbe8", 8, 120, 3);
+        text(d.x, d.y - 46, n ? "¡Cuac! ×" + n : "¡Cuac!", "#fff6b0", 13);
+        d.state = "fly"; d.t = 0;
+      }
+    } else if (d.state === "fly") {
+      d.z += 260 * dt; d.x += d.face * 120 * dt; d.flap += dt * 30;
+      if (d.t > .9) d.dead = true;
+    }
+  }
+}
+function drawRunDuck(d) {
+  if (d.t < 0 && d.state === "drop") return;
+  ctx.save();
+  if (d.state === "mark") {
+    const k = clamp(d.t / DUCK.mark, 0, 1);
+    ctx.fillStyle = `rgba(255,246,176,${.12 + k * .18})`; ctx.beginPath(); ctx.ellipse(d.x, d.y, DUCK.r, DUCK.r * .55, 0, 0, TAU); ctx.fill();
+    ctx.strokeStyle = "rgba(255,240,150,.85)"; ctx.lineWidth = 2; ctx.setLineDash([6, 5]); ctx.stroke(); ctx.setLineDash([]);
+  }
+  if (d.state !== "fly") ell(d.x, d.y + 2, 9, 3, "rgba(4,2,12,.35)");
+  ctx.globalAlpha = d.state === "fly" ? clamp(1 - d.t / .9, 0, 1) : 1;
+  ctx.translate(d.x, d.y - d.z); ctx.scale(d.face * .7, .7);
+  const bob = d.state === "run" ? -Math.abs(Math.sin(d.walk)) * 3 : d.state === "peck" ? Math.max(0, Math.sin(d.t * 26)) * 5 : 0;
+  if (d.state === "peck") ctx.rotate(Math.max(0, Math.sin(d.t * 26)) * .35);
+  drawDuckBody(bob, d.state === "fly" || d.state === "drop" ? d.flap + d.t * 30 : undefined);
+  ctx.restore();
+}
+
+// ================= ghost art: moods, little gestures with Fobi, and the duck-swarmed state =================
+function drawSpirit(g) {
+  const y = g.y + Math.sin(g.bob) * 4, t = T(), f = g.face, sway = Math.sin(g.bob * .7) * .06, mood = g.mood || "normal";
+  const P = g.phobia, shake = P ? Math.sin(t * 40) * 1.6 : 0;
+  ell(g.x, g.y + 42, 14, 4, "rgba(120,240,230,.18)");
+  const sc = 1.15 * (1 + (g.lvl - 1) * .07) * (1 + (g.pump || 0) * .3), hk = hurtK(g), app = g.appear === undefined ? 1 : g.appear;
+  ctx.save(); ctx.globalAlpha = app * (.85 + .15 * Math.sin(t * 3));
+  const droop = mood === "sad" ? 6 : 0;
+  ctx.translate(g.x + shake + (hk > 0 ? Math.sin(t * 70) * 3 * hk : 0), y + droop - (1 - app) * 20); ctx.scale(f * sc, sc);
+  ctx.rotate(sway + hk * .25 + (mood === "sad" ? .12 : 0) + (mood === "read" ? .18 : 0));
+  // boots
+  [-6, 6].forEach((x, i) => { const by = 30 + Math.sin(t * 6 + i * 2) * 2; ctx.beginPath(); ctx.moveTo(x - 4, by - 8); ctx.lineTo(x + 2, by - 8); ctx.lineTo(x + 2, by - 1); ctx.lineTo(x + 7, by); ctx.quadraticCurveTo(x + 8, by + 4, x + 5, by + 4); ctx.lineTo(x - 4, by + 4); ctx.closePath(); S("#3a2a22", 1.4); });
+  // trench coat (bulging and wriggling when it's full of ducks)
+  const bulge = P ? 1 + .08 * g.lvl / SPIRIT_MAX + Math.sin(t * 9) * .03 : 1;
+  ctx.save(); ctx.scale(bulge, 1);
+  ctx.beginPath(); ctx.moveTo(-11, -14); ctx.quadraticCurveTo(-14, 6, -16, 22); ctx.lineTo(-4, 20); ctx.lineTo(0, 24); ctx.lineTo(4, 20); ctx.lineTo(16, 22); ctx.quadraticCurveTo(14, 6, 11, -14); ctx.closePath();
+  S(lg(0, -14, 0, 24, P ? ["#7a6844", "#4e4028"] : ["#8a7650", "#5e4e32"]), 1.8);
+  poly([-3, -12, 3, -12, 2, 20, -2, 20]); F("rgba(12,8,20,.85)");
+  ctx.strokeStyle = "rgba(30,20,10,.45)"; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(-12, 4); ctx.lineTo(12, 4); ctx.stroke();
+  [-6, 6].forEach(x => { circS(x, -4, 1.3, "#c9a24a", .8); circS(x, 10, 1.3, "#c9a24a", .8); });
+  poly([-11, -14, -4, -12, -6, -2]); S("#9a8660", 1.4); poly([11, -14, 4, -12, 6, -2]); S("#9a8660", 1.4);
+  if (P) {
+    // peck marks and torn spots
+    ctx.strokeStyle = "rgba(25,12,6,.8)"; ctx.lineWidth = 1.3;
+    [[-9, 0], [7, -6], [9, 14], [-6, 16], [-12, 10]].forEach(([x, yy]) => { ctx.beginPath(); ctx.moveTo(x - 2, yy - 2); ctx.lineTo(x, yy + 1); ctx.lineTo(x + 2, yy - 2); ctx.stroke(); });
+    // feathers stuck all over
+    [[-10, -6, .6], [8, 2, -.4], [-4, 12, .9], [12, 16, -.8], [5, -10, .2], [-13, 18, .4]].forEach(([x, yy, r]) => { ctx.save(); ctx.translate(x, yy); ctx.rotate(r + Math.sin(t * 5 + x) * .15); ctx.beginPath(); ctx.ellipse(0, 0, 4.2, 1.6, 0, 0, TAU); S("#fffbe8", .8); ctx.restore(); });
+    // ducks crammed inside, peeking out of the coat
+    const n = Math.min(4, g.lvl);
+    for (let i = 0; i < n; i++) {
+      const dx = (i % 2 ? 1.5 : -1.5), dy = -6 + i * 7 + Math.sin(t * 8 + i) * 1.2;
+      circS(dx, dy, 3.4, "#fff4c8", .9); poly([dx + 3, dy - .5, dx + 6.5, dy + .4, dx + 3, dy + 1.4]); F("#ff9a2a"); circ(dx + 1.2, dy - 1, .8, "#120a1a");
+    }
+    // one more duck sitting on top, where a head should be
+    ctx.save(); ctx.translate(-1, -20); ctx.scale(.45, .45); drawDuckBody(Math.sin(t * 7) * 1.5); ctx.restore();
+  }
+  ctx.restore();
+  // eyes floating between beret and coat, expressive
+  const ex = f * .5, ey = -24 + (mood === "read" ? 2 : 0) + (mood === "sad" ? 1.5 : 0);
+  const glow = .7 + Math.sin(t * 4) * .3;
+  ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.fillStyle = `rgba(166,244,232,${.35 * glow})`; ctx.beginPath(); ctx.arc(-2.6 + ex, ey, 3.2, 0, TAU); ctx.arc(2.6 + ex, ey, 3.2, 0, TAU); ctx.fill(); ctx.restore();
+  ctx.strokeStyle = "#d6fff8"; ctx.fillStyle = "#d6fff8"; ctx.lineWidth = 1.2; ctx.lineCap = "round";
+  if (mood === "happy") { [-2.6, 2.6].forEach(dx => { ctx.beginPath(); ctx.arc(dx + ex, ey + 1, 1.6, Math.PI * 1.1, Math.PI * 1.9); ctx.stroke(); }); }
+  else if (mood === "shock") { [-2.8, 2.8].forEach(dx => { ctx.beginPath(); ctx.arc(dx + ex, ey, 2.1, 0, TAU); ctx.stroke(); }); }
+  else {
+    const r = mood === "worry" ? 1.1 : 1.5;
+    [-2.6, 2.6].forEach(dx => circ(dx + ex, ey + (mood === "read" ? 1 : 0), r, "#d6fff8"));
+    if (mood === "worry" || mood === "sad") { ctx.beginPath(); ctx.moveTo(-4.6 + ex, ey - 3.2); ctx.lineTo(-1.2 + ex, ey - 4.4); ctx.moveTo(4.6 + ex, ey - 3.2); ctx.lineTo(1.2 + ex, ey - 4.4); ctx.stroke(); }
+  }
+  ctx.lineCap = "butt";
+  if (mood === "worry") { const ph = (t * .9) % 1; ctx.globalAlpha *= 1 - ph; circ(7 + ex, ey - 2 + ph * 8, 1.3, "#bfe8ff"); ctx.globalAlpha = app; }
+  // beret (knocked crooked when swarmed)
+  ctx.save(); ctx.translate(P ? 3 : 0, -31 - (mood === "shock" ? 2 : 0)); ctx.rotate(P ? .5 : mood === "sad" ? -.05 : -.2);
+  ctx.beginPath(); ctx.ellipse(0, 0, 11, 4.5, 0, 0, TAU); S("#6a1a2a", 1.6); ctx.beginPath(); ctx.ellipse(1, -2, 9, 4, 0, Math.PI, TAU); S("#6a1a2a", 1.4); rrS(0, -7, 2, 3, 1, "#6a1a2a", 1);
+  ctx.restore();
+  // gloves: where they go depends on what he's doing with Fobi
+  const R = g.react, rk = R ? 1 - R.t / R.max : 0, sw = g.swing > 0 ? 10 : 0;
+  const glove = s => {
+    let hx = s * 18 + (s === 1 ? sw : 0), hy = 4 + Math.sin(t * 5 + s) * 2;
+    if (P) { hx = s * 9; hy = 6 + Math.sin(t * 30 + s) * 1.5; }                                   // hugging the coat shut
+    else if (R && R.k === "cheer") { hx = s * 15; hy = -30 - Math.abs(Math.sin(rk * Math.PI * 3)) * 6; } // arms up, proud
+    else if (R && R.k === "pat" && s === 1) { hx = 6; hy = 26 + Math.abs(Math.sin(rk * Math.PI * 4)) * 5; } // patting the pail
+    else if (R && R.k === "flinch") { hx = s * 6 + 6; hy = -6; }                                // reaching out
+    else if (mood === "worry") { hx = 14 + s * 4; hy = 6 + Math.sin(t * 9 + s) * 2; }
+    else if (mood === "read" && s === 1) { hx = 10; hy = 22; }                                   // hand on his shoulder
+    else if (mood === "sad") { hy = 14; hx = s * 12; }
+    ctx.beginPath(); ctx.moveTo(s * 11, -10); ctx.quadraticCurveTo(s * 15, -4, s * 14, 2); ctx.lineTo(s * 9, 2); ctx.closePath(); S(P ? "#6a5a3a" : "#7a6644", 1.3);
+    ctx.beginPath(); ctx.ellipse(hx, hy, 4.5, 4, 0, 0, TAU); S("#f4f4f0", 1.3);
+    for (let i = 0; i < 3; i++) rrS(hx + s * 2.5, hy - 3 + i * 2.2, 3.4, 1.8, .9, "#f4f4f0", .8);
+  };
+  glove(-1); glove(1);
+  if (R && R.k === "cheer") { for (let i = 0; i < 3; i++) { const a = t * 4 + i * 2.1; circ(Math.cos(a) * 20, -36 + Math.sin(a) * 6, 1.4, "#fff6b0"); } }
+  ctx.restore();
+  if (g.lvl === undefined) return;
+  const top = y - 50 * sc / 1.15;
+  for (let i = 0; i < SPIRIT_MAX; i++) circS(g.x - 16 + i * 8, top, 2.6, i < g.lvl ? (P ? "#fff4c8" : "#a6f4e8") : "rgba(40,30,60,.8)", 1);
+  if (g.hp < g.maxhp || P) hpBar(g.x, top - 8, 34, g.hp / g.maxhp, P ? "#fff4c8" : "#a6f4e8", 4);
 }
 
 // ================= waves, objectives, slot machine =================
@@ -4305,7 +4434,7 @@ function update(dt) {
   G.targets = allyTargets();
   updateWaves(dt);
   if (G.phase === "slot") { updateFx(dt); return; }
-  updatePlayer(dt); updateAllies(dt); updateCasts(dt); updateEnemies(dt); updatePortals(dt); updateMTombs(dt); updateShadows(dt); updateShots(dt); updateEShots(dt); updatePuddles(dt); updateDrops(dt); updateSpirits(dt); updateWolves(dt); updateLadders(dt); updateBubbles(dt); updateDucks(dt); updatePotionPuddles(); G.specialCd.caramel = Math.max(0, G.specialCd.caramel - dt); updateBats(dt); updateTombs(dt);
+  updatePlayer(dt); updateAllies(dt); updateCasts(dt); updateEnemies(dt); updatePortals(dt); updateMTombs(dt); updateShadows(dt); updateRunDucks(dt); tickUltMsg(dt); updateShots(dt); updateEShots(dt); updatePuddles(dt); updateDrops(dt); updateSpirits(dt); updateWolves(dt); updateLadders(dt); updateBubbles(dt); updateDucks(dt); updatePotionPuddles(); G.specialCd.caramel = Math.max(0, G.specialCd.caramel - dt); updateBats(dt); updateTombs(dt);
   updateSkeletons(dt); updateGhosts(dt); updateDecos(dt); updateCleavers(dt); updateMonster(dt); updateBigBats(dt); updatePickups(dt); updateFx(dt); cleanup();
 }
 
@@ -4416,7 +4545,7 @@ function updateHUD() {
   const myWolf = G.wolves.find(w => !w.dead && !w.white && w.from === p && (w.state === "wolf" || w.state === "rage"));
   setClass("bR", "rage", !!myWolf && !um); if (myWolf && !um) setText("nR", "Enfurecer");
   const ready = p.ult >= 100 && !M;
-  const fob = festis().find(f => f.phobiaT > 0); const rdy = ready && !fob; setText("nF", fob ? "Patos " + Math.ceil(fob.phobiaT) + "s" : rdy ? "¡Lista!" : Math.floor(p.ult) + "%"); setCd("bF", fob ? 1 - fob.phobiaT / PHOBIA_TIME : 1 - p.ult / 100); setClass("bF", "ready", rdy);
+  const fob = spiritPhobic(p); const rdy = ready && !fob; setText("nF", fob ? "¡Patos!" : rdy ? "¡Lista!" : Math.floor(p.ult) + "%"); setCd("bF", fob ? 0 : 1 - p.ult / 100); setClass("bF", "ready", rdy);
   setText("nP", p.potion ? POTIONS[p.potion].name : "Poción");
   $("bP").style.setProperty("--potc", p.potion ? POTIONS[p.potion].color : "#bdb0d2"); setClass("bP", "disabled", !p.potion);
   setClass("bA", "disabled", !p.alive || p.stun > 0);
@@ -4828,6 +4957,7 @@ function render() {
   G.decos.forEach(d => list.push({ y: d.y, f: () => drawDeco(d) }));
   G.velas.forEach(v => list.push({ y: v.y, f: () => drawVela(v) }));
   G.wolves.forEach(w => list.push({ y: w.y, f: () => drawWolf(w) }));
+  G.runDucks.forEach(d => list.push({ y: d.y, f: () => drawRunDuck(d) }));
   G.ducks.forEach(d => list.push({ y: d.y, f: () => drawDuck(d) }));
   G.enemies.forEach(e => { if (!e.hidden && inView(e.x, e.y, 120)) list.push({ y: e.y, f: () => drawEnemy(e) }); });
   G.skeletons.forEach(s => list.push({ y: s.y, f: () => drawSkeleton(s) }));

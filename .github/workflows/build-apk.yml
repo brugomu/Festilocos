@@ -62,7 +62,7 @@ jobs:
       - name: Probar en emulador
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 31
+          api-level: 33
           arch: x86_64
           target: google_apis
           disable-animations: true
@@ -72,9 +72,13 @@ jobs:
             adb shell am start -n com.festilocos.juego/.MainActivity
             sleep 20
             adb exec-out screencap -p > pantalla1.png
-            adb shell input tap 1200 650
-            sleep 8
+            SIZE=$(adb shell wm size | tail -1 | sed 's/.*: //'); W=${SIZE%x*}; H=${SIZE#*x}; if [ $W -lt $H ]; then T=$W; W=$H; H=$T; fi
+            adb shell input tap $((W*20/100)) $((H*92/100))
+            sleep 6
             adb exec-out screencap -p > pantalla2.png
+            adb shell input swipe $((W*15/100)) $((H*70/100)) $((W*15/100)) $((H*95/100)) 1500
+            sleep 3
+            adb exec-out screencap -p > pantalla3.png
             adb logcat -d > logcat.txt || true
 
       - name: Guardar resultados de la prueba
@@ -83,4 +87,4 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           grep -E "FESTI|AndroidRuntime|FATAL|chromium|renderer|WebView" logcat.txt | tail -300 > resumen.txt || true
-          gh release upload build-${{ github.run_number }} pantalla1.png pantalla2.png resumen.txt --clobber -R ${{ github.repository }}
+          gh release upload build-${{ github.run_number }} pantalla1.png pantalla2.png pantalla3.png resumen.txt --clobber -R ${{ github.repository }}

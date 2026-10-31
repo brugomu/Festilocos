@@ -18,6 +18,7 @@ import android.webkit.WebViewClient;
 public class MainActivity extends Activity {
     private static final String TAG = "FESTI";
     private WebView web;
+    private int crashes = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +42,11 @@ public class MainActivity extends Activity {
             public boolean onRenderProcessGone(WebView view, RenderProcessGoneDetail detail) {
                 Log.e(TAG, "renderer gone, crashed=" + (Build.VERSION.SDK_INT >= 26 && detail.didCrash()));
                 if (web != null) { ((android.view.ViewGroup) web.getParent()).removeView(web); web.destroy(); web = null; }
-                createWebView();
+                if (++crashes <= 2) { createWebView(); return true; }
+                android.widget.TextView t = new android.widget.TextView(MainActivity.this);
+                t.setText("El juego se cerró solo varias veces. Sacale una captura a esto y mandásela a Claude.\nDetalle: el motor del navegador interno se detuvo (crash=" + (Build.VERSION.SDK_INT >= 26 && detail.didCrash()) + ").");
+                t.setTextColor(0xFFFFE2B8); t.setBackgroundColor(0xFF120A1A); t.setPadding(40, 40, 40, 40); t.setTextSize(18);
+                setContentView(t);
                 return true;
             }
         });

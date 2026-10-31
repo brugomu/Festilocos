@@ -450,6 +450,16 @@ details ul{margin:6px 0 0;padding-left:16px;display:flex;flex-direction:column;g
     <div class="row"><button class="cta" id="againBtn">Volver a la plaza</button></div>
   </div>
 </div>
+<div id="errBox" hidden style="position:fixed;left:8px;right:8px;bottom:8px;z-index:99;background:#3a0e1a;color:#ffd6d6;border:2px solid #ff6b6b;border-radius:10px;padding:8px 10px;font:12px/1.35 monospace;white-space:pre-wrap;max-height:40vh;overflow:auto"></div>
+<script>
+// if something breaks, show the error on screen so it can be photographed and fixed
+(function () {
+  var box = document.getElementById("errBox"), n = 0;
+  function show(msg) { if (n++ > 6) return; box.hidden = false; box.textContent += "Error: " + msg + "\n"; }
+  window.addEventListener("error", function (e) { show((e.message || e) + (e.lineno ? " (línea " + e.lineno + ")" : "")); });
+  window.addEventListener("unhandledrejection", function (e) { show(String(e.reason)); });
+})();
+</script>
 <script>
 (() => {
 "use strict";
@@ -1979,6 +1989,7 @@ function newLobby() {
   setMode("lobby"); centerCam(G.player.x, G.player.y);
 }
 function newMatch(diffKey) {
+  if (!GY.bg) buildGraveyard();
   W = GY; G = blankState("match");
   Object.assign(G, { diff: DIFFS[diffKey], diffKey, base: null, B: null, core: null, player: makeFobi(PHONE_POS.x - 10, PHONE_POS.y + 70, playerCos(), false),
     phone: { x: PHONE_POS.x, y: PHONE_POS.y, cd: 0, ring: 0 }, picks: [], slots: [],
@@ -4892,7 +4903,7 @@ function drawJoy() {
 }
 
 // ================= boot & loop =================
-buildGraveyard();
+// the graveyard is big, so it is only painted the first time you go to defend it
 buildLobby();
 W = LB;
 setMode("title");

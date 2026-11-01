@@ -28,7 +28,8 @@ body.mode-lobby .matchonly,body.mode-match .lobbyonly,body.mode-title .matchonly
 .panel{background:linear-gradient(180deg,rgba(51,34,79,.94),rgba(30,20,48,.94));border:2px solid var(--line);border-radius:14px;box-shadow:0 3px 0 var(--outline),inset 0 1px 0 rgba(255,255,255,.08)}
 .top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
 .me{display:flex;align-items:center;gap:10px;padding:6px 12px 6px 6px;min-width:0}
-.me canvas{width:48px;height:48px;border-radius:12px;background:radial-gradient(circle at 50% 35%,#4b3470,#1c1230);border:2px solid var(--outline);flex:none}
+.me canvas{width:58px;height:58px;flex:none;margin:-6px 0 -6px -2px;filter:drop-shadow(0 2px 0 rgba(0,0,0,.4))}
+.aicon{width:24px;height:24px;flex:none;margin:-4px 0}
 .who{display:flex;flex-direction:column;gap:4px;min-width:0}
 .who .nm{font-family:var(--display);font-size:18px;line-height:1;color:var(--ember);text-shadow:0 2px 0 var(--outline)}
 .hp{position:relative;width:150px;height:16px;border-radius:8px;background:#140c20;border:2px solid var(--outline);overflow:hidden}
@@ -291,7 +292,7 @@ details ul{margin:6px 0 0;padding-left:16px;display:flex;flex-direction:column;g
 #callBtn,#placeBtn{font-size:18px;padding:8px 22px}
 #callBtn[disabled]{opacity:.45;cursor:not-allowed}
 @media (max-width:760px){
-  .hp{width:110px}.me canvas{width:40px;height:40px}.who .nm{font-size:15px}
+  .hp{width:110px}.me canvas{width:48px;height:48px}.who .nm{font-size:15px}
   .wave,.plaza{font-size:16px;padding:3px 12px}.status{font-size:11px}
   .opt{min-width:90px;padding:5px 8px}
   .wardrobe,.bio{grid-template-columns:1fr}
@@ -1440,6 +1441,13 @@ function drawFobi(u) {
   if (!u.alive) return;
   if (u.enter && u.enter.t < 0) return;
   if (u.enter) drawEnterPortal(u);
+  if (u.beamK && G && G.core) { // being beamed up into the flying heart
+    const k = u.beamK, e = k * k * (3 - 2 * k), c = G.core, tx = c.x, ty = c.y - (c.alt || 0) - 50;
+    if (k >= .98) return;
+    ctx.save(); ctx.translate(u.x + (tx - u.x) * e, u.y + (ty - u.y) * e - Math.sin(k * Math.PI) * 30);
+    const s = 1.28 * (1 - .85 * e); ctx.globalAlpha = 1 - Math.max(0, k - .75) * 4;
+    ctx.scale(u.face * s * Math.cos(k * 14), s); ctx.rotate(Math.sin(k * 9) * .3); drawFobiBody(u); ctx.restore(); ctx.globalAlpha = 1; return;
+  }
   ctx.save(); ctx.translate(u.x, u.y);
   if (u.enter) { ctx.beginPath(); ctx.rect(-90, -240, 180, 243); ctx.clip(); ctx.translate(0, enterOffset(u)); ctx.globalAlpha = 0; }
   ctx.strokeStyle = u === G.player || !G ? "#ff8a1f" : u.cos.lining; ctx.globalAlpha = .75; ctx.lineWidth = 3;
@@ -4104,13 +4112,38 @@ function updateEscape(dt) {
     for (let i = 0; i < n; i++) { const e = spawnEnemy(weighted([["emp", 50], ["cafe", 20], ["friki", 12], ["manitas", 10], ["memo", 5]]), sp); e.path = []; }
   }
   while (E.bosses.length && E.t <= E.bosses[0]) { E.bosses.shift(); const e = spawnEnemy(Math.random() < .5 ? "mocha" : "becario", pick(G.B.spawns)); e.path = []; }
-  if (E.t <= 0) {
-    const inZone = u => u.alive && Math.hypot(u.x - E.x, (u.y - E.y) / .6) < E.r;
-    const saved = festis().filter(inZone).length;
-    G.escaped = inZone(G.player); G.escapedNet = G.allies.filter(a => a.remote && inZone(a)).map(a => a.netId); G.escapeSaved = saved;
-    if (G.escaped) G.earn.obj += 300;
-    endGame(true);
+  const inZone = u => u.alive && Math.hypot(u.x - E.x, (u.y - E.y) / .6) < E.r;
+  if (E.t <= 0 && E.beamT === undefined) {
+    // time's up: the heart beams up everyone standing under it, like a UFO
+    E.beamT = 0; E.beamDur = 2.6;
+    festis().forEach(u => { if (inZone(u)) { u.beamK = 0.001; u.bsx = u.x; u.bsy = u.y; u.intangible = 9; } });
+    toast("¡El Corazón los abduce!", 2.2);
   }
+  if (E.beamT !== undefined) {
+    E.beamT += dt; E.t = 0;
+    const k = Math.min(1, E.beamT / E.beamDur);
+    festis().forEach(u => { if (u.beamK) { u.beamK = Math.max(.001, k); u.x = u.bsx; u.y = u.bsy; } });
+    G.enemies.forEach(e => { if (!e.dead) e.stun = Math.max(e.stun || 0, .3); });
+    if (E.beamT >= E.beamDur + .3) {
+      const up = u => !!u.beamK;
+      G.escaped = up(G.player); G.escapedNet = G.allies.filter(a => a.remote && up(a)).map(a => a.netId); G.escapeSaved = festis().filter(up).length;
+      if (G.escaped) G.earn.obj += 300;
+      endGame(true);
+    }
+  }
+}
+// the tractor beam: soft while the heart hovers, strong while it abducts
+function drawEscapeBeam() {
+  const E = G.escape, c = G.core; if (!E || !c || E.fly < 1) return;
+  const hx = c.x, hy = c.y - (c.alt || 0) - 40, tt = T();
+  const strong = E.beamT !== undefined, a = strong ? .5 + Math.sin(tt * 20) * .08 : .1 + Math.sin(tt * 3) * .03;
+  ctx.save(); ctx.globalCompositeOperation = "lighter";
+  const g = ctx.createLinearGradient(0, hy, 0, E.y + E.r * .6);
+  g.addColorStop(0, `rgba(255,236,170,${a})`); g.addColorStop(1, `rgba(255,190,90,${a * .35})`);
+  ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(hx - 18, hy); ctx.lineTo(hx + 18, hy); ctx.lineTo(E.x + E.r * .9, E.y); ctx.ellipse(E.x, E.y, E.r * .9, E.r * .54, 0, 0, Math.PI); ctx.lineTo(hx - 18, hy); ctx.fill();
+  // rising sparkles
+  for (let i = 0; i < (strong ? 30 : 10); i++) { const ph = (tt * (strong ? .9 : .35) + i * .137) % 1, sx = E.x + Math.sin(i * 7.3) * E.r * .7 * (1 - ph), sy = E.y + (hy - E.y) * ph; ctx.globalAlpha = (1 - ph) * (strong ? .9 : .5); circ(sx + (hx - E.x) * ph, sy, 2 + (i % 3), "#fff2c4"); }
+  ctx.restore();
 }
 function drawEscapeZone() {
   const E = G.escape; if (!E) return;
@@ -4121,7 +4154,7 @@ function drawEscapeZone() {
   ctx.setLineDash([14, 10]); ctx.lineDashOffset = -tt * 40; ctx.strokeStyle = urgent && Math.sin(tt * 10) > 0 ? "#ff8a6a" : "#ffcf57"; ctx.lineWidth = 4;
   ctx.beginPath(); ctx.ellipse(E.x, E.y, E.r, E.r * .6, 0, 0, TAU); ctx.stroke(); ctx.setLineDash([]);
   ctx.restore();
-  if (E.fly >= 1) label("¡Subí acá! " + Math.ceil(E.t) + " s", E.x, E.y + E.r * .6 + 30, 18, urgent ? "#ff9a7a" : "#ffe2b8");
+  if (E.fly >= 1 && E.beamT === undefined) label("¡Subí acá! " + Math.ceil(E.t) + " s", E.x, E.y + E.r * .6 + 30, 18, urgent ? "#ff9a7a" : "#ffe2b8");
 }
 
 // ================= wolf fury and phobia shadows =================
@@ -5014,7 +5047,7 @@ function drawPotThrow(b) {
 // ================= the kiosk (Ceniza) and the Caja Antivicio (Sor Tosca) =================
 // Packs come with cigarettes (a dead format: cards that came in cigarette packs). Sor Tosca's box takes your vices
 // and gives you a blessing: a floating box that you tap to try to upgrade it, then tap once more to open it.
-const CIG_FOR_BLESS = 25, CIGAR_FOR_BLESS = 10;
+const CIG_FOR_BLESS = 20, CIGAR_FOR_BLESS = 10;
 const KSTATE = { blessing: null, t: 0, coughT: 2, cough: 0 };
 const TOSCA_NEAR = ["Fobi la saluda de lejos. Muy de lejos.", "Fobi finge estar mirando el celular.", "Fobi suspira. Otra vez la monja.", "Fobi se pregunta si puede dar la vuelta sin que lo vea. No puede.", "Ni los fantasmas pasan por acá."];
 
@@ -5323,7 +5356,7 @@ const SHOPS = {
     },
     topics: [
       ["Sobre vos", ["Soy Sor Tosca. Cuido esta caja con mucho amor. Y mucha tos. *cof*", "No es humo, es incienso. *cof*"]],
-      ["Sobre la caja", ["Veinticinco cigarrillos o diez habanos. Los habanos traen cajas más benditas: mejoran más seguido. *cof*", "La caja levita por obra divina. O por el humo caliente. Una de las dos. *cof cof*"]],
+      ["Sobre la caja", ["Veinte cigarrillos o diez habanos. Los habanos traen cajas más benditas: mejoran más seguido. *cof*", "La caja levita por obra divina. O por el humo caliente. Una de las dos. *cof cof*"]],
       ["Sobre los vicios", ["Fumar es malísimo. Por eso me los quedo todos. Sacrificio personal. *cof cof cof*", "¿Los habanos? Esos los guardo en un lugar muy especial. Mi boca. Digo, mi bolsillo. *cof*"]],
       ["Sobre la plaza", ["Me pusieron acá, lejos de todo, para que tenga paz. ¡Qué considerados! *cof*", "¡Ceniza y yo somos íntimas amigas! Ella todavía no lo sabe. *cof*"]]
     ]
@@ -5719,7 +5752,7 @@ function updateHUD() {
   const bk = POT_KEYS.filter(k => p.buff[k] > 0).map(k => k + Math.ceil(p.buff[k])).join() + (p.slowStack > .1 ? "m" + Math.round(p.slowStack * 10) : "");
   if (hc.buffs !== bk) { hc.buffs = bk; $("buffs").innerHTML = POT_KEYS.filter(k => p.buff[k] > 0).map(k => `<b style="background:${POTIONS[k].color}">${POTIONS[k].name} ${Math.ceil(p.buff[k])}s</b>`).join("") + (p.slowStack > .1 ? `<b style="background:#f4efe4">Lento ${Math.round(p.slowStack * 100)}%</b>` : ""); }
   const ak = G.allies.map(a => a.cos.lining + Math.ceil(a.hp)).join();
-  if (hc.allies !== ak) { hc.allies = ak; $("allyList").innerHTML = G.allies.map(a => `<div class="panel ally"><span class="dot" style="background:${a.cos.lining}"></span>${a.remote || a.netName ? a.netName || "Amigo" : a.host ? "Anfitrión" : "Fobi IA · " + (ROLE_NAME[a.role] || "")}<span class="mini"><i style="width:${(100 * a.hp / a.maxhp) | 0}%;background:${a.cos.lining}"></i></span></div>`).join(""); }
+  if (hc.allies !== ak) { hc.allies = ak; $("allyList").innerHTML = G.allies.map(a => `<div class="panel ally"><img class="aicon" src="${festiIconURL(a.cos)}" alt="">${a.remote || a.netName ? a.netName || "Amigo" : a.host ? "Anfitrión" : "Fobi IA · " + (ROLE_NAME[a.role] || "")}<span class="mini"><i style="width:${(100 * a.hp / a.maxhp) | 0}%;background:${a.cos.lining}"></i></span></div>`).join(""); }
   setText("waveTxt", G.phase === "setup" ? "Preparación · " + G.diff.name : G.phase === "escape" ? "¡Huida! · " + Math.max(0, Math.ceil(G.escape.t)) + " s" : "Oleada " + G.wave + "/" + MAX_WAVE + " · " + G.diff.name);
   let st;
   if (G.phase === "setup") st = G.allies.length ? "Llevá el Corazón a uno de los 3 lugares marcados" : "Llamá ayuda en el teléfono o andá directo a un lugar marcado";
@@ -5801,8 +5834,42 @@ function drawFobiInto(cvs, scale, yFrac, u) {
   c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, cvs.width, cvs.height);
   ctx.save(); ctx.translate(cvs.width / 2, cvs.height * yFrac); ctx.scale(scale, scale); drawFobiBody(u); ctx.restore(); ctx = prev;
 }
+// Character icons wear a frame from their festivity. Halloween: a glowing carved pumpkin with the character inside.
+const ICON_FRAMES = {
+  halloween(draw) {
+    // glow behind
+    ctx.fillStyle = rg(50, 56, 20, 52, ["rgba(255,150,40,.55)", "rgba(255,150,40,0)"]); ctx.fillRect(0, 0, 100, 100);
+    // ribbed pumpkin
+    const ribs = [[-27, 19, 33], [27, 19, 33], [-14, 22, 36], [14, 22, 36], [0, 24, 37]];
+    ribs.forEach(([dx, rx, ry]) => { ctx.beginPath(); ctx.ellipse(50 + dx, 57, rx, ry, 0, 0, TAU); S(lg(50 + dx - rx, 30, 50 + dx + rx, 90, ["#ffa63a", "#d8601a"]), 2.4); });
+    ctx.strokeStyle = "rgba(140,50,10,.35)"; ctx.lineWidth = 1.4; [-20, -7, 7, 20].forEach(dx => { ctx.beginPath(); ctx.moveTo(50 + dx, 26); ctx.quadraticCurveTo(50 + dx * 1.3, 57, 50 + dx, 89); ctx.stroke(); });
+    // stem, leaf and a curly vine
+    ctx.save(); ctx.translate(50, 22); ctx.rotate(.18); rrS(-4, -14, 8, 16, 3, lg(0, -14, 0, 2, ["#7a8a3a", "#4a5a22"]), 2); ctx.restore();
+    ctx.beginPath(); ctx.moveTo(55, 19); ctx.quadraticCurveTo(66, 8, 76, 14); ctx.quadraticCurveTo(68, 22, 55, 19); S("#6fb04a", 1.6);
+    ctx.strokeStyle = "#4a5a22"; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(46, 16); ctx.bezierCurveTo(36, 8, 30, 18, 36, 20); ctx.stroke();
+    // carved window: a thick rim, a warm candle glow and the character inside
+    ctx.beginPath(); ctx.arc(50, 59, 27, 0, TAU); S("#b8480f", 2.2);
+    ctx.save(); ctx.beginPath(); ctx.arc(50, 60, 24, 0, TAU); ctx.clip();
+    ctx.fillStyle = rg(50, 66, 4, 30, ["#fff1b0", "#ffb03a", "#e06a1a"]); ctx.fillRect(20, 30, 60, 60);
+    draw();
+    ctx.fillStyle = lg(0, 36, 0, 46, ["rgba(90,30,0,.55)", "rgba(90,30,0,0)"]); ctx.fillRect(20, 34, 60, 14); // carved edge shadow
+    ctx.restore();
+  }
+};
+function drawFestiIcon(cvs, u, fest) {
+  const c = cvs.getContext("2d"), prev = ctx; ctx = c;
+  c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, cvs.width, cvs.height);
+  ctx.save(); ctx.scale(cvs.width / 100, cvs.height / 100);
+  ICON_FRAMES[fest || "halloween"](() => { ctx.save(); ctx.translate(50, 125); ctx.scale(1.45, 1.45); drawFobiBody(u); ctx.restore(); });
+  ctx.restore(); ctx = prev;
+}
+const iconCache = {};
+function festiIconURL(cos) {
+  const key = cos.lining + cos.pail; if (iconCache[key]) return iconCache[key];
+  const cv = document.createElement("canvas"); cv.width = cv.height = 64; drawFestiIcon(cv, { cos }); return iconCache[key] = cv.toDataURL();
+}
 function refreshPortraits() {
-  drawFobiInto($("portrait"), 2.0, 1.52, { cos: playerCos() });
+  drawFestiIcon($("portrait"), { cos: playerCos() });
 }
 function decoIcon(type, size) {
   return mkCanvas(size, size, () => {
@@ -5831,12 +5898,12 @@ const DECO_ODDS = [["apple", 40], ["dulce", 36], ["caldero", 24]];
 const SPECIAL_REFUND = 1000;
 // Packs: the small one only has cigarettes, the medium one might hide a cuban cigar, the big one always has cigars.
 const PACKS = [
-  { id: "deco", name: "Paquete Decorette", brand: "Decorette", price: 500, color: "#ff8a1f", cigs: [2, 3], cigar: 0, cigars: [0, 0], desc: "5 cartas de decoración para la defensa. Trae 2 o 3 cigarrillos comunes.", rolls: [{ kind: "deco", n: 5 }], special: .01,
+  { id: "deco", name: "Paquete Decorette", brand: "Decorette", price: 500, color: "#ff8a1f", cigs: [2, 3], cigar: 0, cigarOdds: [[0, 1]], desc: "5 cartas de decoración para la defensa. Trae 2 o 3 cigarrillos comunes.", rolls: [{ kind: "deco", n: 5 }], special: .01,
     odds: ["Cada carta: Manzana Verduga 40% · Calabaza Dulce 36% · Caldera Pocionera 24%", "Decoración especial (Manzana Acaramelada): 1% por paquete, en lugar de una carta. Si ya la tenés, se cambia por " + SPECIAL_REFUND + " monedas", "Vicios: 2 o 3 cigarrillos (mitad y mitad). Nunca trae habanos"] },
-  { id: "fest", name: "Paquete Festivo Light", brand: "Festivo", price: 1500, color: "#9a5ad6", cigs: [4, 6], cigar: .15, cigars: [1, 1], desc: "4 decoraciones y 1 cosmético para Fobi. Trae de 4 a 6 cigarrillos y, a veces, un habano.", rolls: [{ kind: "deco", n: 4 }, { kind: "cos", odds: [["comun", 70], ["raro", 25], ["leg", 5]] }], special: .05,
-    odds: ["4 decoraciones con las probabilidades del Paquete Decorette", "Decoración especial (Manzana Acaramelada): 5% por paquete, en lugar de una decoración", "1 cosmético: Común 70% · Raro 25% · Legendario 5%. Si te sale repetido, se cambia por monedas", "Vicios: de 4 a 6 cigarrillos (un tercio cada uno) y 15% de que venga 1 habano además"] },
-  { id: "gold", name: "Paquete Corazón Dorado", brand: "Dorado", price: 4000, color: "#e8b23a", cigs: [0, 0], cigar: 1, cigars: [1, 2], desc: "3 decoraciones, 1 pieza del próximo festiloco y 2 cosméticos, uno raro o mejor. Siempre trae habanos.", rolls: [{ kind: "deco", n: 3 }, { kind: "piece" }, { kind: "cos", odds: [["raro", 80], ["leg", 20]] }, { kind: "cos", odds: [["comun", 60], ["raro", 30], ["leg", 10]] }], special: .05,
-    odds: ["3 decoraciones con las probabilidades del Paquete Decorette", "Decoración especial (Manzana Acaramelada): 5% por paquete, en lugar de una decoración", "1 pieza del próximo festiloco: 100%", "Cosmético 1: Raro 80% · Legendario 20%", "Cosmético 2: Común 60% · Raro 30% · Legendario 10%", "Vicios: habanos asegurados. 1 habano 75% · 2 habanos 25%"] }
+  { id: "fest", name: "Paquete Festivo Light", brand: "Festivo", price: 1500, color: "#9a5ad6", cigs: [4, 6], cigar: .15, cigarOdds: [[1, 85], [2, 15]], desc: "4 decoraciones y 1 cosmético para Fobi. Trae de 4 a 6 cigarrillos y, a veces, un habano.", rolls: [{ kind: "deco", n: 4 }, { kind: "cos", odds: [["comun", 70], ["raro", 25], ["leg", 5]] }], special: .05,
+    odds: ["4 decoraciones con las probabilidades del Paquete Decorette", "Decoración especial (Manzana Acaramelada): 5% por paquete, en lugar de una decoración", "1 cosmético: Común 70% · Raro 25% · Legendario 5%. Si te sale repetido, se cambia por monedas", "Vicios: de 4 a 6 cigarrillos (un tercio cada uno) y 15% de que vengan habanos además: 1 habano 85% · 2 habanos 15%"] },
+  { id: "gold", name: "Paquete Corazón Dorado", brand: "Dorado", price: 4000, color: "#e8b23a", cigs: [0, 0], cigar: 1, cigarOdds: [[1, 50], [2, 28], [3, 14], [4, 6], [5, 2]], desc: "3 decoraciones, 1 pieza del próximo festiloco y 2 cosméticos, uno raro o mejor. Siempre trae habanos.", rolls: [{ kind: "deco", n: 3 }, { kind: "piece" }, { kind: "cos", odds: [["raro", 80], ["leg", 20]] }, { kind: "cos", odds: [["comun", 60], ["raro", 30], ["leg", 10]] }], special: .05,
+    odds: ["3 decoraciones con las probabilidades del Paquete Decorette", "Decoración especial (Manzana Acaramelada): 5% por paquete, en lugar de una decoración", "1 pieza del próximo festiloco: 100%", "Cosmético 1: Raro 80% · Legendario 20%", "Cosmético 2: Común 60% · Raro 30% · Legendario 10%", "Vicios: habanos asegurados. 1 habano 50% · 2 habanos 28% · 3 habanos 14% · 4 habanos 6% · 5 habanos 2%"] }
 ];
 function rollCos(odds) {
   const rar = weighted(odds), pool = COSMETICS.filter(c => c.rar === rar), c = pick(pool);
@@ -5863,7 +5930,7 @@ function buyPack(p) {
   });
   // the vices that come inside
   const nc = p.cigs[0] + randi(p.cigs[1] - p.cigs[0] + 1);
-  const nh = Math.random() < p.cigar ? (p.id === "gold" ? (Math.random() < .25 ? 2 : 1) : 1) : 0;
+  const nh = Math.random() < p.cigar ? weighted(p.cigarOdds) : 0;
   if (nc) { SAVE.cigs += nc; items.push({ kind: "cig", cuban: false, n: nc }); }
   if (nh) { SAVE.cigars += nh; items.push({ kind: "cig", cuban: true, n: nh }); }
   persist(); return items;
@@ -5898,7 +5965,7 @@ function openBases() {
 }
 document.querySelectorAll("[data-diff]").forEach(btn => btn.addEventListener("click", () => { chosenDiff = btn.dataset.diff; document.querySelectorAll("[data-diff]").forEach(b => b.classList.toggle("sel", b === btn)); }));
 $("goBtn").addEventListener("click", () => { $("baseOv").hidden = true; newMatch(chosenDiff); portraitHint(); });
-drawFobiInto($("rcFobi"), 2.5, 1.42, { cos: DEFAULT_COS });
+drawFestiIcon($("rcFobi"), { cos: DEFAULT_COS });
 $("baseBack").addEventListener("click", () => { $("baseOv").hidden = true; });
 $("playBtn").addEventListener("click", () => { $("startOv").hidden = true; newLobby(); portraitHint(); toast("Bienvenido a la Plaza Festiva. A la izquierda están el kiosco y el vestidor; la defensa, abajo. (En la esquina de abajo está la monja. Nadie va.)", 4); });
 $("againBtn").addEventListener("click", () => { $("endOv").hidden = true; newLobby(); });
@@ -5913,7 +5980,7 @@ const POSES = ["idle", "susto", "lectura"];
 function openCloset() {
   $("closetOv").hidden = false; keys.clear();
   renderWardrobe(); setCTab("ropa");
-  drawFobiInto($("pjFobi"), 2.4, 1.36, { cos: playerCos() });
+  drawFestiIcon($("pjFobi"), { cos: playerCos() });
 }
 function closeCloset() { $("closetOv").hidden = true; keys.clear(); refreshPortraits(); }
 function setCTab(t) {
@@ -5942,7 +6009,7 @@ function renderWardrobe() {
       const b = document.createElement("button"); b.className = "cosb" + (eq ? " eq" : "") + (own ? "" : " lock");
       b.appendChild(cosIcon(c, 128));
       b.insertAdjacentHTML("beforeend", `<span>${c.name}</span><i style="color:${RAR[c.rar].c}">${own ? RAR[c.rar].name : "Bloqueado · sobres"}</i>`);
-      b.addEventListener("click", () => { if (!own) return; SAVE.eq[slot] = c.id; persist(); if (G && G.player) G.player.cos = playerCos(); refreshPortraits(); drawFobiInto($("pjFobi"), 2.4, 1.36, { cos: playerCos() }); renderWardrobe(); stage.pose = 1; stage.poseT = 0; });
+      b.addEventListener("click", () => { if (!own) return; SAVE.eq[slot] = c.id; persist(); if (G && G.player) G.player.cos = playerCos(); refreshPortraits(); drawFestiIcon($("pjFobi"), { cos: playerCos() }); renderWardrobe(); stage.pose = 1; stage.poseT = 0; });
       g.appendChild(b);
     });
     el.appendChild(g);
@@ -6144,6 +6211,7 @@ function render() {
   if (G.monster) { const M = G.monster; list.push({ y: M.y, f: () => drawMonster(M) }); }
   G.bigbats.forEach(b => { if (b.state === "decoy") list.push({ y: b.y + 18, f: () => drawBat(b, true) }); });
   G.allies.forEach(a => list.push({ y: a.y, f: () => drawFobi(a) }));
+  if (G.escape) list.push({ y: 1e6, f: drawEscapeBeam });
   G.spirits.forEach(g => { if (g.attached && g.from) list.push({ y: g.from.y - .5, f: () => drawSpirit(g) }); });
   list.sort((a, b) => a.y - b.y).forEach(o => o.f());
   drawAim();
@@ -6240,6 +6308,6 @@ function frame(now) {
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
-window.__festi = { get G() { return G; }, get SAVE() { return SAVE; }, startSlotNow() { if (G && G.mode === "match") { G.wave = 4; startSlot(5); } }, spawn: t => spawnEnemy(t), hurt: (t, a) => hurtAlly(t, a), startEscape: () => startEscape(), startObj: t => { G.obj = null; startObjective(t); }, endWaveNow2: () => endWave(), mapShot: () => { const c = document.createElement("canvas"), k = .3; c.width = GY.w * k; c.height = GY.h * k; const g = c.getContext("2d"); g.scale(k, k); g.drawImage(GY.bg, 0, 0); [...GY.props].sort((a, b) => a.y - b.y).forEach(p => g.drawImage(p.img, p.x - p.ax, p.y - p.ay)); g.fillStyle = "#ff8a1f"; for (const kk in BASES) { g.beginPath(); g.arc(BASES[kk].core.x, BASES[kk].core.y, 40, 0, 7); g.fill(); } g.fillStyle = "#7dffa0"; g.beginPath(); g.arc(PHONE_POS.x, PHONE_POS.y, 40, 0, 7); g.fill(); g.fillStyle = "#6ab8ff"; MTOMBS.forEach(t => { g.beginPath(); g.arc(t.x, t.y, 20, 0, 7); g.fill(); }); return c.toDataURL(); }, mt: () => G.mtombs, endWaveNow: () => endWave(), addPick: w => addPick(w), callTeam: () => callTeam(), dropPart: s => dropPart(s), build: w => build(w), selectSlot: i => { G.sel = i; }, npcShot: (c, w) => drawNPCInto(c, () => { ctx.translate(-55, 0); drawCeniza(1, false); ctx.translate(60, 0); drawCeniza(2, true, true); ctx.translate(55, 0); drawTosca(1, 0); ctx.translate(55, 0); drawTosca(1, .6); }, 4.2, .95) };
+window.__festi = { get G() { return G; }, get SAVE() { return SAVE; }, startSlotNow() { if (G && G.mode === "match") { G.wave = 4; startSlot(5); } }, spawn: t => spawnEnemy(t), hurt: (t, a) => hurtAlly(t, a), startEscape: () => startEscape(), startObj: t => { G.obj = null; startObjective(t); }, endWaveNow2: () => endWave(), mapShot: () => { const c = document.createElement("canvas"), k = .3; c.width = GY.w * k; c.height = GY.h * k; const g = c.getContext("2d"); g.scale(k, k); g.drawImage(GY.bg, 0, 0); [...GY.props].sort((a, b) => a.y - b.y).forEach(p => g.drawImage(p.img, p.x - p.ax, p.y - p.ay)); g.fillStyle = "#ff8a1f"; for (const kk in BASES) { g.beginPath(); g.arc(BASES[kk].core.x, BASES[kk].core.y, 40, 0, 7); g.fill(); } g.fillStyle = "#7dffa0"; g.beginPath(); g.arc(PHONE_POS.x, PHONE_POS.y, 40, 0, 7); g.fill(); g.fillStyle = "#6ab8ff"; MTOMBS.forEach(t => { g.beginPath(); g.arc(t.x, t.y, 20, 0, 7); g.fill(); }); return c.toDataURL(); }, mt: () => G.mtombs, endWaveNow: () => endWave(), addPick: w => addPick(w), callTeam: () => callTeam(), dropPart: s => dropPart(s), build: w => build(w), selectSlot: i => { G.sel = i; }, iconShot: c => drawFestiIcon(c, { cos: playerCos() }), npcShot: (c, w) => drawNPCInto(c, () => { ctx.translate(-55, 0); drawCeniza(1, false); ctx.translate(60, 0); drawCeniza(2, true, true); ctx.translate(55, 0); drawTosca(1, 0); ctx.translate(55, 0); drawTosca(1, .6); }, 4.2, .95) };
 })();
 </script>

@@ -288,7 +288,7 @@ details ul{margin:6px 0 0;padding-left:16px;display:flex;flex-direction:column;g
         <div class="ttl" id="buildTtl">Caja de decoración</div>
         <button class="opt" id="o1"><b>1 · Manzana Verduga</b><span id="s1"></span></button>
         <button class="opt" id="o2"><b>2 · Calabaza Dulce</b><span id="s2"></span></button>
-        <button class="opt" id="o3"><b>3 · Caldero</b><span id="s3"></span></button>
+        <button class="opt" id="o3"><b>3 · Caldera Pocionera</b><span id="s3"></span></button>
         <button class="opt" id="o4"><b>4 · Manzana Acaramelada</b><span id="s4"></span></button>
       </div>
       <div class="panel ctx matchonly phonemenu" id="phonePanel" hidden>
@@ -1596,12 +1596,20 @@ function drawCore(c) {
   // weak heart beats faster and squashes more
   const pulse = 1 + Math.sin(tt * (2.2 + lo * 6)) * (.02 + lo * .025) - h * .04; ctx.scale(pulse + h * .05, pulse);
   if (!alt) ell(0, 10, 92, 26, "rgba(4,2,12,.45)");
-  for (let i = 0; i < 7; i++) {
-    // while the heart flies, its candles float around it, spinning with sparkles: it's clearly magic
-    let a = Math.PI * (.15 + i * .117), x = Math.cos(a) * 96, y = Math.sin(a) * 30 + 8;
-    if (alt > 0) { a = tt * 1.3 + i / 7 * TAU; x = Math.cos(a) * 104; y = Math.sin(a) * 34 - 36 + Math.sin(tt * 3 + i) * 7; circ(x + Math.sin(tt * 9 + i) * 4, y + 6, 1.6, "rgba(255,240,180,.8)"); circ(x - 3, y + 12 + Math.sin(tt * 7 + i) * 3, 1.1, "rgba(255,210,140,.7)"); }
-    rrS(x - 3, y - 13, 6, 14, 2, "#efe3c8", 1.2); ell(x, y - 17, 2.6, 4.4, "#ffcf57");
-  }
+  // while the heart flies, its candles orbit all the way around it (behind, then in front), with sparkles: it's clearly magic
+  const candles = front => {
+    for (let i = 0; i < 7; i++) {
+      let a = Math.PI * (.15 + i * .117), x = Math.cos(a) * 96, y = Math.sin(a) * 30 + 8, s = 1;
+      if (alt > 0) {
+        a = tt * 1.3 + i / 7 * TAU; const depth = Math.sin(a);
+        if ((depth >= 0) !== front) continue;
+        x = Math.cos(a) * 118; y = -40 + depth * 34 + Math.sin(tt * 3 + i) * 6; s = .8 + (depth + 1) * .15;
+        circ(x + Math.sin(tt * 9 + i) * 4, y + 6, 1.6, "rgba(255,240,180,.8)"); circ(x - 3, y + 12 + Math.sin(tt * 7 + i) * 3, 1.1, "rgba(255,210,140,.7)");
+      } else if (front) continue;
+      ctx.save(); ctx.translate(x, y); ctx.scale(s, s); rrS(-3, -13, 6, 14, 2, "#efe3c8", 1.2); ell(0, -17, 2.6, 4.4, "#ffcf57"); ctx.restore();
+    }
+  };
+  candles(false);
   [[-54, 22, 50], [54, 22, 50], [-30, 28, 60], [30, 28, 60], [0, 32, 66]].forEach(([x, rx, ry]) => { ctx.beginPath(); ctx.ellipse(x, -44, rx, ry, 0, 0, TAU); S(rg(x - rx * .4, -70, 4, ry * 1.2, ["#ffab48", "#ec7518", "#b04f0a"]), 2.6); });
   rrS(-9, -122, 18, 24, 5, "#4b6f2a", 2.2);
   // the candle inside sputters when it's low and flares red when hit
@@ -1613,6 +1621,7 @@ function drawCore(c) {
   ctx.fillStyle = glow; ctx.beginPath(); ctx.moveTo(0, -33); ctx.bezierCurveTo(-11, -41, -8, -50, 0, -44); ctx.bezierCurveTo(8, -50, 11, -41, 0, -33); ctx.fill();
   ctx.fillStyle = "#3a1205"; ctx.beginPath(); ctx.moveTo(-56, -24); ctx.quadraticCurveTo(0, 14, 56, -24); ctx.lineTo(44, -16); ctx.lineTo(34, -6); ctx.lineTo(22, -12); ctx.lineTo(10, -2); ctx.lineTo(-4, -10); ctx.lineTo(-18, -2); ctx.lineTo(-30, -8); ctx.lineTo(-44, -14); ctx.closePath(); ctx.fill();
   ctx.fillStyle = glow; ctx.beginPath(); ctx.moveTo(-50, -22); ctx.quadraticCurveTo(0, 10, 50, -22); ctx.lineTo(42, -17); ctx.lineTo(34, -9); ctx.lineTo(22, -15); ctx.lineTo(10, -5); ctx.lineTo(-4, -13); ctx.lineTo(-18, -5); ctx.lineTo(-30, -11); ctx.lineTo(-42, -16); ctx.closePath(); ctx.fill();
+  if (alt > 0) candles(true);
   if (lo > 0) {
     // cracks, bruises and smoke leaking out of the top
     ctx.globalAlpha = Math.min(1, .5 + lo);
@@ -1979,7 +1988,7 @@ function drawEnemyStatus(e, k) {
   } else if (e.hp < e.maxhp) hpBar(e.x, top - 6, 36, e.hp / e.maxhp, "#ff6b6b", 5);
   let ix = e.x - 14;
   const icon = (c, tx) => { circS(ix, top - 18, 6, c, 1.5); ctx.fillStyle = "#120a1a"; ctx.font = "900 9px Nunito, sans-serif"; ctx.textAlign = "center"; ctx.fillText(tx, ix, top - 15); ix += 14; };
-  if (!e.boss) { if (e.weak > 0) icon(POTIONS.fuerza.color, "↓"); if (e.fragile > 0) icon(POTIONS.resistencia.color, "×"); if (e.slow > 0) icon(POTIONS.velocidad.color, "~"); }
+  if (!e.boss) { if (e.weak > 0) icon(POTIONS.fuerza.color, "↓"); if (e.fragile > 0) icon(POTIONS.resistencia.color, e.fragStack > 1 ? String(e.fragStack) : "×"); if (e.slow > 0) icon(POTIONS.velocidad.color, "~"); }
   if (e.state === "dizzy" || e.stun > 0) stunStars(e.x, top - 4);
 }
 
@@ -1990,7 +1999,7 @@ const POTIONS = {
   velocidad: { name: "Lentitud", color: "#62e08a", debuff: "slow", debuffName: "lento", bubble: "pegajoso" }
 };
 const POT_KEYS = Object.keys(POTIONS);
-const DECO = { apple: { name: "Manzana Verduga", hp: 60 }, dulce: { name: "Calabaza Dulce", hp: 45 }, caldero: { name: "Caldero", hp: 65 }, caramel: { name: "Manzana Acaramelada", hp: 95, special: true, cd: 60 } };
+const DECO = { apple: { name: "Manzana Verduga", hp: 60 }, dulce: { name: "Calabaza Dulce", hp: 45 }, caldero: { name: "Caldera Pocionera", hp: 65 }, caramel: { name: "Manzana Acaramelada", hp: 95, special: true, cd: 60 } };
 const FREE_STOCK = { apple: 2, dulce: 2, caldero: 1, caramel: 0 };
 const MAX_WAVE = 10;
 const ALLY_COLORS = ["#2fc6c9", "#9be37a", "#e86bd3"];
@@ -2019,7 +2028,7 @@ const teamSpd = () => 1 + .07 * allyCount();
 function rescaleTeam(oldN, newN) { const k = teamHp(newN) / teamHp(oldN); for (const e of G.enemies) { if (e.dead) continue; e.hp *= k; e.maxhp *= k; } }
 function blankState(mode) {
   return { mode, t: 0, paused: false, over: false, kills: 0, fx: { hurt: 0, heal: 0 }, earn: { kills: 0, obj: 0, slot: 0 },
-    allies: [], enemies: [], shots: [], bubbles: [], ducks: [], duckFalls: [], ladders: [], drops: [], spirits: [], wolves: [], tombFly: [], shadows: [], runDucks: [], booms: [], portals: [], eshots: [], bats: [], tombs: [], skeletons: [], ghosts: [], decos: [], cleavers: [], pickups: [], bigbats: [], velas: [], puddles: [],
+    allies: [], enemies: [], shots: [], bubbles: [], ducks: [], duckFalls: [], ladders: [], drops: [], spirits: [], wolves: [], tombFly: [], shadows: [], runDucks: [], booms: [], potThrows: [], portals: [], eshots: [], bats: [], tombs: [], skeletons: [], ghosts: [], decos: [], cleavers: [], pickups: [], bigbats: [], velas: [], puddles: [],
     monster: null, parts: [], rings: [], texts: [], fireflies: [], npcs: [], slots: [], aim: null, targets: [] };
 }
 function makeFobi(x, y, cos, ai) {
@@ -2209,7 +2218,7 @@ function killEnemy(e) {
   if (c) { G.earn.kills += c; text(e.x, e.y - 90, "+" + c, "#ffd76a", 13); }
   const big = e.boss ? 2.2 : 1;
   if (e.type === "vase") { breakVase(e); return; }
-  if (e.type === "hatch") { burst(e.x, e.y - 10, "#c9a6ff", 22, 200); text(e.x, e.y - 70, "¡Escotilla rota!", "#d9c2ff", 16); if (G.obj && G.obj.type === "escotilla" && G.obj.status === "active") finishObjective(); return; }
+  if (e.type === "hatch") { burst(e.x, e.y - 10, "#c9a6ff", 22, 200); text(e.x, e.y - 90, "¡Baño portátil destruido!", "#d9c2ff", 16); if (G.obj && G.obj.type === "escotilla" && G.obj.status === "active") finishObjective(); return; }
   if (e.type === "auditor" && G.obj && G.obj.type === "auditor" && G.obj.status === "active") { text(e.x, e.y - 110, "¡Era el auditor!", "#c9b8ff", 18); finishObjective(); }
   if (e.type === "portal") { burst(e.x, e.y - 30, "#7fc8ff", 20, 200); text(e.x, e.y - 80, "¡Puerta rota!", "#9fd4ff", 14); return; }
   if (e.type === "monkey") { burst(e.x, e.y - 14, "#ffd34a", 10, 140); return; }
@@ -2221,11 +2230,12 @@ function killEnemy(e) {
 function hurtEnemy(e, amt, opts) {
   if (e.dead || e.hidden) return;
   opts = opts || {};
-  if (e.fragile > 0) amt *= 1.5;
+  // stacking guard-down: each stack makes them take 15% more damage (other sources count as about 3 stacks)
+  if (e.fragile > 0) amt *= e.fragStack > 0 ? 1 + .15 * e.fragStack : 1.5;
   if (e.tremble > 0) amt *= .4;
   if (e.shield > 0) { const ab = Math.min(e.shield, amt); e.shield -= ab; amt -= ab; e.flash = .1; if (e.shield <= 0) { burst(e.x, e.y - 60, "#ffd34a", 8, 120); text(e.x, e.y - 80, "¡Casco roto!", "#ffd34a", 12); } if (amt <= 0) return; }
   e.hp -= amt; e.flash = .1;
-  if (opts.from && (opts.from === G.player || opts.from.remote) && !G.monster) opts.from.ult = Math.min(100, opts.from.ult + amt / 22);
+  if (opts.from && (opts.from === G.player || opts.from.remote) && !G.monster) opts.from.ult = Math.min(100, opts.from.ult + amt / 15);
   if (opts.slow) e.slow = Math.max(e.slow, opts.slow);
   if (amt >= 8 && Math.random() < .5) text(e.x + rand(-10, 10), e.y - 70 * (BOSS_SCALE[e.type] || 1), String(Math.round(amt)), "#fff2d6", 12);
   if (e.hp <= 0) killEnemy(e);
@@ -2401,7 +2411,6 @@ function updatePlayer(dt) {
   const p = G.player;
   tickFesti(p, dt);
   if (p.enter) return;
-  if (G.mode === "match" && !G.monster) p.ult = Math.min(100, p.ult + dt * .7);
   if (!p.alive) {
     p.respawnT -= dt;
     if (p.respawnT <= 0) { p.alive = true; p.hp = p.maxhp; p.x = G.core.x + G.B.start[0]; p.y = G.core.y + G.B.start[1]; p.intangible = 1.5; p.ammo = MAG; p.reload = 0; startEnter(p, 1.2); }
@@ -2496,6 +2505,7 @@ function share(e, mode, power) {
 function updateEnemy(e, dt) {
   e.flash = Math.max(0, e.flash - dt); e.swing = Math.max(0, e.swing - dt);
   for (const k of ["slow", "weak", "fragile", "boost", "speedBuff", "stun", "noclip", "tremble", "paranoid"]) e[k] = Math.max(0, e[k] - dt);
+  if (!(e.fragile > 0)) e.fragStack = 0;
   e.atkT -= dt;
   const dp = Math.hypot(e.x - PIT.x, (e.y - PIT.y) / .82);
   e.mud = dp > PIT.r0 && dp < PIT.r1 + 10 && e.type !== "memo" && !e.prop;
@@ -3062,10 +3072,10 @@ function usePotionFor(p, pt) {
     cal.bubbleT = 8; cal.bubbleType = p.potion; cal.bubbleTick = 0;
     text(cal.x, cal.y - 80, "¡Burbujas de efecto " + P.bubble + "!", P.color, 15); ring(cal.x, cal.y, 10, 90, P.color, .5);
   } else {
+    // the bottle is thrown in an arc and shatters on the enemies, like a spell in a strategy game
     const c = pt || (p === G.player ? aimPoint(220) : autoPoint(p, 220));
-    G.puddles.push({ x: c.x, y: c.y, r: 80, type: "pot", pot: p.potion, life: 7, max: 7 });
-    ring(c.x, c.y, 10, 80, P.color, .5); burst(c.x, c.y - 10, P.color, 18, 160);
-    text(c.x, c.y - 50, "Charco " + P.bubble, P.color, 14);
+    G.potThrows.push({ sx: p.x + p.face * 10, sy: p.y - 40, tx: c.x, ty: c.y, x: p.x, y: p.y - 40, t: 0, dur: .55, pot: p.potion, from: p, spin: 0 });
+    p.lift = 1;
   }
   p.potion = null;
 }
@@ -4116,7 +4126,7 @@ function updateSpirits(dt) {
 
 // ================= ultimate: anatidaefobia (the ghost gets swarmed by ducks) =================
 const ULT_MSG = { fobi: "Sientes cómo las miradas te apuñalan desde abajo. La falta de la mano que te acogía es enorme." };
-const DUCK_LEVEL_T = 1.6, DUCKS_PER_LEVEL = 5, DRAIN = .11, DRAIN_DUCK = .4, DUCK = { spd: 185, peck: 1.3, mark: .5, r: 70, stun: 1.6, fragile: 5, life: 11 };
+const DUCK_LEVEL_T = 1.6, DUCKS_PER_LEVEL = 5, DRAIN = .11, DRAIN_DUCK = .4, DUCK = { spd: 185, peck: 1.3, mark: .5, r: 70, stun: 1.6, fragile: 6, life: 11, dmg: 16, maxStack: 8 };
 function spiritPhobic(u) { const g = spiritOf(u); return !!(g && g.phobia); }
 function useUlt() { if (netIntercept("ult")) return; useUltFor(G.player); }
 function useUltFor(p) {
@@ -4197,7 +4207,7 @@ function updateRunDucks(dt) {
       if (d.t >= DUCK.mark) {
         // it flies off, and everyone in the marked area feels watched: frozen, guard down
         let n = 0;
-        for (const e of G.enemies) { if (e.dead || e.hidden) continue; if (Math.hypot((e.x - d.x) / (DUCK.r + e.r), (e.y - d.y) / ((DUCK.r + e.r) * .55)) <= 1) { e.stun = Math.max(e.stun, e.boss ? DUCK.stun * .5 : DUCK.stun); e.paranoid = DUCK.stun; e.fragile = Math.max(e.fragile, DUCK.fragile); e.prep = null; e.action = null; n++; } }
+        for (const e of G.enemies) { if (e.dead || e.hidden) continue; if (Math.hypot((e.x - d.x) / (DUCK.r + e.r), (e.y - d.y) / ((DUCK.r + e.r) * .55)) <= 1) { e.stun = Math.max(e.stun, e.boss ? DUCK.stun * .5 : DUCK.stun); e.paranoid = DUCK.stun; e.fragile = Math.max(e.fragile, DUCK.fragile); e.fragStack = Math.min(DUCK.maxStack, (e.fragStack || 0) + 1); e.prep = null; e.action = null; hurtEnemy(e, DUCK.dmg, { from: d.from }); n++; } }
         ring(d.x, d.y, 6, DUCK.r, "rgba(255,246,176,.9)", .4); burst(d.x, d.y - 10, "#fffbe8", 8, 120, 3);
         text(d.x, d.y - 46, n ? "¡Cuac! ×" + n : "¡Cuac!", "#fff6b0", 13);
         d.state = "fly"; d.t = 0;
@@ -4294,17 +4304,22 @@ function drawSpirit(g, part) {
   const R = g.react, rk = R ? 1 - R.t / R.max : 0, sw = g.swing > 0 ? 10 : 0, A = g.attached;
   const glove = s => {
     let hx = s * 18 + (s === 1 ? sw : 0), hy = 4 + Math.sin(t * 5 + s) * 2;
-    if (A) { hx = s === 1 ? 12 : -13; hy = s === 1 ? 18 : 10 + Math.sin(t * 4) * 1.5; }      // holding on to his shoulders
-    if (s === 1 && g.punch) { hx = 15; hy = 4; }                                               // the punching glove flies out (drawn below)
-    if (P) { hx = s * 9; hy = 6 + Math.sin(t * 30 + s) * 1.5; }                                   // hugging the coat shut
-    else if (R && R.k === "bats") { const up = Math.sin(Math.min(1, rk * 1.3) * Math.PI) * 9; hx = s === 1 ? 20 : 9; hy = -2 - up; }   // lifts his son's pail so the bats can get out
-    else if (R && R.k === "tomb") { if (s === 1) { const k2 = Math.min(1, rk * 1.6); hx = 16 + k2 * 10; hy = -6 - k2 * 4; } else { hx = -10; hy = 4; } } // points where the tomb goes
-    else if (R && R.k === "wolf") { if (s === 1) { hx = 9; hy = -15 + (rk < .75 ? Math.sin(t * 14) * 1.2 : 0); } else { hx = -9; hy = 6; } } // hand on the chin, looking up, thinking it over
-    else if (R && R.k === "rage") { hx = s * 13; hy = -18 + Math.sin(t * 40 + s) * 2.5; }       // fists up, shaking
-    else if (R && R.k === "pat" && s === 1) { hx = A ? 14 : 6; hy = (A ? -14 : 26) + Math.abs(Math.sin(rk * Math.PI * 4)) * 5; } // patting the pail
-    else if (R && R.k === "flinch") { hx = s * 6 + 6; hy = -6; }                                // reaching out
-    else if (mood === "worry") { hx = A ? 13 + s * 5 : 14 + s * 4; hy = (A ? 20 : 6) + Math.sin(t * 9 + s) * 2; } // clinging to him
-    else if (mood === "read" && s === 1) { hx = 13; hy = 22; }                                   // hand on his shoulder, reading along
+    if (A) {
+      // on his back the whole ghost is drawn behind Fobi, so the hands always go where Fobi doesn't cover them:
+      // beside his body, beside the pail or above it
+      const by = Math.sin(t * 4 + s) * 1.5;
+      hx = s === 1 ? 34 : -12; hy = s === 1 ? 12 + by : 10 + by;                                         // holding his shoulders from the sides
+      if (P) { hx = s === 1 ? 33 : -11; hy = 8 + Math.sin(t * 30 + s) * 1.5; }
+      else if (R && R.k === "bats") { const up = Math.sin(Math.min(1, rk * 1.3) * Math.PI) * 9; hx = s === 1 ? 33 : -5; hy = -12 - up; } // lifts the pail by its sides
+      else if (R && R.k === "tomb") { if (s === 1) { const k2 = Math.min(1, rk * 1.6); hx = 34 + k2 * 8; hy = -10 - k2 * 6; } else { hx = -12; hy = 8; } } // points the way
+      else if (R && R.k === "wolf") { if (s === -1) { hx = -7; hy = -21 + (rk < .75 ? Math.sin(t * 14) * 1.2 : 0); } else { hx = 34; hy = 12; } } // hand on the chin, thinking
+      else if (R && R.k === "rage") { hx = s === 1 ? 22 : -9; hy = (s === 1 ? -32 : -27) + Math.sin(t * 40 + s) * 2.5; } // fists up, shaking
+      else if (R && R.k === "pat" && s === 1) { hx = 14; hy = -27 + Math.abs(Math.sin(rk * Math.PI * 4)) * 5; } // patting the top of the pail
+      else if (R && R.k === "flinch") { hx = s === 1 ? 36 : -13; hy = -4; }
+      else if (mood === "worry") { hx = s === 1 ? 34 : -11; hy = 17 + Math.sin(t * 9 + s) * 2; }
+      else if (mood === "read" && s === 1) { hx = 34; hy = 18; }
+    }
+    else if (P) { hx = s * 9; hy = 6 + Math.sin(t * 30 + s) * 1.5; }                                   // hugging the coat shut
     else if (mood === "sad") { hy = 14; hx = s * 12; }
     if (s === 1 && g.punch) return;
     // the sleeve goes from his shoulder all the way to the glove, so the arm wraps over Fobi instead of passing through him
@@ -4314,9 +4329,7 @@ function drawSpirit(g, part) {
     ctx.beginPath(); ctx.ellipse(hx, hy, 4.5, 4, 0, 0, TAU); S("#f4f4f0", 1.3);
     for (let i = 0; i < 3; i++) rrS(hx + s * 2.5, hy - 3 + i * 2.2, 3.4, 1.8, .9, "#f4f4f0", .8);
   };
-  // on his back, the far arm stays behind Fobi and the near arm goes in front of him
-  if (!A) { if (part !== "back") { glove(-1); glove(1); } }
-  else { if (part === "back") glove(-1); if (part === "front") glove(1); }
+  if (part !== "back") { glove(-1); glove(1); }
   if (part !== "back") {
   if (R && R.k === "bats") { for (let i = 0; i < 3; i++) { const a = t * 4 + i * 2.1; circ(16 + Math.cos(a) * 10, -14 + Math.sin(a) * 4, 1.4, "#a6f4e8"); } }
   if (R && R.k === "tomb") { ctx.strokeStyle = "rgba(166,244,232,.6)"; ctx.setLineDash([3, 4]); ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(30, -10); ctx.lineTo(48, -16); ctx.stroke(); ctx.setLineDash([]); }
@@ -4356,7 +4369,7 @@ const isHost = () => NET.role === "host";
 
 // ---------- packing the match into plain data ----------
 const NET_SKIP = new Set(["path", "fn", "gaps", "candies", "learned2"]);
-const LISTS = ["booms", "enemies", "shots", "eshots", "bats", "bigbats", "tombs", "skeletons", "ghosts", "decos", "cleavers", "pickups", "velas", "puddles", "wolves", "ladders", "drops", "duckFalls", "bubbles", "runDucks", "tombFly", "shadows", "spirits", "ducks"];
+const LISTS = ["potThrows", "booms", "enemies", "shots", "eshots", "bats", "bigbats", "tombs", "skeletons", "ghosts", "decos", "cleavers", "pickups", "velas", "puddles", "wolves", "ladders", "drops", "duckFalls", "bubbles", "runDucks", "tombFly", "shadows", "spirits", "ducks"];
 function nid(o) { return o._id || (o._id = ++NET.ids); }
 const isEnt = v => v && typeof v === "object" && typeof v.x === "number" && typeof v.y === "number" && (v.kind !== undefined || v.type !== undefined || v.hp !== undefined);
 const rnd = v => Math.round(v * 100) / 100;
@@ -4469,7 +4482,6 @@ function updateRemote(a, dt) {
     return;
   }
   tickFesti(a, dt);
-  if (!G.monster) a.ult = Math.min(100, a.ult + dt * .7);
 }
 function netHostTick(dt) {
   if (!NET.clients.size) return;
@@ -4729,8 +4741,9 @@ function startHatch() {
   let x = p.x + rand(-40, 40), y = p.y + rand(-30, 30);
   for (let i = 0; i < 10 && G.core && dist({ x, y }, G.core) < 600; i++) { x = (x + sp.x) / 2; y = (y + sp.y) / 2; }
   const inn = makeProp("hatch", clamp(x, 80, W.w - 80), clamp(y, 100, W.h - 60), 200, {});
+  inn.y -= 0;
   let o = null;
-  for (let i = 0; i < 20 && !o; i++) { const a = rand(0, TAU), d = rand(210, 270), ox = G.core.x + Math.cos(a) * d, oy = G.core.y + Math.sin(a) * d * .75; if (openSpot(ox, oy) && !G.slots.some(s => dist(s, { x: ox, y: oy }) < 70)) o = { x: ox, y: oy }; }
+  for (let i = 0; i < 24 && !o; i++) { const a = rand(0, TAU), d = rand(140, 190), ox = G.core.x + Math.cos(a) * d, oy = G.core.y + Math.sin(a) * d * .75; if (openSpot(ox, oy) && !G.slots.some(s => dist(s, { x: ox, y: oy }) < 70)) o = { x: ox, y: oy }; }
   G.hatch = { inn, out: o || { x: G.core.x + 240, y: G.core.y + 60 }, streaks: [], pop: 0 };
 }
 function updateHatch(dt) {
@@ -4743,7 +4756,7 @@ function updateHatch(dt) {
     e.htp = Math.max(0, (e.htp || 0) - dt);
     if (e.htp > 0 || dist(e, H.inn) > 40) continue;
     // the employee becomes a straight line from hatch to hatch, then pops out of the other one
-    H.streaks.push({ x0: H.inn.x, y0: H.inn.y - 10, x1: H.out.x, y1: H.out.y - 10, t: .55 });
+    H.streaks.push({ x0: H.inn.x, y0: H.inn.y - 34, x1: H.out.x, y1: H.out.y - 10, t: .55 });
     e.x = H.out.x + rand(-16, 16); e.y = H.out.y + 18 + rand(0, 10); e.path = []; e.htp = 6; H.pop = .5;
     burst(H.out.x, H.out.y - 14, "#c9a6ff", 8, 120);
   }
@@ -4770,7 +4783,24 @@ function drawHatchGround() {
     ctx.strokeStyle = "#f2e6ff"; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
   }
 }
-function drawHatchEnt(e) { drawHatchBox(e.x, e.y, true, e.hp / e.maxhp, 0); if (e.flash > 0) { ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = .4; ell(e.x, e.y - 8, 30, 16, "#fff"); ctx.restore(); } label("escotilla", e.x, e.y - 56, 10, "#d9c2ff"); }
+// the entrance is a portable toilet: employees go in, and come out of the sewer next to your heart
+function drawHatchEnt(e) {
+  const t = T(), H = G.hatch, busy = H && H.streaks.some(s => s.t > .35);
+  ctx.save(); ctx.translate(e.x, e.y);
+  ell(0, 4, 26, 8, "rgba(4,2,12,.45)");
+  const shake = busy ? Math.sin(t * 60) * 1.5 : 0; ctx.translate(shake, 0);
+  rrS(-21, -74, 42, 76, 4, lg(-21, 0, 21, 0, ["#3aa0d9", "#1f6fa8"]), 2.4);
+  ctx.beginPath(); ctx.moveTo(-24, -72); ctx.quadraticCurveTo(0, -88, 24, -72); ctx.closePath(); S("#e8eef4", 2);
+  rrS(-15, -64, 30, 62, 3, lg(-15, 0, 15, 0, ["#4ab4ea", "#2a84c0"]), 1.8);
+  // crescent moon vent and the occupied sign
+  ctx.save(); ctx.translate(0, -52); ctx.fillStyle = "#0c2a40"; ctx.beginPath(); ctx.arc(0, 0, 5, 0, TAU); ctx.fill(); ctx.fillStyle = "#3a9ad4"; ctx.beginPath(); ctx.arc(2.5, -1, 4.4, 0, TAU); ctx.fill(); ctx.restore();
+  rrS(-11, -40, 22, 8, 2, busy ? "#d94a3a" : "#4ac46a", 1.2); ctx.fillStyle = "#fff"; ctx.font = "900 5.5px Nunito, sans-serif"; ctx.textAlign = "center"; ctx.fillText(busy ? "OCUPADO" : "LIBRE", 0, -34.2);
+  circS(10, -26, 2, "#d9dee4", 1);
+  [[-21, -12], [21, -12]].forEach(([x, y]) => rrS(x - 2, y, 4, 12, 1, "#1a5a88", 1));
+  ctx.restore();
+  if (e.flash > 0) { ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = .4; rr(e.x - 21, e.y - 74, 42, 76, 4, "#fff"); ctx.restore(); }
+  hpBar(e.x, e.y - 96, 44, e.hp / e.maxhp, "#c9a6ff", 5); label("baño portátil", e.x, e.y - 104, 10, "#d9c2ff");
+}
 
 // ================= mission: light the candles =================
 const CANDLE_SPOTS = [[420, 380], [1250, 420], [2600, 420], [380, 1350], [1450, 1700], [2550, 1400], [1050, 2250], [2300, 2200], [700, 2350], [2800, 900]];
@@ -4851,7 +4881,7 @@ function drawVase(e) {
 
 // ================= mission bookkeeping =================
 function missionWaveEnd() {
-  if (G.hatch) { if (!G.hatch.inn.dead) { G.hatch.inn.dead = true; failObjective("la escotilla siguió abierta"); } G.hatch = null; }
+  if (G.hatch) { if (!G.hatch.inn.dead) { G.hatch.inn.dead = true; failObjective("el baño portátil siguió en pie"); } G.hatch = null; }
   if (G.torch) { if (G.obj && G.obj.type === "velas" && G.obj.status === "active") failObjective("quedaron velas apagadas"); G.torch = null; G.mcandles = null; }
   for (const e of G.enemies) if (e.type === "vase" && !e.dead) { e.dead = true; burst(e.x, e.y - 16, "#d9a06a", 8, 100); }
   if (G.obj && G.obj.type === "jarrones" && G.obj.status === "active") failObjective("quedaron jarrones sin romper");
@@ -4872,10 +4902,39 @@ function drawObjArrows() {
   }
 }
 
+// ================= potion throws =================
+function updatePotThrows(dt) {
+  for (const b of G.potThrows) {
+    if (b.dead) continue;
+    b.t += dt; b.spin += dt * 14;
+    const k = Math.min(1, b.t / b.dur);
+    b.x = b.sx + (b.tx - b.sx) * k; b.y = b.sy + (b.ty - b.sy) * k - Math.sin(k * Math.PI) * 110;
+    if (k >= 1) {
+      b.dead = true;
+      const P = POTIONS[b.pot];
+      G.puddles.push({ x: b.tx, y: b.ty, r: 80, type: "pot", pot: b.pot, life: 7, max: 7 });
+      for (const e of G.enemies) if (!e.dead && !e.hidden && Math.hypot((e.x - b.tx) / (80 + e.r), (e.y - b.ty) / ((80 + e.r) * .6)) <= 1) { e[P.debuff] = Math.max(e[P.debuff] || 0, 4); hurtEnemy(e, 14, { from: b.from }); }
+      ring(b.tx, b.ty, 10, 80, P.color, .5); burst(b.tx, b.ty - 10, P.color, 22, 190); burst(b.tx, b.ty - 6, "#e8f4ff", 8, 140, 2);
+      text(b.tx, b.ty - 50, "¡Splash! " + P.bubble, P.color, 14);
+    }
+  }
+  G.potThrows = G.potThrows.filter(b => !b.dead);
+}
+function drawPotThrow(b) {
+  const P = POTIONS[b.pot], k = Math.min(1, b.t / b.dur);
+  ell(b.sx + (b.tx - b.sx) * k, b.sy + 40 + (b.ty - b.sy - 40) * k, 8 * (.6 + k * .4), 3, "rgba(4,2,12,.35)");
+  ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(b.spin);
+  ctx.beginPath(); ctx.arc(0, 3, 7, 0, TAU); S("rgba(220,240,255,.85)", 1.6);
+  ctx.beginPath(); ctx.arc(0, 4, 5.2, 0, Math.PI); F(P.color); ctx.fillRect(-5.2, 2, 10.4, 2); ctx.fillStyle = P.color;
+  rrS(-2.5, -8, 5, 6, 1, "rgba(220,240,255,.9)", 1.2); rrS(-3, -11, 6, 4, 1.5, "#8a5a34", 1.1);
+  circ(-2.5, 1, 1.4, "rgba(255,255,255,.8)");
+  ctx.restore();
+}
+
 // ================= waves, objectives, slot machine =================
 const OBJ_INFO = {
   auditor: { title: "El auditor infiltrado", desc: "Un auditor se disfrazó de empleado común: lo vas a reconocer porque se pasa unos papeles de una mano a la otra. Despedilo antes de que llegue al Corazón." },
-  escotilla: { title: "Escotilla clandestina", desc: "Abrieron una escotilla que manda empleados directo al lado del Corazón. Rompé la entrada antes de que termine la oleada." },
+  escotilla: { title: "El baño portátil", desc: "Pusieron un baño portátil lejos de la base: los empleados que entran salen por la alcantarilla que está al lado del Corazón. Rompé el baño antes de que termine la oleada." },
   velas: { title: "Encendé las velas", desc: "Agarrá la antorcha que apareció junto al Corazón y prendé las 4 velas apagadas del cementerio antes de que termine la oleada." },
   jarrones: { title: "Los jarrones de Don Hueso", desc: "Don Hueso te mandó jarrones misteriosos alrededor del Corazón. Rompelos todos: pueden salir monedas, caramelos, pociones… o cosas peores." }
 };
@@ -5059,7 +5118,7 @@ function update(dt) {
   G.targets = allyTargets();
   updateWaves(dt);
   if (G.phase === "slot") { updateFx(dt); return; }
-  updatePlayer(dt); updateAllies(dt); updateCasts(dt); updateEnemies(dt); updatePortals(dt); updateMTombs(dt); updateShadows(dt); updateRunDucks(dt); updateBooms(dt); updateHatch(dt); updateCandles(dt); tickUltMsg(dt); if (NET.role === "host") netHostTick(dt); updateShots(dt); updateEShots(dt); updatePuddles(dt); updateDrops(dt); updateSpirits(dt); updateWolves(dt); updateLadders(dt); updateBubbles(dt); updateDucks(dt); updatePotionPuddles(); G.specialCd.caramel = Math.max(0, G.specialCd.caramel - dt); updateBats(dt); updateTombs(dt);
+  updatePlayer(dt); updateAllies(dt); updateCasts(dt); updateEnemies(dt); updatePortals(dt); updateMTombs(dt); updateShadows(dt); updateRunDucks(dt); updateBooms(dt); updatePotThrows(dt); updateHatch(dt); updateCandles(dt); tickUltMsg(dt); if (NET.role === "host") netHostTick(dt); updateShots(dt); updateEShots(dt); updatePuddles(dt); updateDrops(dt); updateSpirits(dt); updateWolves(dt); updateLadders(dt); updateBubbles(dt); updateDucks(dt); updatePotionPuddles(); G.specialCd.caramel = Math.max(0, G.specialCd.caramel - dt); updateBats(dt); updateTombs(dt);
   updateSkeletons(dt); updateGhosts(dt); updateDecos(dt); updateCleavers(dt); updateMonster(dt); updateBigBats(dt); updatePickups(dt); updateFx(dt); cleanup();
 }
 
@@ -5153,7 +5212,7 @@ function updateHUD() {
     if (o.type === "velas" && G.mcandles) prog = " · velas " + G.mcandles.filter(c => c.lit).length + "/" + G.mcandles.length + (G.torch && !G.torch.holder ? " · agarrá la antorcha" : "");
     if (o.type === "jarrones") prog = " · quedan " + G.enemies.filter(e => e.type === "vase" && !e.dead).length;
     if (o.type === "auditor") prog = o.spawned ? " · está entre los empleados" : " · llega en la segunda tanda";
-    if (o.type === "escotilla") prog = " · rompé la entrada";
+    if (o.type === "escotilla") prog = " · rompé el baño portátil";
     ob = `<b>${info.title}</b>${o.status === "ok" ? " · ¡cumplido! +" + OBJ_REWARD : o.status === "fail" ? " · fallido" : prog}`;
     cls = o.status === "ok" ? "ok" : o.status === "fail" ? "fail" : "";
   } else if (G.nextObj) { ob = `<b>Próxima oleada:</b> ${OBJ_INFO[G.nextObj].title} · ${OBJ_INFO[G.nextObj].desc}`; }
@@ -5243,7 +5302,7 @@ const DECO_ODDS = [["apple", 40], ["dulce", 36], ["caldero", 24]];
 const SPECIAL_REFUND = 1000;
 const PACKS = [
   { id: "deco", name: "Sobre de Decoraciones", price: 250, color: "#ff8a1f", desc: "5 pegatinas de decoración para llevar a la defensa.", rolls: [{ kind: "deco", n: 5 }], special: .01,
-    odds: ["Cada pegatina: Manzana Verduga 40% · Calabaza Dulce 36% · Caldero 24%", "Decoración especial (Manzana Acaramelada): 1% por sobre. Reemplaza a una de las pegatinas. Si ya la tenés, se cambia por " + SPECIAL_REFUND + " monedas"] },
+    odds: ["Cada pegatina: Manzana Verduga 40% · Calabaza Dulce 36% · Caldera Pocionera 24%", "Decoración especial (Manzana Acaramelada): 1% por sobre. Reemplaza a una de las pegatinas. Si ya la tenés, se cambia por " + SPECIAL_REFUND + " monedas"] },
   { id: "fest", name: "Sobre Festivo", price: 1000, color: "#9a5ad6", desc: "4 decoraciones y 1 cosmético para Fobi.", rolls: [{ kind: "deco", n: 4 }, { kind: "cos", odds: [["comun", 70], ["raro", 25], ["leg", 5]] }], special: .05,
     odds: ["4 decoraciones con las probabilidades del sobre de decoraciones", "Decoración especial (Manzana Acaramelada): 5% por sobre, en lugar de una decoración", "1 cosmético: Común 70% · Raro 25% · Legendario 5%", "Si te sale uno repetido, se cambia por monedas"] },
   { id: "gold", name: "Sobre del Corazón Dorado", price: 3000, color: "#e8b23a", desc: "3 decoraciones, 1 pieza del próximo festiloco y 2 cosméticos, uno raro o mejor.", rolls: [{ kind: "deco", n: 3 }, { kind: "piece" }, { kind: "cos", odds: [["raro", 80], ["leg", 20]] }, { kind: "cos", odds: [["comun", 60], ["raro", 30], ["leg", 10]] }], special: .05,
@@ -5319,7 +5378,7 @@ function showOpening(p, items) {
 }
 function renderInv() {
   const el = $("invList"); el.innerHTML = "";
-  el.insertAdjacentHTML("beforeend", `<p style="margin-bottom:10px">Cada defensa te da 2 Manzanas, 2 Calabazas y 1 Caldero gratis. Lo que tenés acá se suma, y se gasta solo cuando lo colocás.</p>`);
+  el.insertAdjacentHTML("beforeend", `<p style="margin-bottom:10px">Cada defensa te da 2 Manzanas, 2 Calabazas y 1 Caldera Pocionera gratis. Lo que tenés acá se suma, y se gasta solo cuando lo colocás.</p>`);
   const g = document.createElement("div"); g.className = "invgrid";
   ["apple", "dulce", "caldero"].forEach(k => { const d = document.createElement("div"); d.className = "inv"; d.appendChild(decoIcon(k, 160)); d.insertAdjacentHTML("beforeend", `<b>×${SAVE.inv[k]}</b><span>${DECO[k].name}</span>`); g.appendChild(d); });
   { const has = SAVE.specials.includes("caramel"), d = document.createElement("div"); d.className = "inv" + (has ? "" : " locked"); d.appendChild(decoIcon("caramel", 160)); d.insertAdjacentHTML("beforeend", `<b>${has ? "Tuya" : "Bloqueada"}</b><span>${DECO.caramel.name}</span><span class="fine">${has ? "Especial: se puede colocar en cada partida, con 60 s de espera" : "Especial y muy rara: 1% en el sobre de decoraciones, 5% en los otros sobres"}</span>`); g.appendChild(d); }
@@ -5342,7 +5401,7 @@ $("openDone").addEventListener("click", () => { $("opening").hidden = true; $("k
 function openBases() {
   $("baseOv").hidden = false; keys.clear();
   const inv = SAVE.inv;
-  $("bringTxt").textContent = `Llevás: ${FREE_STOCK.apple + inv.apple} Manzanas, ${FREE_STOCK.dulce + inv.dulce} Calabazas, ${FREE_STOCK.caldero + inv.caldero} Calderos (incluye las gratis de cada partida). ${SAVE.specials.includes("caramel") ? "Y tu Manzana Acaramelada especial, con 60 segundos de espera entre una y otra." : "La Manzana Acaramelada especial todavía no la conseguiste: sale muy rara vez en los sobres."}`;
+  $("bringTxt").textContent = `Llevás: ${FREE_STOCK.apple + inv.apple} Manzanas, ${FREE_STOCK.dulce + inv.dulce} Calabazas, ${FREE_STOCK.caldero + inv.caldero} Calderas Pocioneras (incluye las gratis de cada partida). ${SAVE.specials.includes("caramel") ? "Y tu Manzana Acaramelada especial, con 60 segundos de espera entre una y otra." : "La Manzana Acaramelada especial todavía no la conseguiste: sale muy rara vez en los sobres."}`;
 }
 document.querySelectorAll("[data-diff]").forEach(btn => btn.addEventListener("click", () => { chosenDiff = btn.dataset.diff; document.querySelectorAll("[data-diff]").forEach(b => b.classList.toggle("sel", b === btn)); }));
 $("goBtn").addEventListener("click", () => { $("baseOv").hidden = true; newMatch(chosenDiff); portraitHint(); });
@@ -5592,10 +5651,10 @@ function render() {
   if (G.monster) { const M = G.monster; list.push({ y: M.y, f: () => drawMonster(M) }); }
   G.bigbats.forEach(b => { if (b.state === "decoy") list.push({ y: b.y + 18, f: () => drawBat(b, true) }); });
   G.allies.forEach(a => list.push({ y: a.y, f: () => drawFobi(a) }));
-  G.spirits.forEach(g => { if (g.attached && g.from) { list.push({ y: g.from.y - .5, f: () => drawSpirit(g, "back") }); list.push({ y: g.from.y + .5, f: () => drawSpirit(g, "front") }); } });
+  G.spirits.forEach(g => { if (g.attached && g.from) list.push({ y: g.from.y - .5, f: () => drawSpirit(g) }); });
   list.sort((a, b) => a.y - b.y).forEach(o => o.f());
   drawAim();
-  G.cleavers.forEach(drawCleaver); G.shots.forEach(drawShot); G.eshots.forEach(drawEShot); G.bubbles.forEach(drawBubble); G.duckFalls.forEach(drawDuckFall); G.tombFly.forEach(drawTombFly); G.shadows.forEach(drawShadow); if (G.cine && G.cine.e) drawAuditorCine(G.cine.e); G.booms.forEach(drawBoom);
+  G.cleavers.forEach(drawCleaver); G.shots.forEach(drawShot); G.eshots.forEach(drawEShot); G.bubbles.forEach(drawBubble); G.duckFalls.forEach(drawDuckFall); G.tombFly.forEach(drawTombFly); G.shadows.forEach(drawShadow); if (G.cine && G.cine.e) drawAuditorCine(G.cine.e); G.potThrows.forEach(drawPotThrow); G.booms.forEach(drawBoom);
   G.bats.forEach(b => { if (b.delay <= 0) drawBat(b, false); });
   G.bigbats.forEach(b => { if (b.state === "fly") drawBat(b, true); });
   G.ghosts.forEach(drawGhost); G.spirits.forEach(g => { if (!g.attached) drawSpirit(g); });

@@ -174,10 +174,23 @@ kbd{font-family:var(--body);font-weight:900;font-size:11px;background:rgba(255,2
 .reels{display:flex;gap:10px;justify-content:center;padding:12px;border-radius:16px;background:linear-gradient(180deg,#2a1d40,#150d24);border:3px solid var(--outline);box-shadow:inset 0 0 0 3px #c9962a}
 .reels canvas{width:96px;height:96px;border-radius:12px;background:radial-gradient(circle at 50% 35%,#fff6e3,#e6d6bb);border:3px solid var(--outline)}
 .slotres{font-weight:800;color:var(--ink);min-height:40px;font-size:14px;line-height:1.4}
+.bajas{font-family:var(--display);font-size:13px;color:#ff9ab0;text-shadow:0 2px 0 var(--outline);line-height:1}
+#standPanel .cta{font-size:16px;padding:7px 16px}
+#readyBtn.on{background:#9be37a;color:#13240c}
+.skl{color:#ff9ab0;font-size:18px}
+.upcard .sk-sign{background:#4a1424;color:#ffb3c4}
+.upaths{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.upath{border:2px solid rgba(255,255,255,.25);border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.upath b{font-size:16px!important;color:#ffb3c4}
+.upath ol{margin:0;padding-left:1.2em;font-size:12px;color:#d8d2e6;font-weight:700;display:flex;flex-direction:column;gap:3px}
+.upath li.got{color:#9be37a}
+.upath.locked{opacity:.45}
+.upath .cta{font-size:14px;padding:6px 10px;align-self:stretch}
+@media (max-width:520px){.upaths{grid-template-columns:1fr}}
 /* RPG-style shops (like ¡Atacad, Tripulación!) */
 .shopcard{position:relative;width:min(960px,100%);max-height:calc(100% - 8px);overflow:auto;background:#0d0b14;border:4px solid #fff;border-radius:16px;box-shadow:0 8px 0 #000;padding:12px;display:flex;flex-direction:column;gap:10px;color:#fff}
 .sk-top{position:relative;border:4px solid #fff;border-radius:10px;overflow:hidden;height:clamp(150px,34vh,250px);flex:none;background:#1a1028}
-#skCv{width:100%;height:100%;display:block}
+#skCv,#upCv{width:100%;height:100%;display:block}
 .sk-sign{position:absolute;left:10px;top:8px;transform:rotate(-1.5deg);background:#3a1d52;color:#ffd27a;border:3px solid #120a1a;border-radius:8px;padding:3px 12px;font-family:var(--display);font-size:15px;white-space:nowrap;box-shadow:0 3px 0 #120a1a;max-width:calc(50% - 60px);overflow:hidden;text-overflow:ellipsis}
 .sk-wallet{position:absolute;right:10px;bottom:10px;background:#120a1a;color:#ffd34a;border:3px solid #fff;border-radius:99px;padding:3px 12px;font-family:var(--display);font-size:18px;display:flex;align-items:center;gap:6px}
 .sk-wallet b{font-weight:400}
@@ -342,6 +355,7 @@ details ul{margin:6px 0 0;padding-left:16px;display:flex;flex-direction:column;g
             <span class="nm">Fobi</span>
             <div class="hp matchonly"><i id="hpBar"></i><span id="hpTxt">80 / 80</span></div>
             <div class="buffs matchonly" id="buffs"></div>
+            <span class="bajas matchonly" id="bajasTxt" title="Bajas: se gastan en la tienda de Gancho">☠ 0</span>
             <span class="lobbyonly fine">Plaza Festiva</span>
           </div>
         </div>
@@ -383,6 +397,12 @@ details ul{margin:6px 0 0;padding-left:16px;display:flex;flex-direction:column;g
       <div class="panel ctx matchonly" id="phobiaPanel" hidden>
         <div class="ttl">Fobia ajena: ¿a quién le invocás su fobia?</div>
         <div class="who-row" id="phobiaList"></div>
+      </div>
+      <div class="panel ctx matchonly" id="standPanel" hidden>
+        <div class="ttl">Tienda de Gancho</div>
+        <button class="cta" id="upBtn">Mejorar · ☠ <span id="upBtnN">0</span></button>
+        <button class="cta" id="readyBtn">Megáfono: ¡listo!</button>
+        <span class="fine" id="readyTxt" style="width:100%;text-align:center"></span>
       </div>
       <div class="panel ctx matchonly" id="heartPanel" hidden>
         <div class="ttl" id="heartTtl"></div>
@@ -471,7 +491,7 @@ details ul{margin:6px 0 0;padding-left:16px;display:flex;flex-direction:column;g
       <button class="base sel" data-diff="normal"><b>Normal</b><span>Una vez y media más empleados en cada horda.</span><span class="tags"><i>Enemigos ×1,5</i><i>Monedas ×1</i></span></button>
       <button class="base" data-diff="dificil"><b>Difícil</b><span>Las hordas de Normal, pero cada golpe enemigo pega mucho más fuerte.</span><span class="tags"><i>Enemigos ×1,5</i><i>Daño ×1,6</i><i>Monedas ×1,5</i></span></button>
     </div>
-    <p>10 hordas, con objetivos en la 3, 6 y 9 y tragaperras en la 5 y la 10. Aparecés junto al teléfono: llamá ayuda si querés y después llevá el Corazón a uno de los tres lugares marcados con flechas.</p>
+    <p>15 hordas, con objetivos en la 3, 6, 9 y 12, tragaperras en la 5, 10 y 15, y la tienda de mejoras después de cada horda par. Aparecés junto al teléfono: llamá ayuda si querés y después llevá el Corazón a uno de los tres lugares marcados con flechas.</p>
     <p class="fine" id="bringTxt"></p>
     <div class="row"><button class="cta" id="goBtn">Entrar al cementerio</button><button class="cta ghost" id="baseBack">Volver</button></div>
     <div class="netrow">
@@ -513,6 +533,19 @@ details ul{margin:6px 0 0;padding-left:16px;display:flex;flex-direction:column;g
       <span class="bless-msg" id="blessMsg"></span>
       <div class="stickers" id="blessItems"></div>
       <span class="fine" id="blessHint"></span>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="upOv" hidden>
+  <div class="shopcard upcard" role="dialog" aria-labelledby="upName">
+    <div class="sk-top"><canvas id="upCv" aria-hidden="true"></canvas>
+      <div class="sk-sign">Gancho · mejoras a cambio de bajas</div>
+      <div class="sk-wallet"><span class="skl">☠</span><b id="upBajas">0</b></div>
+      <button class="sk-x" id="upClose" aria-label="Cerrar">×</button></div>
+    <div class="sk-bottom">
+      <div class="sk-box"><span class="sk-name" id="upName">Gancho</span><p class="sk-say" id="upSay" data-act="skip"></p><div id="upLeft"></div></div>
+      <div class="sk-box" id="upRight"></div>
     </div>
   </div>
 </div>
@@ -1488,7 +1521,7 @@ function drawFobi(u) {
   auras.forEach((k, i) => { ctx.strokeStyle = POTIONS[k].color; ctx.globalAlpha = .6 + Math.sin(T() * 8) * .2; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.ellipse(u.x, u.y + 2, 25 + i * 5, 9 + i * 2, 0, 0, TAU); ctx.stroke(); ctx.globalAlpha = 1; });
   if (u.stun > 0) stunStars(u.x, u.y - 88);
   if (G && G.mode === "match") {
-    if (!u.ai && u.reload > 0) { ctx.strokeStyle = "rgba(166,244,232,.85)"; ctx.lineWidth = 3; ctx.beginPath(); ctx.ellipse(u.x, u.y + 2, 24, 9, 0, -Math.PI / 2, -Math.PI / 2 + TAU * (1 - u.reload / RELOAD)); ctx.stroke(); }
+    if (!u.ai && u.reload > 0) { ctx.strokeStyle = "rgba(166,244,232,.85)"; ctx.lineWidth = 3; ctx.beginPath(); ctx.ellipse(u.x, u.y + 2, 24, 9, 0, -Math.PI / 2, -Math.PI / 2 + TAU * (1 - u.reload / reloadOf(u))); ctx.stroke(); }
     else { hpBar(u.x, u.y - 86, 36, u.hp / u.maxhp, u.cos.lining, 4); ctx.font = "900 9px Nunito, sans-serif"; ctx.textAlign = "center"; ctx.fillStyle = u.cos.lining; if (u.ai) ctx.fillText("IA", u.x, u.y - 92); else if (u !== G.player) ctx.fillText(u.netName || (u.host ? "Anfitrión" : ""), u.x, u.y - 92); }
   }
 }
@@ -2113,7 +2146,8 @@ const POTIONS = {
 const POT_KEYS = Object.keys(POTIONS);
 const DECO = { apple: { name: "Manzana Verduga", hp: 60 }, dulce: { name: "Calabaza Dulce", hp: 45 }, caldero: { name: "Caldera Pocionera", hp: 65 }, caramel: { name: "Manzana Acaramelada", hp: 95, special: true, cd: 60 } };
 const FREE_STOCK = { apple: 2, dulce: 2, caldero: 1, caramel: 0 };
-const MAX_WAVE = 10;
+const MAX_WAVE = 15;
+function shuffleArr(a) { for (let i = a.length - 1; i > 0; i--) { const j = randi(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 const ALLY_COLORS = ["#2fc6c9", "#9be37a", "#e86bd3"];
 const ETYPES = {
   emp: { hp: 55, spd: 50, dmg: 4, atk: 1.05, coin: 10, r: 15 },
@@ -2165,7 +2199,7 @@ function newMatch(diffKey) {
   W = GY; G = blankState("match");
   Object.assign(G, { diff: DIFFS[diffKey], diffKey, base: null, B: null, core: null, player: makeFobi(PHONE_POS.x - 10, PHONE_POS.y + 70, playerCos(), false),
     phone: { x: PHONE_POS.x, y: PHONE_POS.y, cd: 0, ring: 0 }, picks: [], slots: [],
-    free: Object.assign({}, FREE_STOCK), specialCd: { caramel: 0 }, wave: 0, phase: "setup", prepT: 0, queue: [], spawnT: 0, obj: null, nextObj: null, objPool: ["auditor", "escotilla", "velas", "jarrones"].sort(() => Math.random() - .5), slot: null });
+    free: Object.assign({}, FREE_STOCK), specialCd: { caramel: 0 }, wave: 0, phase: "setup", prepT: 0, queue: [], spawnT: 0, obj: null, nextObj: null, objPool: shuffleArr(["auditor", "escotilla", "velas", "jarrones"]), slot: null });
   G.player.ult = 35;
   // you don't start right by the phone: walk over and find out what it does
   for (const [dx, dy] of [[-430, 120], [420, 140], [-380, -200], [0, 420], [-250, 300]]) {
@@ -2245,7 +2279,7 @@ const keys = new Set();
 let lastInput = "mouse";
 const mouse = { x: 0, y: 0, down: false };
 const joy = { id: null, ox: 0, oy: 0, x: 0, y: 0, active: false };
-const MODALS = ["startOv", "baseOv", "kioskOv", "closetOv", "pauseOv", "endOv", "netOv"];
+const MODALS = ["startOv", "baseOv", "kioskOv", "upOv", "closetOv", "pauseOv", "endOv", "netOv"];
 const modalOpen = () => MODALS.some(id => !$(id).hidden);
 window.addEventListener("keydown", e => {
   if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) return;
@@ -2253,7 +2287,7 @@ window.addEventListener("keydown", e => {
   if (e.repeat) return;
   keys.add(e.code); lastInput = "mouse";
   if (!G) return;
-  if (e.code === "Escape") { if (!$("kioskOv").hidden) { closeKiosk(); return; } if (!$("closetOv").hidden) { closeCloset(); return; } if (!$("baseOv").hidden) { $("baseOv").hidden = true; return; } togglePause(); return; }
+  if (e.code === "Escape") { if (!$("upOv").hidden) { closeUpShop(); return; } if (!$("kioskOv").hidden) { closeKiosk(); return; } if (!$("closetOv").hidden) { closeCloset(); return; } if (!$("baseOv").hidden) { $("baseOv").hidden = true; return; } togglePause(); return; }
   if (modalOpen() || G.over) return;
   if (G.mode === "lobby") { if (e.code === "Space" || e.code === "KeyE" || e.code === "Enter") useSpot(); return; }
   if (e.code === "KeyP") { togglePause(); return; }
@@ -2267,6 +2301,7 @@ window.addEventListener("keydown", e => {
     if (e.code === "Space") placeHeart(nearMarker());
     return;
   }
+  if (G.ustand && nearStand()) { if (e.code === "Space") { openUpShop(); return; } if (e.code === "Enter") { toggleReady(); return; } }
   if (e.code === "Space") usePotion();
   const n = { Digit1: 1, Digit2: 2, Digit3: 3, Digit4: 4 }[e.code];
   if (n) build(["apple", "dulce", "caldero", "caramel"][n - 1]);
@@ -2320,12 +2355,12 @@ function tapBtn(id, fn) {
 tapBtn("bF", useUlt); tapBtn("bP", usePotion);
 tapBtn("o1", () => build("apple")); tapBtn("o2", () => build("dulce")); tapBtn("o3", () => build("caldero")); tapBtn("o4", () => build("caramel"));
 tapBtn("addFobi", () => addPick("fobi")); tapBtn("callBtn", () => callTeam()); tapBtn("placeBtn", () => placeHeart(nearMarker()));
-tapBtn("useBtn", useSpot);
+tapBtn("useBtn", useSpot); tapBtn("upBtn", openUpShop); tapBtn("readyBtn", toggleReady);
 function togglePause() { if (!G || G.over) return; G.paused = !G.paused; $("pauseOv").hidden = !G.paused; }
 
 // ================= combat =================
-function killEnemy(e) {
-  e.dead = true; G.kills++; if (e.wave === G.wave && G.hKilled !== undefined) G.hKilled++;
+function killEnemy(e, from) {
+  e.dead = true; G.kills++; creditKill(e, from); if (e.wave === G.wave && G.hKilled !== undefined) G.hKilled++;
   const c = ETYPES[e.type].coin;
   if (c) { G.earn.kills += c; text(e.x, e.y - 90, "+" + c, "#ffd76a", 13); }
   const big = e.boss ? 2.2 : 1;
@@ -2350,7 +2385,7 @@ function hurtEnemy(e, amt, opts) {
   if (opts.from && (opts.from === G.player || opts.from.remote) && !G.monster) opts.from.ult = Math.min(100, opts.from.ult + amt / 15);
   if (opts.slow) e.slow = Math.max(e.slow, opts.slow);
   if (amt >= 8 && Math.random() < .5) text(e.x + rand(-10, 10), e.y - 70 * (BOSS_SCALE[e.type] || 1), String(Math.round(amt)), "#fff2d6", 12);
-  if (e.hp <= 0) killEnemy(e);
+  if (e.hp <= 0) killEnemy(e, opts.from);
 }
 function isFesti(t) { return t.kind === "player" || t.kind === "ally"; }
 function allyTargets() {
@@ -2417,7 +2452,9 @@ function hurtAlly(t, amt) {
     case "ghost": t.dead = true; burst(t.x, t.y - 10, "#a6f4e8", 16, 160); break;
   }
 }
-function killTomb(t) { t.dead = true; burst(t.x, t.y - 14, "#8d8a98", 16, 170); ring(t.x, t.y, 10, 50, "rgba(160,150,190,.6)"); }
+function killTomb(t) {
+  if (upLv(t.from, "tomb", 0) >= 3) { for (let i = 0; i < 3; i++) { const a = -Math.PI / 2 + (i - 1) * 1.1; const s = makeSkeleton(t.x + Math.cos(a) * 50, t.y + Math.sin(a) * 30 + 24, t.x, t.y, true, t.from); collideWorld(s); G.skeletons.push(s); burst(s.x, s.y, "#e6d29a", 10, 140); } text(t.x, t.y - 70, "¡La tumba suelta a sus guardianes!", "#f1dfa8", 14); }
+  t.dead = true; burst(t.x, t.y - 14, "#8d8a98", 16, 170); ring(t.x, t.y, 10, 50, "rgba(160,150,190,.6)"); }
 function dropCandy(x, y, type) { G.pickups.push({ kind: "candy", type, x: clamp(x, 30, W.w - 30), y: clamp(y, 60, W.h - 30), life: 18, bob: rand(0, TAU), heal: type === "cherry" ? 12 : 9 }); }
 
 // ================= festiloco actions =================
@@ -2426,9 +2463,10 @@ function tryAttack(u, target) {
   if (u === G.player && netIntercept("atk", { pt: { x: Math.round(target.x), y: Math.round(target.y) } })) return;
   if (!u || !canAct(u) || u.reload > 0 || u.ammo < 1 || u.fireCd > 0) return;
   u.ammo -= 1; u.fireCd = .2; u.lift = 1; u.idleFire = 0;
-  if (u.ammo <= 0) u.reload = RELOAD;
+  if (u.ammo <= 0) u.reload = reloadOf(u);
   const a = Math.atan2(target.y - (u.y - 28), target.x - u.x);
-  G.shots.push({ x: u.x, y: u.y - 28, vx: Math.cos(a) * 640, vy: Math.sin(a) * 640, a, left: 540, dmg: 35 * dmgMul(u), kind: Math.random() < .5 ? "mano" : "bota", from: u, tint: u.ai ? u.cos.lining : null });
+  const ua = upLv(u, "atk", 0);
+  G.shots.push({ x: u.x, y: u.y - 28, vx: Math.cos(a) * 640, vy: Math.sin(a) * 640, a, left: 540, dmg: 35 * dmgMul(u) * (1 + .2 * ua), pierce: ua >= 2 ? ua - 1 : 0, boom: ua >= 3 && u.ammo <= 0, kind: Math.random() < .5 ? "mano" : "bota", from: u, tint: u.ai ? u.cos.lining : null });
   if (Math.abs(Math.cos(a)) > .2) u.face = Math.sign(Math.cos(a));
 }
 function useSkill(k, pt, who) {
@@ -2439,13 +2477,13 @@ function useSkill(k, pt, who) {
   if (u.cd[k] > 0) return false;
   u.lift = 1;
   if (k === "bats") {
-    const c = pt || aimPoint(380); u.cd.bats = 14; startCast(u, "bats", c);
+    const c = pt || aimPoint(380); u.cd.bats = 14 - [0, 0, 2, 4][upLv(u, "bats", 1)]; startCast(u, "bats", c);
   } else if (k === "tomb") {
     const c = pt || aimPoint(260); u.cd.tomb = 12; startCast(u, "tomb", c);
   } else if (k === "ghost") {
     const c = pt || aimPoint(260);
     if (!castWolf(u, c)) return false;
-    u.cd.ghost = 20;
+    u.cd.ghost = 20 - [0, 4, 4, 8][upLv(u, "ghost", 1)];
   }
   return true;
 }
@@ -2454,7 +2492,12 @@ function tombSpawn(t) {
   if (t.dead) return;
   const mine = G.skeletons.filter(s => s.tomb === t && !s.dead).length;
   if (mine >= 15) return;
-  for (let i = 0; i < 3; i++) { const a = rand(0, TAU); const s = makeSkeleton(t.x + Math.cos(a) * 30, t.y + Math.sin(a) * 18 + 18, t.x, t.y, false, t.from); s.tomb = t; collideWorld(s); G.skeletons.push(s); }
+  // upgrades: more bones (more skeletons) or guardians (big guardian skeletons)
+  const qb = upLv(t.from, "tomb", 1), ga = upLv(t.from, "tomb", 0);
+  let n = 3; if (qb === 1 && Math.random() < .3) n = 4; else if (qb === 2 && Math.random() < .4) n = 5; else if (qb === 3 && Math.random() < .5) n = 6;
+  const proc = ga > 0 && Math.random() < [0, .15, .2, .3][ga], guards = proc ? (ga >= 2 ? n : 1) : 0;
+  for (let i = 0; i < n; i++) { const a = rand(0, TAU), big = i < guards; const s = makeSkeleton(t.x + Math.cos(a) * 30, t.y + Math.sin(a) * 18 + 18, t.x, t.y, big, t.from); s.tomb = t; collideWorld(s); G.skeletons.push(s); if (big) burst(s.x, s.y, "#e6d29a", 8, 120); }
+  if (guards) text(t.x, t.y - 60, guards > 1 ? "¡Guardianes!" : "¡Un guardián!", "#f1dfa8", 14);
   burst(t.x, t.y, "#d9d2bd", 10, 120); t.glow = .6; tombPulse(t);
 }
 function tombPulse(src) {
@@ -2497,8 +2540,8 @@ function tickFesti(u, dt) {
   for (const k in u.buff) u.buff[k] = Math.max(0, u.buff[k] - dt);
   for (const k in u.cd) u.cd[k] = Math.max(0, u.cd[k] - dt);
   u.idleFire += dt;
-  if (u.reload > 0) { u.reload -= dt; if (u.reload <= 0) { u.reload = 0; u.ammo = MAG; } }
-  else if (u.ammo < MAG && u.idleFire > 2.5) u.reload = RELOAD;
+  if (u.reload > 0) { u.reload -= dt; if (u.reload <= 0) { u.reload = 0; u.ammo = magOf(u); } }
+  else if (u.ammo < magOf(u) && u.idleFire > 2.5) u.reload = reloadOf(u);
   u.fireCd -= dt;
   if (G.mode !== "match" || !u.alive) return;
   let milked = false;
@@ -2525,7 +2568,7 @@ function updatePlayer(dt) {
   if (p.enter) return;
   if (!p.alive) {
     p.respawnT -= dt;
-    if (p.respawnT <= 0) { p.alive = true; p.hp = p.maxhp; p.x = G.core.x + G.B.start[0]; p.y = G.core.y + G.B.start[1]; p.intangible = 1.5; p.ammo = MAG; p.reload = 0; startEnter(p, 1.2); }
+    if (p.respawnT <= 0) { p.alive = true; p.hp = p.maxhp; p.x = G.core.x + G.B.start[0]; p.y = G.core.y + G.B.start[1]; p.intangible = 1.5; p.ammo = magOf(p); p.reload = 0; startEnter(p, 1.2); }
     return;
   }
   if (p.stun > 0) return;
@@ -2565,7 +2608,15 @@ function notifyAbility(src, abil) {
     if (dist(b, src) < b.auraR && !b.learned.includes(abil)) { b.learned.push(abil); text(b.x, b.y - 150, "¡Anotado: " + LEARN_NAMES[abil] + "!", "#cfe6ff", 15); ring(b.x, b.y, 10, b.auraR, "rgba(180,220,255,.6)", .6); }
   }
 }
-function enemySpeed(e) { return e.spd * teamSpd() * (e.boost > 0 ? 1.8 : 1) * (e.slow > 0 ? .5 : 1) * (e.mud ? .55 : 1) * (e.speedBuff > 0 ? 1.5 : 1); }
+// hidden pacing trick: employees walk much faster while they're far from the heart and nobody is near them,
+// then settle to their normal speed once they get close (the game never says this)
+function marchBoost(e) {
+  if (e.boss || !G.core || G.escape || G.mode !== "match") return 1;
+  const dc = dist(e, G.core); if (dc < 420) return 1;
+  for (const u of festis()) if (Math.abs(u.x - e.x) < 260 && Math.abs(u.y - e.y) < 260 && dist(u, e) < 260) return 1;
+  return 1 + .8 * Math.min(1, (dc - 420) / 380);
+}
+function enemySpeed(e) { return e.spd * marchBoost(e) * teamSpd() * (e.boost > 0 ? 1.8 : 1) * (e.slow > 0 ? .5 : 1) * (e.mud ? .55 : 1) * (e.speedBuff > 0 ? 1.5 : 1); }
 function stepToward(e, gx, gy, spd, dt) {
   const a = Math.atan2(gy - e.y, gx - e.x), px = e.x;
   e.x += Math.cos(a) * spd * dt; e.y += Math.sin(a) * spd * dt; e.walk += dt * 9 * Math.max(.4, spd / 50);
@@ -2759,6 +2810,7 @@ function updateDrops(dt) {
 function makeWolf(x, y, from, white) {
   const w = { kind: "wolf", x, y, r: white ? 20 : 17, state: white ? "wolf" : "man", t: 6, max: 6, hp: white ? 150 : 90, maxhp: white ? 150 : 90, white, lives: white ? 2 : 1,
     atkT: .3, chargeCd: 2.5, action: null, face: 1, flash: 0, walk: 0, from, shake: 0, rageLv: 0, rageT: 0, swing: 0 };
+  if (!white) { const al = upLv(from, "ghost", 0); w.hp = w.maxhp = Math.round(w.maxhp * [1, 1.3, 1.3, 1.6][al]); if (al >= 3) w.t = w.max = 3; }
   collideWorld(w); return w;
 }
 function wolfTransform(w) {
@@ -2804,7 +2856,7 @@ function updateWolves(dt) {
     }
     if (w.state === "rage") { w.t -= dt; if (w.t <= 0) { w.state = "wolf"; burst(w.x, w.y - 40, "#ff6b5a", 20, 200); text(w.x, w.y - 120, "Furia ×" + w.rageLv, "#ff6b5a", 18); } continue; }
     if (w.rageT > 0) { w.rageT -= dt; if (w.rageT <= 0) { w.rageLv = 0; w.rageT = 0; } if (Math.random() < dt * 8) G.parts.push({ x: w.x + rand(-14, 14), y: w.y - 70, vx: rand(-10, 10), vy: -40, life: .6, max: .6, color: "rgba(255,120,90,.7)", size: 3 }); }
-    const lv = w.rageLv, dmgK = 1 + .35 * lv, spdK = 1 + .15 * lv;
+    const lv = w.rageLv, al = w.white ? 0 : upLv(w.from, "ghost", 0), hb = w.white ? 0 : upLv(w.from, "ghost", 1), dmgK = (1 + .35 * lv) * [1, 1, 1.25, 1.5][al], spdK = 1 + .15 * lv;
     w.atkT -= dt; w.chargeCd -= dt;
     const A = w.action;
     if (A) {
@@ -2812,7 +2864,7 @@ function updateWolves(dt) {
       A.t -= dt; const px = w.x;
       w.x += Math.cos(A.a) * 560 * dt; w.y += Math.sin(A.a) * 560 * dt; w.walk += dt * 16; collideWorld(w, px);
       if (A.t <= 0) {
-        for (const e of G.enemies) if (!e.dead && !e.hidden && dist(e, w) < 105 + e.r) hurtEnemy(e, (w.white ? 55 : 40) * dmgK, { from: w.from });
+        for (const e of G.enemies) if (!e.dead && !e.hidden && dist(e, w) < 105 + e.r) { hurtEnemy(e, (w.white ? 55 : 40) * dmgK * (hb >= 3 ? 1.6 : 1), { from: w.from }); if (hb >= 2) e.stun = Math.max(e.stun, 1); }
         ring(w.x, w.y, 10, 105, w.white ? "rgba(240,240,255,.9)" : "rgba(255,190,110,.85)", .45); burst(w.x, w.y, "#8a7a6a", 18, 220); stars(w.x, w.y - 30);
         w.action = null;
       }
@@ -2825,7 +2877,7 @@ function updateWolves(dt) {
       // charge at the farthest enemy inside the charge range
       let far = null, fd = 90;
       for (const o of G.enemies) { if (o.dead || o.hidden) continue; const d = dist(o, w); if (d < CHARGE_RANGE && d > fd) { fd = d; far = o; } }
-      if (far) { const a = Math.atan2(far.y - w.y, far.x - w.x); w.action = { a, t: fd / 560, aim: .5, len: fd }; w.face = Math.cos(a) >= 0 ? 1 : -1; w.chargeCd = 7; continue; }
+      if (far) { const a = Math.atan2(far.y - w.y, far.x - w.x); w.action = { a, t: fd / 560, aim: .5, len: fd }; w.face = Math.cos(a) >= 0 ? 1 : -1; w.chargeCd = hb >= 2 ? 4 : 7; continue; }
     }
     const d = dist(w, e);
     if (d > w.r + e.r + 24) { const px = w.x, a = Math.atan2(e.y - w.y, e.x - w.x); w.x += Math.cos(a) * 125 * spdK * dt; w.y += Math.sin(a) * 125 * spdK * dt; w.walk += dt * 10; collideWorld(w, px); }
@@ -3401,7 +3453,13 @@ function updateShots(dt) {
     for (const e of G.enemies) {
       if (e.dead || e.hidden) continue;
       const k = BOSS_SCALE[e.type] || 1;
-      if (Math.hypot(e.x - s.x, e.y - 22 * k - s.y) < e.r + 14) { hurtEnemy(e, s.dmg, { from: s.from }); s.dead = true; burst(s.x, s.y, "#a6f4e8", 7, 120, 2.5); stars(s.x, s.y); if (!s.noDrop) dropPart(s); break; }
+      if (s.hit && s.hit.includes(e)) continue;
+      if (Math.hypot(e.x - s.x, e.y - 22 * k - s.y) < e.r + 14) {
+        hurtEnemy(e, s.dmg, { from: s.from }); burst(s.x, s.y, "#a6f4e8", 7, 120, 2.5); stars(s.x, s.y);
+        if (s.boom) { s.boom = false; ring(s.x, s.y, 10, 90, "rgba(255,190,110,.8)", .4); burst(s.x, s.y, "#ffb347", 16, 200); for (const o of G.enemies) if (o !== e && !o.dead && !o.hidden && Math.hypot(o.x - s.x, o.y - 20 - s.y) < 90 + o.r) hurtEnemy(o, s.dmg * .6, { from: s.from }); }
+        if (s.pierce > 0) { s.pierce--; (s.hit || (s.hit = [])).push(e); continue; }
+        s.dead = true; if (!s.noDrop) dropPart(s); break;
+      }
     }
   }
 }
@@ -3421,8 +3479,10 @@ function updateBats(dt) {
       const e = b.target;
       if (!e || e.dead || e.hidden) { dropCandy(b.x, b.y + 30, "cherry"); burst(b.x, b.y, "#e8395f", 6, 80); b.dead = true; continue; }
       b.x = e.x + b.ox; b.y = e.y + b.oy; b.tick -= dt;
-      if (b.tick <= 0) { b.tick = .25; hurtEnemy(e, 6 * dmgMul(b.from), { from: b.from }); b.drained += 6; }
-      if (b.drained >= 36) { dropCandy(b.x, b.y + 34, "cherry"); burst(b.x, b.y, "#e8395f", 8, 90); b.dead = true; }
+      const fa = upLv(b.from, "bats", 0);
+      if (fa >= 3) e.slow = Math.max(e.slow, .3);
+      if (b.tick <= 0) { b.tick = .25 / [1, 1.3, 1.6, 2][fa]; hurtEnemy(e, 6 * dmgMul(b.from), { from: b.from }); b.drained += 6; }
+      if (b.drained >= (fa >= 2 ? 54 : 36)) { dropCandy(b.x, b.y + 34, "cherry"); burst(b.x, b.y, "#e8395f", 8, 90); b.dead = true; }
     } else if (b.state === "hover") {
       b.t -= dt; b.x = b.hx + Math.cos(G.t * 3 + b.flap * .01) * 10; b.y = b.hy + Math.sin(G.t * 4 + b.flap * .02) * 6;
       const e = nearestEnemy(b, 95);
@@ -3603,7 +3663,8 @@ function updateCasts(dt) {
     if (c.kind === "bats") {
       if (c.t < .9) u.lift = 1;
       // bats pour out of the keyhole one by one while the pail is up
-      while (c.spawned < 7 && c.t > .18 + c.spawned * .085) {
+      const nb = [7, 9, 11, 14][upLv(u, "bats", 1)];
+      while (c.spawned < nb && c.t > .18 + c.spawned * (.6 / nb)) {
         const k = keyholePos(u), a = rand(0, TAU), r = 115 * Math.sqrt(Math.random());
         G.bats.push({ x: k.x, y: k.y, tx: c.pt.x + Math.cos(a) * r, ty: c.pt.y + Math.sin(a) * r, delay: 0, state: "fly", t: 0, target: null, drained: 0, tick: 0, flap: rand(0, TAU), alpha: 1, from: u });
         c.spawned++; burst(k.x, k.y, "#a6f4e8", 3, 60, 2);
@@ -4538,6 +4599,7 @@ function makeSnap() {
   s.S.slots = G.slots.map(sl => pack(sl, 0)); s.S.mtombs = G.mtombs ? G.mtombs.map(t => pack(t, 0)) : null;
   s.S.portals = G.portals.map(P => ({ glow: rnd(P.glow), a: packRef(P.a), b: packRef(P.b) }));
   s.S.monster = G.monster ? pack(G.monster, 0) : null;
+  s.S.ustand = G.ustand ? pack(G.ustand, 1) : null;
   s.S.cine = G.cine ? pack(G.cine, 1) : null;
   s.S.hatch = G.hatch ? { inn: packRef(G.hatch.inn), out: G.hatch.out, pop: rnd(G.hatch.pop), streaks: G.hatch.streaks.map(x => pack(x, 1)) } : null;
   s.S.mcandles = G.mcandles ? G.mcandles.map(c => pack(c, 1)) : null;
@@ -4610,12 +4672,14 @@ function netDoAct(u, m) {
   else if (m.a === "ult") useUltFor(u);
   else if (m.a === "pot") usePotionFor(u, m.pt);
   else if (m.a === "build" && DECO[m.k]) buildFor(u, m.k);
+  else if (m.a === "upg" && G.ustand) buyUp(u, m.k, +m.p);
+  else if (m.a === "ready" && G.ustand) u.ready = !!m.v;
 }
 // remote festilocos on the host: they move where their phone says, and come back after falling
 function updateRemote(a, dt) {
   if (!a.alive) {
     a.respawnT -= dt;
-    if (a.respawnT <= 0 && G.core) { a.alive = true; a.hp = a.maxhp; a.x = G.core.x + G.B.start[0] + rand(-30, 30); a.y = G.core.y + G.B.start[1]; a.ammo = MAG; a.reload = 0; a.tpN = (a.tpN || 0) + 1; startEnter(a, 1.2); }
+    if (a.respawnT <= 0 && G.core) { a.alive = true; a.hp = a.maxhp; a.x = G.core.x + G.B.start[0] + rand(-30, 30); a.y = G.core.y + G.B.start[1]; a.ammo = magOf(a); a.reload = 0; a.tpN = (a.tpN || 0) + 1; startEnter(a, 1.2); }
     return;
   }
   tickFesti(a, dt);
@@ -4688,7 +4752,7 @@ function applySnap(s) {
   G.hParts = S.hParts ? S.hParts.map(p => ({ ...p, q: new Array(p.ql) })) : null;
   G.core = S.core ? Object.assign(G.core || {}, S.core) : null;
   G.cine = S.cine; G.hatch = S.hatch; G.mcandles = S.mcandles; G.torch = S.torch;
-  G.phone = S.phone || G.phone; G.escape = S.escape; G.mtombs = S.mtombs; G.monster = S.monster;
+  G.ustand = S.ustand; G.phone = S.phone || G.phone; G.escape = S.escape; G.mtombs = S.mtombs; G.monster = S.monster;
   G.slots = S.slots.map(sl => sl);
   G.portals = S.portals;
   if (S.base && !G.B) G.B = BASES[S.base];
@@ -4756,7 +4820,7 @@ function guestEnd(m) {
     // whether *I* made it to the heart is my own story, not the host's
     const ok = (m.escapedNet || []).includes(NET.myId);
     $("endTitle").textContent = ok ? "¡El Corazón Festivo sigue latiendo!" : "El Corazón se salvó… pero te quedaste atrás";
-    $("endText").textContent = ok ? "Las 10 hordas volvieron a la oficina y llegaste a tiempo al Corazón con tu equipo." : "Las 10 hordas cayeron, pero no llegaste a tiempo al Corazón y la oficina te atrapó.";
+    $("endText").textContent = ok ? "Las 15 hordas volvieron a la oficina y llegaste a tiempo al Corazón con tu equipo." : "Las 15 hordas cayeron, pero no llegaste a tiempo al Corazón y la oficina te atrapó.";
   }
   $("earnBox").innerHTML = m.earnHtml; $("stWave").textContent = m.wave; $("stKills").textContent = m.kills; $("stTime").textContent = m.time;
   setTimeout(() => { $("endOv").hidden = false; }, 800);
@@ -4874,9 +4938,10 @@ function drawAuditor(e) { drawEmployee(e); drawAuditorPapers(e); }
 
 // ================= mission: secret hatch =================
 function startHatch() {
-  const sp = pick(G.B.spawns), path = [sp, ...sp.path], p = path[Math.min(path.length - 1, 1)] || sp;
+  // the porta-potty goes near the entrance that is farthest from the Heart
+  const sp = [...G.B.spawns].sort((a, b) => dist(b, G.core) - dist(a, G.core))[0], path = [sp, ...sp.path], p = path[Math.min(path.length - 1, 1)] || sp;
   let x = p.x + rand(-40, 40), y = p.y + rand(-30, 30);
-  for (let i = 0; i < 10 && G.core && dist({ x, y }, G.core) < 600; i++) { x = (x + sp.x) / 2; y = (y + sp.y) / 2; }
+  if (dist({ x, y }, G.core) < dist(sp, G.core)) { x = sp.x + rand(-30, 30); y = sp.y + rand(-20, 20); }
   const inn = makeProp("hatch", clamp(x, 80, W.w - 80), clamp(y, 100, W.h - 60), 200, {});
   inn.y -= 0;
   let o = null;
@@ -4912,6 +4977,11 @@ function drawHatchBox(x, y, open, hpFrac, glow) {
 }
 function drawHatchGround() {
   const H = G.hatch; if (!H) return;
+  if (!H.inn.dead) { // a glowing dotted trail between the porta-potty and the sewer, so it's easy to find
+    const tt = T(); ctx.save(); ctx.setLineDash([10, 16]); ctx.lineDashOffset = -tt * 30; ctx.lineCap = "round";
+    ctx.strokeStyle = "rgba(200,160,255,.18)"; ctx.lineWidth = 12; ctx.beginPath(); ctx.moveTo(H.inn.x, H.inn.y); ctx.lineTo(H.out.x, H.out.y); ctx.stroke();
+    ctx.strokeStyle = "rgba(220,190,255,.55)"; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
+  }
   drawHatchBox(H.out.x, H.out.y, false, undefined, H.pop);
   for (const s of H.streaks) {
     const k = s.t / .55;
@@ -4977,14 +5047,18 @@ function drawTorch() {
 }
 
 // ================= mission: mysterious vases =================
+// four big vases, all together in one spot far from the Heart: going for them is the team's call
 function startVases() {
-  const n = 6;
-  for (let i = 0; i < n; i++) {
-    for (let k = 0; k < 20; k++) {
-      const a = i / n * TAU + rand(-.3, .3), d = rand(170, 330), x = G.core.x + Math.cos(a) * d, y = G.core.y + Math.sin(a) * d * .75;
-      if (openSpot(x, y) && !G.slots.some(s => dist(s, { x, y }) < 60)) { makeProp("vase", x, y, 14, { vtype: randi(3) }); break; }
-    }
+  const offs = [[-40, -18], [40, -18], [-40, 30], [40, 30]];
+  let at = null;
+  for (let k = 0; k < 60 && !at; k++) {
+    const a = rand(0, TAU), d = rand(560, 820), x = G.core.x + Math.cos(a) * d, y = G.core.y + Math.sin(a) * d * .75;
+    if (x < 120 || x > W.w - 120 || y < 160 || y > W.h - 120) continue;
+    if (offs.every(([ox, oy]) => openSpot(x + ox, y + oy))) at = { x, y };
   }
+  at = at || { x: clamp(G.core.x + 600, 150, W.w - 150), y: G.core.y };
+  offs.forEach(([ox, oy], i) => makeProp("vase", at.x + ox, at.y + oy, 40, { vtype: i % 3, big: true, r: 24 }));
+  G.vaseSpot = at;
 }
 const VASE_LOOT = [["coins", 28], ["candy", 18], ["potion", 14], ["enemies", 16], ["skeletons", 10], ["boom", 14]];
 function breakVase(e) {
@@ -5005,7 +5079,7 @@ function breakVase(e) {
   if (G.obj && G.obj.type === "jarrones" && G.obj.status === "active" && !G.enemies.some(o => o.type === "vase" && !o.dead && o !== e)) finishObjective();
 }
 function drawVase(e) {
-  ctx.save(); ctx.translate(e.x, e.y);
+  ctx.save(); ctx.translate(e.x, e.y); if (e.big) ctx.scale(1.9, 1.9);
   ell(0, 3, 16, 5, "rgba(4,2,12,.45)");
   const cols = [["#d9a06a", "#a8703f"], ["#7ab0d9", "#3f6fa8"], ["#c98ad9", "#8a4fa8"]][e.vtype || 0];
   ctx.beginPath(); ctx.moveTo(-7, -38); ctx.lineTo(7, -38); ctx.lineTo(6, -32); ctx.quadraticCurveTo(18, -24, 14, -8); ctx.quadraticCurveTo(10, 2, 0, 2); ctx.quadraticCurveTo(-10, 2, -14, -8); ctx.quadraticCurveTo(-18, -24, -6, -32); ctx.closePath();
@@ -5029,12 +5103,14 @@ function drawObjArrows() {
   if (G.torch && !G.torch.holder) pts.push({ x: G.torch.x, y: G.torch.y, c: "#ffcf57", ic: "🔥" });
   if (G.torch && G.torch.holder) for (const c of G.mcandles) if (!c.lit) pts.push({ x: c.x, y: c.y - 40, c: "#ffcf57", ic: "!" });
   if (G.hatch && !G.hatch.inn.dead) pts.push({ x: G.hatch.inn.x, y: G.hatch.inn.y, c: "#c9a6ff", ic: "!" });
+  if (G.ustand) pts.push({ x: G.ustand.x + 40, y: G.ustand.y - 30, c: "#ff9ab0", ic: "$" });
+  if (G.obj && G.obj.type === "jarrones" && G.obj.status === "active") { const v = G.enemies.find(e => e.type === "vase" && !e.dead); if (v) pts.push({ x: v.x, y: v.y - 20, c: "#e8b23a", ic: "?" }); }
   for (const P of pts) {
     const sx = (P.x - cam.x) * SCALE, sy = (P.y - cam.y) * SCALE;
     if (sx > 0 && sx < VW && sy > 0 && sy < VH) continue;
     const cx = VW / 2, cy = VH / 2, a = Math.atan2(sy - cy, sx - cx), m = 60;
     const ex = clamp(cx + Math.cos(a) * VW, m, VW - m), ey = clamp(cy + Math.sin(a) * VH, m + 60, VH - m - 90);
-    ctx.save(); ctx.translate(ex, ey); circS(0, 0, 15, "rgba(36,24,58,.92)", 2); label(P.ic === "🔥" ? "A" : "!", 0, 5, 13, P.c);
+    ctx.save(); ctx.translate(ex, ey); circS(0, 0, 15, "rgba(36,24,58,.92)", 2); label(P.ic === "🔥" ? "A" : P.ic === "$" ? "☠" : P.ic, 0, 5, 13, P.c);
     ctx.save(); ctx.rotate(a); poly([26, 0, 17, -7, 17, 7]); S(P.c, 1.6); ctx.restore(); ctx.restore();
   }
 }
@@ -5369,18 +5445,18 @@ const SHOPS = {
     menu: [["give", "Entregar vicios"], ["talk", "Hablar"], ["odds", "¿Qué trae una caja?"], ["exit", "Salir"]],
     greet: ["¡Hijo mío! ¡Qué alegría verte! Casi nunca viene nadie. *cof cof*", "¡Bienvenido a la Caja Antivicio! Entregá tus vicios y Dios te bendecirá. *cof*", "¡Un visitante! Hoy es un gran día. *cof cof cof*"],
     say: {
-      give: "Yo solo los guardo, para que nadie los use. *cof* ¿Qué me traés?",
+      give: "Yo los guardo en un lugar seguro. *cof* ¿Qué me traés?",
       talk: "¡Me encanta charlar! Nadie se queda a charlar conmigo. Deben estar muy ocupados. *cof*",
       odds: "Cada caja empieza Común. Cada vez que la tocás, puede mejorar… o no. Cuando ya no mejora, la abrís. *cof*",
       none: ["Te faltan vicios todavía. Seguí… digo, no sigas. *cof*", "Necesito más pecados para la bendición. *cof*"],
-      bless: ["¡Una bendición! Tocala, que se abre sola… con fe. *cof*", "El Señor provee. Y yo me quedo el humo. *cof cof*"],
-      done: ["Bendito seas. *cof* Esto… esto lo guardo yo.", "Tus pecados están a salvo conmigo. *aspira* *cof cof*", "¡Gracias! Sos el primero que me habla en toda la semana. *cof*"],
-      exit: ["¡Volvé pronto! Bueno, nadie vuelve pronto. ¡Pero vos podrías! *cof*", "¡Que Dios te acompañe! Y que no te acompañe el humo. *cof*"]
+      bless: ["¡Una bendición! Tocala, que se abre sola… con fe. *cof*", "El Señor provee. *cof cof* Disculpá, es la garganta."],
+      done: ["Bendito seas. *cof* Esto… esto lo guardo yo.", "Tus pecados están a salvo conmigo. *cof cof cof*", "¡Gracias! Sos el primero que me habla en toda la semana. *cof*"],
+      exit: ["¡Volvé pronto! Bueno, nadie vuelve pronto. ¡Pero vos podrías! *cof*", "¡Que Dios te acompañe! *cof* *cof* Estoy bien, estoy bien."]
     },
     topics: [
-      ["Sobre vos", ["Soy Sor Tosca. Cuido esta caja con mucho amor. Y mucha tos. *cof*", "No es humo, es incienso. *cof*"]],
-      ["Sobre la caja", ["Veinte cigarrillos o diez habanos. Los habanos traen cajas más benditas: mejoran más seguido. *cof*", "La caja levita por obra divina. O por el humo caliente. Una de las dos. *cof cof*"]],
-      ["Sobre los vicios", ["Fumar es malísimo. Por eso me los quedo todos. Sacrificio personal. *cof cof cof*", "¿Los habanos? Esos los guardo en un lugar muy especial. Mi boca. Digo, mi bolsillo. *cof*"]],
+      ["Sobre vos", ["Soy Sor Tosca. Cuido esta caja con mucho amor. *cof cof*", "¿La tos? Es la humedad de la plaza. *cof* *COF* *cof*"]],
+      ["Sobre la caja", ["Veinte cigarrillos o diez habanos. Los habanos traen cajas más benditas: mejoran más seguido. *cof*", "La caja levita por obra divina. *cof cof* Eso dicen."]],
+      ["Sobre los vicios", ["Los vicios son malísimos. Por eso los guardo yo, bien guardados. *cof cof cof*", "¿Los habanos? Esos van a un lugar muy especial. *cof* No preguntes cuál. *cof*"]],
       ["Sobre la plaza", ["Me pusieron acá, lejos de todo, para que tenga paz. ¡Qué considerados! *cof*", "¡Ceniza y yo somos íntimas amigas! Ella todavía no lo sabe. *cof*"]]
     ]
   }
@@ -5512,6 +5588,205 @@ function drawKioskFrame(dt) {
   const cv = $("skCv"); if (cv && cv.offsetParent) drawShopScene(cv, KSTATE.t, talking);
   const bc = $("blessCv"); if (bc && bc.offsetParent) drawBlessBox(bc, dt);
 }
+// ================= upgrades between hordes: Gancho's stall, paid with kills ("bajas") =================
+// After every even horde Gancho sets up next to the Heart. Each skill (not the ultimate) has two upgrade paths of
+// three levels; picking one path locks the other. Prices go up with each level and with each horde (like Brotato).
+// The next horde only starts when every player has rung the megaphone (bots follow the humans).
+const BAJA = { emp: 1, cafe: 2, friki: 2, manitas: 2, memo: 2, auditor: 3, hatch: 3, portal: 1, mocha: 15, becario: 15 };
+const UPG_COST = [8, 14, 22];
+const upCost = lv => Math.round(UPG_COST[lv] * (1 + .12 * Math.max(0, (G.wave || 1) - 1)));
+const UPG = {
+  atk: { name: "Ataque", key: "Clic", desc: "Fobi tira manos y botas desde su cubeta. Cada disparo hace 35 de daño. Tiene 4 disparos y recarga en 1,5 s; si dejás de disparar un rato, recarga solo.",
+    paths: [{ name: "Puño pesado", lv: ["+20% de daño", "+40% de daño y cada disparo atraviesa a 1 empleado", "+60% de daño, atraviesa a 2 y el último disparo del cargador explota"] },
+            { name: "Cargador grande", lv: ["5 disparos por cargador", "6 disparos y recarga 25% más rápido", "8 disparos y recarga 40% más rápido"] }] },
+  bats: { name: "Murciélagos golosos", key: "Q", desc: "Salen 7 murciélagos de la cerradura hacia la zona marcada. Se prenden a los empleados y les chupan 6 de vida cada cuarto de segundo, hasta 36. Al terminar dejan un caramelo que cura. Espera: 14 s.",
+    paths: [{ name: "Colmillos", lv: ["Chupan 30% más rápido", "Chupan 60% más rápido y hasta 54 de vida cada uno", "Chupan el doble de rápido y el mordido camina a la mitad de velocidad"] },
+            { name: "Bandada", lv: ["9 murciélagos", "11 murciélagos y 2 s menos de espera", "14 murciélagos y 4 s menos de espera"] }] },
+  tomb: { name: "Tumba", key: "E", desc: "Fobi patea una tumba a la zona marcada. Los empleados la atacan y cada golpe hace salir 3 esqueletos (hasta 15 a la vez). Aguanta 10 golpes. Espera: 12 s.",
+    paths: [{ name: "Guardianes", lv: ["Cada vez que salen esqueletos, 15% de que uno sea un esqueleto guardián", "20%, y cuando pasa, todos los que salen son guardianes", "30%, y cuando la tumba se rompe siempre suelta 3 guardianes más"] },
+            { name: "Más huesos", lv: ["30% de que salgan 4 esqueletos en vez de 3", "40% de que salgan 5", "Mitad y mitad: salen 3 o 6"] }] },
+  ghost: { name: "Hombre lobo", key: "R", desc: "Sale un hombre de la cerradura que a los 6 s se transforma en lobo (si lo golpean antes, se escapa). El lobo muerde y embiste al empleado más lejano. Usala de nuevo con el lobo afuera para enfurecerlo. Espera: 20 s.",
+    paths: [{ name: "Alfa", lv: ["El lobo tiene 30% más de vida", "+30% de vida y 25% más de daño", "+60% de vida, 50% más de daño y se transforma en 3 s"] },
+            { name: "Cazador", lv: ["4 s menos de espera", "Embiste cada 4 s en vez de cada 7 y aturde 1 s", "8 s menos de espera y la embestida hace 60% más de daño"] }] }
+};
+const UKEYS = ["atk", "bats", "tomb", "ghost"];
+function upLv(u, k, p) { const s = u && u.up && u.up[k]; return s && s.p === p ? s.lv : 0; }
+const magOf = u => [4, 5, 6, 8][upLv(u, "atk", 1)];
+const reloadOf = u => RELOAD * [1, 1, .75, .6][upLv(u, "atk", 1)];
+function upState(u, k, p) {
+  const s = u.up && u.up[k];
+  if (s && s.p !== p) return "locked";
+  const lv = s ? s.lv : 0; if (lv >= 3) return "max";
+  return (u.bajas || 0) < upCost(lv) ? "poor" : "ok";
+}
+function buyUp(u, k, p) {
+  if (!UPG[k] || (p !== 0 && p !== 1) || upState(u, k, p) !== "ok") return false;
+  u.up = u.up || {}; const s = u.up[k] || (u.up[k] = { p, lv: 0 });
+  u.bajas -= upCost(s.lv); s.lv++; return true;
+}
+function creditKill(e, from) {
+  if (!from || !(from.kind === "player" || from.kind === "ally")) return;
+  const v = BAJA[e.type] || 0; if (!v) return;
+  from.bajas = (from.bajas || 0) + v; from.kTotal = (from.kTotal || 0) + 1;
+  if (from === G.player) text(e.x + 14, e.y - 104, "+" + v + " ☠", "#ff9ab0", 11);
+}
+// bots shop on their own, picking at random
+function botShop(a) {
+  for (let i = 0; i < 12; i++) {
+    const opts = []; for (const k of UKEYS) for (const p of [0, 1]) if (upState(a, k, p) === "ok") opts.push([k, p]);
+    if (!opts.length) return;
+    const owned = opts.filter(([k]) => a.up && a.up[k]), [k, p] = pick(owned.length && Math.random() < .6 ? owned : opts);
+    buyUp(a, k, p);
+  }
+}
+
+// ---------- the stall and the megaphone next to the Heart ----------
+function openStand() {
+  const c = G.core; let at = null;
+  for (let i = 0; i < 30 && !at; i++) { const a = rand(0, TAU), d = rand(190, 240), x = c.x + Math.cos(a) * d, y = c.y + Math.sin(a) * d * .7; if (openSpot(x, y) && openSpot(x + 80, y) && !G.slots.some(s => dist(s, { x, y }) < 90 || dist(s, { x: x + 80, y }) < 90)) at = { x, y }; }
+  at = at || { x: c.x + 200, y: c.y + 90 };
+  G.ustand = { x: at.x, y: at.y, mx: at.x + 84, my: at.y + 6, t: 0 };
+  festis().forEach(u => u.ready = false);
+  G.allies.forEach(a => { if (a.ai && !a.remote) botShop(a); });
+  ring(at.x, at.y, 10, 120, "rgba(255,120,150,.7)", .6); burst(at.x, at.y - 40, "#ff9ab0", 16, 160);
+  toast("Gancho abrió su tienda de mejoras junto al Corazón. Cuando estés listo, tocá el megáfono.", 4);
+}
+function closeStand() { G.ustand = null; festis().forEach(u => u.ready = false); G.allies.forEach(a => a.ready = false); if (!$("upOv").hidden) closeUpShop(); }
+const humans = () => [G.player, ...G.allies.filter(a => a.remote && !a.dead)];
+function updateStand(dt) {
+  const S0 = G.ustand; S0.t += dt;
+  const hs = humans(); if (hs.length && hs.every(h => h.ready)) { closeStand(); toast("¡Todos listos! Llega la próxima horda", 2.4); nextHorde(); }
+}
+const nearStand = () => { const S0 = G.ustand, p = G.player; return !!S0 && p.alive && Math.hypot(p.x - (S0.x + 40), p.y - S0.y) < 160; };
+function toggleReady() {
+  if (!G.ustand) return;
+  if (netIntercept("ready", { v: !G.player.ready })) { G.player.ready = !G.player.ready; return; }
+  G.player.ready = !G.player.ready;
+  if (G.player.ready) { G.ustand.ring = .6; text(G.ustand.mx, G.ustand.my - 90, "¡Listo!", "#9be37a", 15); }
+}
+function readyCount() { const hs = humans(); return [hs.filter(h => h.ready).length, hs.length]; }
+
+// Gancho: a scruffy scavenger kid with a hooded coat (two little bone horns on the hood), a huge iron hook and a bone between the teeth
+function drawGancho(t, talk) {
+  const br = Math.sin(t * 2.2) * .8;
+  // the hook over the shoulder
+  ctx.lineCap = "round"; ctx.strokeStyle = OL; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(4, -14); ctx.lineTo(20, -78); ctx.stroke(); ctx.strokeStyle = "#7a5a3a"; ctx.lineWidth = 3.4; ctx.stroke();
+  ctx.save(); ctx.translate(20, -80); ctx.strokeStyle = OL; ctx.lineWidth = 7; ctx.beginPath(); ctx.arc(-9, 0, 9, 0, Math.PI * 1.15); ctx.stroke(); ctx.strokeStyle = "#a9adb8"; ctx.lineWidth = 4; ctx.stroke();
+  poly([-19, -6, -23, -14, -14, -9]); S("#a9adb8", 1.6); rrS(-3, -4, 6, 8, 2, "#a9adb8", 1.4); ctx.restore();
+  // coat
+  ctx.beginPath(); ctx.moveTo(-12, -42); ctx.quadraticCurveTo(-18, -20, -19, 0); for (let i = 0; i <= 6; i++) ctx.lineTo(-19 + i * 6.33, i % 2 ? -4 : 0); ctx.quadraticCurveTo(18, -20, 12, -42); ctx.closePath(); S(lg(0, -42, 0, 0, ["#8a2236", "#4a0f1e"]), 2);
+  ctx.strokeStyle = "rgba(255,180,190,.25)"; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(0, -40); ctx.lineTo(0, -2); ctx.stroke();
+  rrS(-9, -24, 18, 4, 1, "#3a1a10", 1.2); circS(0, -22, 2.2, "#d9b34a", .8); // belt
+  // arms: one on the hook, one waving while talking
+  ctx.strokeStyle = OL; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(9, -38); ctx.quadraticCurveTo(14, -34, 12, -44); ctx.stroke(); ctx.strokeStyle = "#7a1c2e"; ctx.lineWidth = 3.6; ctx.stroke(); circS(12.5, -45, 2.8, "#f6e3d6", 1);
+  const wv = talk ? Math.sin(t * 14) * .5 : 0;
+  ctx.save(); ctx.translate(-10, -38); ctx.rotate(.5 + wv); ctx.strokeStyle = OL; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-2, 14); ctx.stroke(); ctx.strokeStyle = "#7a1c2e"; ctx.lineWidth = 3.6; ctx.stroke(); circS(-2, 15, 2.8, "#f6e3d6", 1); ctx.restore();
+  // head inside the hood
+  ctx.save(); ctx.translate(0, br * .3);
+  [-1, 1].forEach(s => { ctx.beginPath(); ctx.moveTo(s * 5, -66); ctx.quadraticCurveTo(s * 12, -74, s * 9, -80); ctx.quadraticCurveTo(s * 7, -72, s * 2, -68); ctx.closePath(); S("#efe2cc", 1.4); }); // little bone horns
+  circS(0, -57, 13, "#7a1c2e", 1.8);
+  ctx.beginPath(); ctx.ellipse(0, -55, 9.6, 9.2, 0, 0, TAU); S("#f6e3d6", 1.4);
+  ctx.fillStyle = "#3a1a14"; ctx.beginPath(); ctx.moveTo(-9, -58); ctx.quadraticCurveTo(-4, -66, 2, -63); ctx.quadraticCurveTo(6, -66, 9, -58); ctx.quadraticCurveTo(3, -61, -9, -58); ctx.fill(); // messy bangs
+  // mismatched, slightly unhinged eyes
+  circS(-3.8, -56, 3.3, "#fff", 1); circ(-3.4, -55.6, 1.3, "#2a1018"); circ(-3, -56.3, .45, "#fff");
+  circS(4.2, -56.5, 2.4, "#fff", 1); circ(4.4, -56.2, 1, "#2a1018");
+  ell(-6.5, -51.5, 2.2, 1.2, "rgba(255,90,120,.55)"); ell(6.8, -51.5, 2.2, 1.2, "rgba(255,90,120,.55)");
+  // grin with a bone between the teeth
+  ctx.strokeStyle = OL; ctx.lineWidth = 1.1; ctx.beginPath(); ctx.arc(0, talk ? -50.5 : -51, 3.6, .15, Math.PI - .15); ctx.stroke();
+  ctx.save(); ctx.translate(0, -49.6); ctx.rotate(-.08); rrS(-10, -1.3, 20, 2.6, 1.2, "#f4ecd8", .9); [-10, 10].forEach(x => { circS(x, -1.4, 1.7, "#f4ecd8", .8); circS(x, 1.4, 1.7, "#f4ecd8", .8); }); ctx.restore();
+  ctx.restore();
+}
+function drawStand() {
+  const S0 = G.ustand; if (!S0) return;
+  const t = T(), x = S0.x, y = S0.y;
+  ctx.save(); ctx.translate(x, y);
+  ell(0, 6, 62, 14, "rgba(4,2,12,.45)");
+  // a crate stall with a little red lantern
+  rrS(-46, -34, 92, 36, 4, lg(0, -34, 0, 2, ["#9a6a3e", "#5e3e22"]), 2.2);
+  ctx.strokeStyle = "rgba(30,15,5,.4)"; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(-46, -16); ctx.lineTo(46, -16); ctx.moveTo(-15, -34); ctx.lineTo(-15, 2); ctx.moveTo(15, -34); ctx.lineTo(15, 2); ctx.stroke();
+  ctx.save(); ctx.translate(-4, -36); ctx.scale(1.15, 1.15); drawGancho(t, false); ctx.restore();
+  rrS(-50, -40, 100, 8, 3, "#b98a5a", 2);
+  rrS(-34, -66 - 60, 68, 18, 5, "#2a1020", 2); ctx.fillStyle = "#ff9ab0"; ctx.font = "900 10px Nunito, sans-serif"; ctx.textAlign = "center"; ctx.fillText("MEJORAS ☠", 0, -113);
+  const f = .8 + Math.sin(t * 9) * .1; ctx.fillStyle = rg(-40, -54, 0, 26, [`rgba(255,90,110,${.5 * f})`, "rgba(255,90,110,0)"]); ctx.beginPath(); ctx.arc(-40, -54, 26, 0, TAU); ctx.fill(); rrS(-44, -60, 8, 11, 2, "#ff5a70", 1.4);
+  ctx.restore();
+  // megaphone on a post, with one light per player
+  ctx.save(); ctx.translate(S0.mx, S0.my);
+  ell(0, 4, 20, 6, "rgba(4,2,12,.4)"); rrS(-3, -60, 6, 62, 2, "#5a5f6e", 1.6);
+  const pump = S0.ring > 0 ? Math.sin(S0.ring * 30) * 2 : 0;
+  ctx.save(); ctx.translate(0, -66); ctx.rotate(-.35); poly([-10, -6, 14 + pump, -15, 14 + pump, 15, -10, 6]); S("#e8394e", 2); rrS(-16, -5, 8, 10, 2, "#f4efe4", 1.4); ellS(14 + pump, 0, 4, 15, "#ffd6dc", 1.6); ctx.restore();
+  const [r, n] = readyCount();
+  for (let i = 0; i < n; i++) circS(-((n - 1) * 7) + i * 14, -96, 5, i < r ? "#9be37a" : "#3a3446", 1.4);
+  ctx.restore();
+  if (G.mode === "match") { const near = nearStand(); label("Tienda de Gancho", x + 40, y - 150 + Math.sin(t * 3) * 3, near ? 17 : 14, near ? "#ffb3c4" : "rgba(255,200,215,.8)"); }
+}
+function updateStandFx(dt) { if (G.ustand && G.ustand.ring > 0) G.ustand.ring = Math.max(0, G.ustand.ring - dt); }
+
+// ---------- the shop window (same layout as Ceniza's) ----------
+const GANCHO = {
+  greet: ["¡Bajas, bajas, bajas! ¿Cuántas traés? A ver, a ver…", "¡Hola, hola! Yo no cobro en monedas. Cobro en despidos. ¿Cuántos despediste?", "¡Volviste! Y oliendo a oficina. Me encanta.", "Pasá, pasá. Todo se paga con bajas. Las monedas no me sirven: no se pueden morder."],
+  buy: ["¡Hecho! Ahora pega más fuerte. O más seguido. Algo hace, seguro.", "¡Mejorado! Andá a usarlo en alguien con corbata.", "Excelente. Me quedo con tus bajas. Las cuento de noche."],
+  poor: ["No te alcanzan las bajas. ¡Andá a despedir gente y volvé!", "Faltan bajas. Los empleados no se despiden solos… bueno, a veces sí, pero no cuenta."],
+  locked: "Ese camino lo cerraste cuando elegiste el otro. Así es la vida: un gancho, una dirección.",
+  max: "Esa ya está al máximo. Más no se puede. Bueno, se puede, pero explota.",
+  exit: ["¡Andá, andá! Y traeme bajas frescas.", "¡Chau! Tocá el megáfono cuando estés listo.", "¡Que no te despidan a vos!"]
+};
+const USHOP = { sel: "atk", say: "", shown: 0 };
+function upSay(s) { USHOP.say = s; USHOP.shown = 0; $("upSay").textContent = ""; }
+function openUpShop() {
+  if (!G.ustand) return;
+  $("upOv").hidden = false; keys.clear();
+  const cv = $("upCv"), dpr = Math.min(2, devicePixelRatio || 1); cv.width = Math.max(1, cv.clientWidth * dpr | 0); cv.height = Math.max(1, cv.clientHeight * dpr | 0);
+  upSay(pick(GANCHO.greet)); upRender();
+}
+function closeUpShop() { $("upOv").hidden = true; keys.clear(); }
+function pathSummary(u, k) { const s = u.up && u.up[k]; return s ? UPG[k].paths[s.p].name + " · nivel " + s.lv + "/3" : "Sin mejorar"; }
+function upRender() {
+  const u = G.player, k = USHOP.sel, D = UPG[k], s = (u.up && u.up[k]) || null;
+  $("upBajas").textContent = u.bajas || 0;
+  $("upLeft").innerHTML = `<div class="sk-list">${UKEYS.map(q => `<button class="sk-row${q === k ? " on" : ""}" data-act="sel" data-k="${q}"><i class="heart">♥</i><span>${UPG[q].name}<small>${pathSummary(u, q)}</small></span><em>${UPG[q].key}</em></button>`).join("")}<button class="sk-row" data-act="exit"><i class="heart">♥</i><span>Salir</span></button></div>`;
+  const paths = D.paths.map((P, p) => {
+    const st = upState(u, k, p), lv = s && s.p === p ? s.lv : 0;
+    const items = P.lv.map((txt, i) => `<li class="${i < lv ? "got" : ""}">${i < lv ? "✓ " : ""}${txt}</li>`).join("");
+    const btn = st === "locked" ? `<span class="sk-note">Cerrado: elegiste ${D.paths[1 - p].name}</span>` : st === "max" ? `<span class="sk-note">¡Camino completo!</span>` :
+      `<button class="cta" data-act="buy" data-p="${p}" ${st === "poor" ? "disabled" : ""}>${lv ? "Nivel " + (lv + 1) : "Elegir"} · ☠ ${upCost(lv)}</button>`;
+    return `<div class="upath${st === "locked" ? " locked" : ""}"><b>${P.name}</b><ol>${items}</ol>${btn}</div>`;
+  }).join("");
+  $("upRight").innerHTML = `<div class="sk-detail"><span class="kind">Habilidad · ${D.key}</span><b>${D.name}</b><p>${D.desc}</p><div class="upaths">${paths}</div><p class="sk-note">Elegir un camino cierra el otro. Los precios suben con cada nivel y con cada horda.</p></div>`;
+}
+function upAct(el) {
+  const a = el.dataset.act;
+  if (a === "skip") { USHOP.shown = USHOP.say.length; return; }
+  if (a === "sel") USHOP.sel = el.dataset.k;
+  else if (a === "exit") { closeUpShop(); toast("Gancho: «" + pick(GANCHO.exit) + "»", 2.6); return; }
+  else if (a === "buy") {
+    const k = USHOP.sel, p = +el.dataset.p, st = upState(G.player, k, p);
+    if (st === "poor") upSay(pick(GANCHO.poor)); else if (st === "locked") upSay(GANCHO.locked); else if (st === "max") upSay(GANCHO.max);
+    else {
+      if (netIntercept("upg", { k, p })) { const s0 = G.player.up = G.player.up || {}; const s = s0[k] || (s0[k] = { p, lv: 0 }); G.player.bajas -= upCost(s.lv); s.lv++; } // predicted; the host confirms
+      else buyUp(G.player, k, p);
+      upSay(pick(GANCHO.buy)); burst(G.player.x, G.player.y - 60, "#ff9ab0", 14, 140);
+    }
+  }
+  upRender();
+}
+$("upOv").addEventListener("click", e => { const el = e.target.closest("[data-act]"); if (el && !el.disabled) upAct(el); });
+$("upClose").addEventListener("click", closeUpShop);
+function drawUpFrame(dt) {
+  if ($("upOv").hidden) return;
+  USHOP.t = (USHOP.t || 0) + dt;
+  if (USHOP.shown < USHOP.say.length) { USHOP.shown = Math.min(USHOP.say.length, USHOP.shown + dt * 48); $("upSay").textContent = USHOP.say.slice(0, Math.floor(USHOP.shown)); }
+  USHOP.rr = (USHOP.rr || 0) - dt; if (USHOP.rr <= 0 && isGuest()) { USHOP.rr = .5; upRender(); }
+  if (!G.ustand) { closeUpShop(); return; }
+  const cv = $("upCv"); if (!cv.offsetParent) return;
+  const g = cv.getContext("2d"), prev = ctx; ctx = g; const W2 = cv.width, H2 = cv.height, k = H2 / 72, w = W2 / k, h = H2 / k, cc = h * .8, t = USHOP.t;
+  g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = lg(0, 0, 0, H2, ["#4a1424", "#160812"]); g.fillRect(0, 0, W2, H2);
+  ctx.save(); ctx.scale(k, k);
+  // hanging trophies: employee ties and lanyards
+  for (let i = 0; i < 9; i++) { const x = w * (.08 + i * .105); if (Math.abs(x - w / 2) < 26) continue; ctx.strokeStyle = "rgba(255,255,255,.25)"; ctx.lineWidth = .6; ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 10 + (i % 3) * 4); ctx.stroke(); const ty = 10 + (i % 3) * 4; if (i % 2) { poly([x - 2, ty, x + 2, ty, x + 3, ty + 12, x, ty + 15, x - 3, ty + 12]); S(["#c2273c", "#2a62c9", "#2f8a5a"][i % 3], .7); } else { rrS(x - 4, ty, 8, 10, 1, "#f4f6f8", .7); rr(x - 3, ty + 2, 6, 2, .5, "#2a62c9"); } }
+  ctx.save(); ctx.translate(w / 2, cc + 40); drawGancho(t, USHOP.shown < USHOP.say.length && Math.sin(t * 22) > 0); ctx.restore();
+  rrS(-4, cc, w + 8, h - cc + 4, 0, lg(0, cc, 0, h, ["#7a4a2a", "#3e2414"]), 2.5);
+  ctx.restore(); ctx = prev;
+}
 
 // ================= waves, objectives, slot machine =================
 const OBJ_INFO = {
@@ -5521,8 +5796,19 @@ const OBJ_INFO = {
   jarrones: { title: "Jarrones misteriosos", desc: "Aparecieron jarrones misteriosos alrededor del Corazón. Rompelos todos: pueden salir monedas, caramelos, pociones… o cosas peores." }
 };
 const OBJ_REWARD = 200;
+// Specialists come in by difficulty: easy ones in the first third, medium ones in the middle, hard ones at the end.
+// New employees just get a row here (from: first horde they show up in).
+const SPEC_TIERS = [
+  { k: "cafe", tier: "fácil", from: 2, base: 1.5, grow: .45, max: 7 },
+  { k: "manitas", tier: "media", from: 6, base: 1.4, grow: .4, max: 6 },
+  { k: "friki", tier: "media", from: 8, base: 1.3, grow: .4, max: 6 },
+  { k: "memo", tier: "difícil", from: 11, base: 1.2, grow: .35, max: 4 }
+];
+// more basic employees at the start (so the first hordes aren't boring), a gentler climb in the middle
 function waveComposition(n) {
-  return { emp: Math.round(6 + n * 2.4), cafe: n >= 2 ? Math.round(n * 1.6) : 0, friki: n >= 3 ? Math.round((n - 1) * .9) : 0, manitas: n >= 4 ? Math.round((n - 2) * .7) : 0, memo: n >= 5 ? Math.max(1, Math.round((n - 3) * .6)) : 0 };
+  const c = { emp: Math.round(12 + n * 1.05) };
+  for (const S0 of SPEC_TIERS) c[S0.k] = n >= S0.from ? Math.min(S0.max, Math.round(S0.base + S0.grow * (n - S0.from))) : 0;
+  return c;
 }
 const SPECIALS = ["cafe", "friki", "manitas", "memo"];
 // every horde comes in three batches (tandas), like Garden Ops
@@ -5579,19 +5865,28 @@ function endWave() {
   G.mausOpen = false;
   if (G.wave >= MAX_WAVE) { startEscape(); return; }
   G.phase = "prep"; G.prepT = 10;
+  if (G.wave % 2 === 0) openStand(); // Gancho shows up after every even horde; no timer, the megaphone decides
   const n = G.wave + 1;
-  if ([3, 6, 9].includes(n)) { G.nextObj = G.objPool[([3, 6, 9].indexOf(n)) % 3]; toast("Próxima oleada con objetivo: " + OBJ_INFO[G.nextObj].title, 3); }
-  else if (n === 5 || n === 10) toast("La próxima oleada empieza con la tragaperras", 3);
+  if (OBJ_WAVES.includes(n)) { G.nextObj = G.objPool[OBJ_WAVES.indexOf(n) % G.objPool.length]; toast("Próxima oleada con objetivo: " + OBJ_INFO[G.nextObj].title, 3); }
+  else if (SLOT_WAVES.includes(n)) toast("La próxima oleada empieza con la tragaperras", 3);
   else toast("Oleada " + G.wave + " superada", 2.2);
 }
+const OBJ_WAVES = [3, 6, 9, 12], SLOT_WAVES = [5, 10, 15];
+function nextHorde() { const n = G.wave + 1; if (SLOT_WAVES.includes(n)) startSlot(n); else startWave(); }
 function updateWaves(dt) {
-  if (G.phase === "prep") { G.prepT -= dt; if (G.prepT <= 0) { const n = G.wave + 1; if (n === 5 || n === 10) startSlot(n); else startWave(); } }
+  if (G.phase === "prep") { if (G.ustand) { updateStand(dt); return; } G.prepT -= dt; if (G.prepT <= 0) nextHorde(); }
   else if (G.phase === "slot") updateSlot(dt);
   else if (G.phase === "spawn") {
     checkObjectiveLive();
     const part = G.hParts[G.hIdx];
     G.spawnT -= dt; G.hTimer += dt;
-    if (G.spawnT <= 0 && part.q.length) { const sp = pick(G.B.spawns), n = Math.min(part.q.length, 2 + Math.floor(G.wave / 3)); for (let i = 0; i < n; i++) { const ty = part.q.shift(); const e = spawnEnemy(ty, spawnPointFor(ty, sp)); e.wave = G.wave; } G.spawnT = Math.max(.7, 1.8 - G.wave * .1); }
+    if (G.spawnT <= 0 && part.q.length) {
+      // take turns between the entrances so no single one gets flooded
+      G.spIdx = ((G.spIdx || 0) + 1) % G.B.spawns.length;
+      const sp = G.B.spawns[G.spIdx], n = Math.min(part.q.length, 2 + Math.floor(G.wave / 4));
+      for (let i = 0; i < n; i++) { const ty = part.q.shift(); const e = spawnEnemy(ty, spawnPointFor(ty, sp)); e.wave = G.wave; }
+      G.spawnT = Math.max(.55, 1.5 - G.wave * .06);
+    }
     if (!part.q.length) {
       const aliveWave = G.enemies.filter(e => !e.dead && e.wave === G.wave).length;
       if (G.hIdx < 2 && (aliveWave <= Math.ceil(part.size * .3) || G.hTimer > 28)) {
@@ -5661,7 +5956,7 @@ function endGame(won) {
   SAVE.coins += total; persist();
   $("endEyebrow").textContent = (won ? "Victoria · " : "Derrota · ") + (G.B ? G.B.name : "Cementerio") + " · " + G.diff.name;
   $("endTitle").textContent = won ? (G.escaped === false ? "El Corazón se salvó… pero te quedaste atrás" : "¡El Corazón Festivo sigue latiendo!") : "Apagaron el Corazón Festivo";
-  $("endText").textContent = won ? (G.escaped === false ? "Las 10 hordas cayeron, pero no llegaste a tiempo al Corazón y la oficina te atrapó. Te perdiste el premio de huida de 300." : "Las 10 hordas volvieron a la oficina y escapaste con el Corazón (+300 por la huida). Las monedas ya están en tu bolsillo para gastarlas en el kiosco.") : "La Corporación ganó esta vez, pero te quedás con lo que juntaste. Probá llamar refuerzos antes o separar más las tumbas.";
+  $("endText").textContent = won ? (G.escaped === false ? "Las 15 hordas cayeron, pero no llegaste a tiempo al Corazón y la oficina te atrapó. Te perdiste el premio de huida de 300." : "Las 15 hordas volvieron a la oficina y escapaste con el Corazón (+300 por la huida). Las monedas ya están en tu bolsillo para gastarlas en el kiosco.") : "La Corporación ganó esta vez, pero te quedás con lo que juntaste. Probá llamar refuerzos antes o separar más las tumbas.";
   $("earnBox").innerHTML = `<span>Empleados despedidos</span><b>${G.earn.kills}</b><span>Objetivos especiales</span><b>${G.earn.obj}</b><span>Tragaperras</span><b>${G.earn.slot}</b><span>Dificultad ${G.diff.name}</span><b>×${String(G.diff.coins).replace(".", ",")}</b><span class="tot">Total</span><b class="tot">${total}</b>`;
   $("stWave").textContent = G.wave + "/" + MAX_WAVE; $("stKills").textContent = G.kills;
   const s = Math.floor(G.t); $("stTime").textContent = Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
@@ -5779,6 +6074,7 @@ function updateHUD() {
   setText("waveTxt", G.phase === "setup" ? "Preparación · " + G.diff.name : G.phase === "escape" ? "¡Huida! · " + Math.max(0, Math.ceil(G.escape.t)) + " s" : "Oleada " + G.wave + "/" + MAX_WAVE + " · " + G.diff.name);
   let st;
   if (G.phase === "setup") st = G.allies.length ? "Llevá el Corazón a uno de los 3 lugares marcados" : "Llamá ayuda en el teléfono o andá directo a un lugar marcado";
+  else if (G.phase === "prep" && G.ustand) { const [r, n] = readyCount(); st = "Tienda de Gancho abierta junto al Corazón · listos " + r + "/" + n + " en el megáfono"; }
   else if (G.phase === "prep") st = (G.wave === 0 ? "La primera oleada llega en " : "Siguiente oleada en ") + Math.ceil(G.prepT) + " s";
   else if (G.phase === "slot") st = "Tragaperras girando…";
   else if (G.phase === "escape") st = (G.escape.fly < 1 ? "El Corazón está volando hacia otro lugar…" : "Llegá al círculo del Corazón y aguantá ahí hasta el final");
@@ -5819,7 +6115,10 @@ function updateHUD() {
   setText("nP", p.potion ? POTIONS[p.potion].name : "Poción");
   $("bP").style.setProperty("--potc", p.potion ? POTIONS[p.potion].color : "#bdb0d2"); setClass("bP", "disabled", !p.potion);
   setClass("bA", "disabled", !p.alive || p.stun > 0);
-  setText("ammoTxt", p.reload > 0 ? "…" : p.ammo + "/" + MAG); setCd("bA", p.reload > 0 ? p.reload / RELOAD : 0); setText("ammoLbl", p.reload > 0 ? "Recargando" : "Ataque");
+  setText("ammoTxt", p.reload > 0 ? "…" : p.ammo + "/" + magOf(p)); setCd("bA", p.reload > 0 ? p.reload / reloadOf(p) : 0); setText("ammoLbl", p.reload > 0 ? "Recargando" : "Ataque");
+  setText("bajasTxt", "☠ " + (p.bajas || 0) + " bajas");
+  const ns = G.ustand && nearStand() && !G.over; setHidden("standPanel", !ns);
+  if (ns) { const [r, n] = readyCount(); setText("upBtnN", String(p.bajas || 0)); setText("readyTxt", "Listos: " + r + "/" + n + (n > 1 ? " · la horda llega cuando todos tocan el megáfono" : "")); setClass("readyBtn", "on", !!p.ready); setText("readyBtn", p.ready ? "¡Listo! (tocá para esperar)" : "Megáfono: ¡listo!"); }
   const ph = nearPhone() && !G.over && !isGuest();
   setHidden("phonePanel", !ph);
   if (ph) {
@@ -6235,6 +6534,7 @@ function render() {
   G.bigbats.forEach(b => { if (b.state === "decoy") list.push({ y: b.y + 18, f: () => drawBat(b, true) }); });
   G.allies.forEach(a => list.push({ y: a.y, f: () => drawFobi(a) }));
   if (G.escape) list.push({ y: 1e6, f: drawEscapeBeam });
+  if (G.ustand) { list.push({ y: G.ustand.y, f: drawStand }); }
   G.spirits.forEach(g => { if (g.attached && g.from) list.push({ y: g.from.y - .5, f: () => drawSpirit(g) }); });
   list.sort((a, b) => a.y - b.y).forEach(o => o.f());
   drawAim();
@@ -6327,6 +6627,7 @@ function frame(now) {
   render(); updateHUD();
   if (!$("closetOv").hidden) drawStage(dt);
   if (!$("kioskOv").hidden) drawKioskFrame(dt);
+  drawUpFrame(dt); if (G && G.ustand) updateStandFx(dt);
   if (!$("startOv").hidden) drawFobiInto($("heroCv"), 3.1, .95, { cos: playerCos(), lift: (Math.sin(now / 700) + 1) * .4 });
   requestAnimationFrame(frame);
 }

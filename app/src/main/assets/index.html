@@ -426,7 +426,7 @@ details ul{margin:6px 0 0;padding-left:16px;display:flex;flex-direction:column;g
 <div class="overlay" id="kioskOv" hidden>
   <div class="panel card kiosk">
     <div class="khead">
-      <h2>Kiosco de Ceniza</h2>
+      <h2 id="kTitle">Kiosco de Ceniza</h2>
       <div class="panel coins"><span class="coin"></span><span id="kCoins">0</span></div>
       <button class="panel iconbtn" id="kClose" aria-label="Cerrar kiosco">×</button>
     </div>
@@ -439,7 +439,7 @@ details ul{margin:6px 0 0;padding-left:16px;display:flex;flex-direction:column;g
       <div class="npcrow"><canvas id="cenizaCv" width="200" height="200"></canvas><div class="bubble"><b>Ceniza, la nigromante</b><span id="kTalk"></span></div></div>
       <div class="packs" id="packList"></div><p class="fine" style="margin-top:10px">Paquetes de cartas con un cigarrillo de regalo, como se vendían antes. En la versión de tienda, las monedas también se podrán comprar con dinero real. Las probabilidades de cada paquete están siempre a la vista.</p></div>
     <div id="tab-vicio" hidden>
-      <div class="npcrow"><canvas id="toscaCv" width="200" height="200"></canvas><div class="bubble"><b>Sor Tosca</b><span id="tTalk"></span></div></div>
+      <div class="npcrow"><canvas id="toscaCv" width="200" height="200"></canvas><div class="bubble"><b>Sor Tosca</b><span id="tTalk"></span><i class="fine" id="tAside" style="display:block;margin-top:4px;opacity:.75"></i></div></div>
       <div class="vices" id="viceCount"></div>
       <div class="blessstage" id="blessStage" hidden><span class="eyebrow" id="blessTtl"></span><canvas id="blessCv" width="320" height="220"></canvas><span class="fine" id="blessHint"></span><div class="stickers" id="blessItems"></div></div>
       <details id="blessOdds"><summary>¿Qué puede traer una bendición?</summary><ul>
@@ -918,9 +918,6 @@ function drawKiosk(x, y) {
   rrS(-126, -40, 252, 40, 4, lg(0, -40, 0, 0, ["#245f51", "#163e35"]), 2.5);
   // packs on counter
   [[-90, "#ff8a1f"], [-60, "#9a5ad6"], [-30, "#e8b23a"]].forEach(([px, c]) => { ctx.save(); ctx.translate(px, -64); ctx.rotate(-.1); rrS(-9, -16, 18, 22, 3, c, 1.6); rr(-6, -12, 12, 4, 1, "rgba(255,255,255,.5)"); circ(0, -1, 3, "rgba(18,10,26,.35)"); ctx.restore(); });
-  // Sor Tosca and her anti-vice box, right next to the kiosk
-  ctx.save(); ctx.translate(178, 0); ell(0, 4, 26, 7, "rgba(4,2,12,.4)"); ctx.scale(1.15, 1.15); drawTosca(t, Math.sin(t * .9) > .93 ? .6 : 0); ctx.restore();
-  rrS(150, -118, 56, 16, 4, "#fff6e3", 1.6); ctx.fillStyle = "#6a1a2a"; ctx.font = "900 7.5px Nunito, sans-serif"; ctx.textAlign = "center"; ctx.fillText("CAJA ANTIVICIO", 178, -107);
   // "abierto" sign
   rrS(52, -76, 46, 16, 4, "#fff6e3", 1.6); ctx.fillStyle = "#2f8a73"; ctx.font = "900 10px Nunito, sans-serif"; ctx.textAlign = "center"; ctx.fillText("ABIERTO", 75, -64);
   // striped awning
@@ -934,6 +931,34 @@ function drawKiosk(x, y) {
   rrS(-92, -222, 184, 44, 10, lg(0, -222, 0, -178, ["#4a2e6e", "#2a1a42"]), 3);
   for (let i = 0; i < 12; i++) { const on = Math.sin(t * 4 + i) > -.3; circS(-82 + i * 15, -216, 2.6, on ? "#ffd27a" : "#6a4a2a", 1); circS(-82 + i * 15, -184, 2.6, !on ? "#ffd27a" : "#6a4a2a", 1); }
   label("KIOSCO", 0, -192, 22, "#ffb347");
+  ctx.restore();
+}
+// Sor Tosca's anti-vice booth, banished to the far corner of the plaza. No path leads here. Nobody planted that on purpose... or did they.
+function drawAntivicio(x, y) {
+  const t = T();
+  ctx.save(); ctx.translate(x, y);
+  ell(0, 8, 90, 18, "rgba(4,2,12,.45)");
+  // little wooden stall
+  rrS(-70, -96, 140, 96, 6, lg(0, -96, 0, 0, ["#8a6a52", "#5a4232"]), 2.5);
+  ctx.strokeStyle = "rgba(30,18,10,.35)"; ctx.lineWidth = 1.2; for (let i = 1; i < 6; i++) { ctx.beginPath(); ctx.moveTo(-70, -96 + i * 16); ctx.lineTo(70, -96 + i * 16); ctx.stroke(); }
+  // tomato splats (nobody knows who) and a scribbled-on poster
+  [[-52, -70, 1], [44, -40, .8], [30, -82, .6], [-34, -24, .7]].forEach(([sx, sy, k]) => { ctx.save(); ctx.translate(sx, sy); ctx.scale(k, k); ctx.fillStyle = "#c8323a"; ctx.beginPath(); for (let i = 0; i < 9; i++) { const a = i / 9 * TAU, r = i % 2 ? 5 : 9; ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r); } ctx.fill(); circ(9, 6, 2, "#c8323a"); circ(-7, 8, 1.5, "#c8323a"); ctx.restore(); });
+  rrS(34, -88, 26, 32, 2, "#fff6e3", 1.4); circS(47, -76, 7, "#cfc8d8", 1); rr(46, -82, 2, 7, .5, "#fff"); rr(44, -80, 6, 2, .5, "#fff");
+  ctx.strokeStyle = "#1a1a1a"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(37, -86); ctx.lineTo(57, -60); ctx.moveTo(57, -86); ctx.lineTo(37, -60); ctx.stroke(); // big X over her face
+  // counter
+  rrS(-78, -40, 156, 14, 4, lg(0, -40, 0, -26, ["#b98a5a", "#8a5e36"]), 2.2);
+  // Sor Tosca herself, always cheerful
+  ctx.save(); ctx.translate(-6, -30); ctx.scale(1.25, 1.25); drawTosca(t, Math.sin(t * .9) > .93 ? .6 : 0); ctx.restore();
+  rrS(-74, -26, 148, 26, 4, lg(0, -26, 0, 0, ["#7a5a42", "#4e3626"]), 2.2);
+  // a tiny "no smoking" sign (ironic)
+  ctx.save(); ctx.translate(-56, -52); circS(0, 0, 9, "#fff6e3", 1.4); ctx.strokeStyle = "#d8314a"; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(0, 0, 6.5, 0, TAU); ctx.moveTo(-4.6, -4.6); ctx.lineTo(4.6, 4.6); ctx.stroke(); rr(-4, -1, 7, 2, .5, "#333"); ctx.restore();
+  // sign on top, someone wrote "NO" on it
+  rrS(-62, -128, 124, 28, 6, "#fff6e3", 2); ctx.fillStyle = "#6a1a2a"; ctx.font = "900 11px Nunito, sans-serif"; ctx.textAlign = "center"; ctx.fillText("CAJA ANTIVICIO", 0, -116); ctx.fillStyle = "#8a7a90"; ctx.font = "800 7px Nunito, sans-serif"; ctx.fillText("¡Entregá tus vicios con alegría!", 0, -106);
+  ctx.save(); ctx.translate(44, -122); ctx.rotate(-.2); ctx.fillStyle = "#1a1a1a"; ctx.font = "900 13px 'Special Elite', monospace"; ctx.fillText("NO", 0, 0); ctx.restore();
+  // a lonely little cloud raining only over her
+  const cx = Math.sin(t * .4) * 6;
+  ctx.globalAlpha = .55; for (let i = 0; i < 7; i++) { const ph = (t * 1.4 + i * .37) % 1; ctx.strokeStyle = "#9ab8e0"; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(cx - 18 + i * 6, -160 + ph * 60); ctx.lineTo(cx - 19 + i * 6, -154 + ph * 60); ctx.stroke(); }
+  ctx.globalAlpha = .85; fluff([[cx - 14, -166, 8], [cx, -170, 10], [cx + 14, -166, 8]], "#8a8ea0", 1.2); ctx.globalAlpha = 1;
   ctx.restore();
 }
 function drawVestidor(x, y) {
@@ -1170,6 +1195,8 @@ function buildLobby() {
   const P = L.props, C = L.colliders, Lt = L.lights;
   P.push({ y: 600, x: 430, draw: () => drawKiosk(430, 600) }); C.push({ type: "r", x0: 300, y0: 450, x1: 560, y1: 600 });
   Lt.push({ x: 430, y: 520, r: 230, c: "255,210,140", flick: .2 }, { x: 430, y: 400, r: 120, c: "255,210,120", flick: .3 });
+  P.push({ y: 1330, x: 1340, draw: () => drawAntivicio(1340, 1330) }); C.push({ type: "r", x0: 1262, y0: 1290, x1: 1418, y1: 1330 });
+  Lt.push({ x: 1340, y: 1260, r: 130, c: "170,190,230", flick: .1 });
   P.push({ y: 690, x: 190, draw: () => drawVestidor(190, 690) }); C.push({ type: "r", x0: 75, y0: 540, x1: 305, y1: 690 });
   Lt.push({ x: 190, y: 620, r: 200, c: "232,107,211", flick: .3 }, { x: 116, y: 600, r: 90, c: "255,220,150", flick: .2 });
   P.push({ y: 1290, x: 760, draw: () => drawGate(760, 1290) }); C.push({ type: "r", x0: 638, y0: 1260, x1: 682, y1: 1294 }, { type: "r", x0: 838, y0: 1260, x1: 882, y1: 1294 });
@@ -1200,7 +1227,8 @@ function buildLobby() {
   const van = makeVan(); P.push({ img: van, x: 1690, y: 1150, ax: 115, ay: 128 }); C.push({ type: "r", x0: 1595, y0: 1100, x1: 1785, y1: 1150 });
   for (let i = 0; i < 6; i++) Lt.push({ x: 1700 + (i % 3) * 90, y: 200 + Math.floor(i / 3) * 120, r: 80, c: "200,230,255", flick: 0 });
   L.spots = [
-    { id: "kiosk", x: 430, y: 650, r: 100, name: "Kiosco de Ceniza", sub: "Paquetes y Caja Antivicio" },
+    { id: "kiosk", x: 430, y: 650, r: 100, name: "Kiosco de Ceniza", sub: "Paquetes de cartas" },
+    { id: "vicio", x: 1340, y: 1380, r: 90, name: "Caja Antivicio", sub: "Sor Tosca (nadie la quiere)" },
     { id: "closet", x: 190, y: 740, r: 95, name: "Vestidor", sub: "Festilocos y ropa" },
     { id: "gate", x: 760, y: 1240, r: 100, name: "Defender", sub: "Defensa del Corazón" },
     { id: "board", x: 1110, y: 610, r: 80, name: "Misiones", sub: "Próximamente" }
@@ -4962,68 +4990,122 @@ function drawPotThrow(b) {
 // Sor Tosca's anti-vice box takes your cigarettes in exchange for a "blessing" (a reward box you tap open).
 const CIG_FOR_BLESS = 10, CIGAR_FOR_BLESS = 3;
 const CENIZA_LINES = {
-  idle: ["¿Vas a comprar o venís a respirar mi aire?", "Paquetes de cartas con un cigarrillo de regalo. Totalmente legal. Creo.", "Antes se vendían así. Después el formato se murió. Yo resucito cosas muertas, ¿se entiende el chiste?", "No hay devoluciones. Los muertos tampoco vuelven… bueno, los míos sí.", "Don Hueso, dejá de saludar, que espantás a los clientes."],
+  idle: ["¿Vas a comprar o venís a respirar mi aire?", "Paquetes de cartas con un cigarrillo de regalo. Totalmente legal. Creo.", "Antes se vendían así. Después el formato se murió. Yo resucito cosas muertas, ¿se entiende el chiste?", "No hay devoluciones. Los muertos tampoco vuelven… bueno, los míos sí.", "Don Hueso, dejá de saludar, que espantás a los clientes.", "¿La monja? Está allá, en la otra punta. La pusimos lejos. Por algo.", "Puedo hablar con los muertos, y ni ellos quieren hablar con Sor Tosca.", "Si vas a llevarle los cigarrillos a ella, no me lo cuentes."],
   buy: ["Excelente decisión. Para mí.", "Otro cliente satisfecho. O resignado, da igual.", "Que lo disfrutes. El cigarrillo va de regalo, la culpa también.", "Gracias por tu dinero. Lo voy a usar para comprar más velas negras."],
   poor: ["Sin monedas no hay paquete. Ni siquiera yo puedo resucitar tu billetera.", "Volvé cuando tengas plata. O un alma, acepto almas."],
-  cigar: ["Uy, te salió un habano. Ni lo mires a la monja de al lado.", "¿Un habano? Qué suerte… para la monja."]
+  cigar: ["Uy, te salió un habano. Escondelo, que la monja tiene olfato.", "¿Un habano? Qué suerte… Que no se entere la de la caja."]
 };
+// Everyone hates Sor Tosca. Absolutely everyone. Nobody says why, but they have good reasons. She hasn't noticed.
 const TOSCA_LINES = {
-  idle: ["Hijo mío, entregá tus vicios en la caja y Dios te bendecirá. *cof cof*", "Yo solo los guardo. Para que nadie los use. *cof*", "Diez cigarrillos o tres habanos, y recibirás una bendición. *cof cof cof*", "No es humo, es incienso. *cof*"],
-  give: ["Bendito seas. *cof* Esto… esto lo guardo yo.", "Tus pecados están a salvo conmigo. *cof cof*", "Muy bien, hijo. *aspira* *cof cof*"],
-  none: ["No tenés suficientes vicios todavía. Seguí… digo, no sigas. *cof*", "Necesito más pecados para la bendición. *cof*"],
+  idle: ["¡Hijo mío! ¡Qué alegría! Entregá tus vicios en la caja y Dios te bendecirá. *cof cof*", "Yo solo los guardo. Para que nadie los use. *cof*", "Diez cigarrillos o tres habanos, y recibirás una bendición. *cof cof cof*", "No es humo, es incienso. *cof*", "¡Casi nunca viene nadie! No entiendo por qué. *cof*", "Me pusieron acá, lejos de todo, para que tenga paz. ¡Qué considerados! *cof*", "Hoy alguien me tiró un tomate. Seguro se le resbaló. *cof cof*", "¡Ceniza y yo somos íntimas amigas! Ella todavía no lo sabe. *cof*", "Dejé una tarta en la puerta de Fobi. Me la devolvieron. Por debajo de la puerta. *cof*", "¡Todos me quieren! Lo siento en el aire. *cof cof*"],
+  give: ["Bendito seas. *cof* Esto… esto lo guardo yo.", "Tus pecados están a salvo conmigo. *cof cof*", "Muy bien, hijo. *aspira* *cof cof*", "¡Gracias! Sos el primero que me habla en toda la semana. *cof*"],
+  none: ["No tenés suficientes vicios todavía. Seguí… digo, no sigas. *cof*", "Necesito más pecados para la bendición. *cof*", "¿Ya te vas? Bueno, todos se van rápido. Debe ser la emoción. *cof*"],
   bless: ["¡Una bendición! Tocá la caja, que se abre sola… con fe. *cof*", "El Señor provee. Y yo me quedo el humo. *cof cof*"]
 };
+// asides: how everyone else reacts to her (never says why)
+const TOSCA_ASIDES = ["(Fobi hace como que no la escuchó.)", "(Desde el kiosco, Don Hueso le hace un gesto feo.)", "(Ceniza, a lo lejos: «No le sonrías, que se queda».)", "(Un empleado de la Corporación cruza la calle para no pasar cerca.)", "(Hasta el viento cambia de dirección para no tocarla.)", "(Fobi se aleja medio paso. Por las dudas.)", "(Alguien escribió «NO» en su cartel. Ella cree que es una firma.)", "(Una paloma se posó en su cartel, la miró y se fue caminando.)"];
+const TOSCA_NEAR = ["Fobi la saluda de lejos. Muy de lejos.", "Fobi finge estar mirando el celular.", "Fobi suspira. Otra vez la monja.", "Fobi se pregunta si puede dar la vuelta sin que lo vea. No puede.", "Ni los fantasmas pasan por acá."];
 const KSTATE = { ceniza: "", tosca: "", blessing: null, t: 0, coughT: 2 };
 function sayCeniza(kind) { KSTATE.ceniza = pick(CENIZA_LINES[kind]); setText("kTalk", KSTATE.ceniza); }
-function sayTosca(kind) { KSTATE.tosca = pick(TOSCA_LINES[kind]); setText("tTalk", KSTATE.tosca); }
+function sayTosca(kind) { KSTATE.tosca = pick(TOSCA_LINES[kind]); setText("tTalk", KSTATE.tosca); setText("tAside", pick(TOSCA_ASIDES)); }
 
-// ---------- characters (provisional designs, original) ----------
-// Ceniza: a bored necromancer with a skull hairclip, bone necklace and a long tattered robe
-function drawCeniza(t, talk) {
-  const breath = Math.sin(t * 1.6) * .8;
-  // robe
-  ctx.beginPath(); ctx.moveTo(-16, -52); ctx.quadraticCurveTo(-24, -20, -26, 2); ctx.lineTo(-18, -2); ctx.lineTo(-12, 3); ctx.lineTo(-4, -1); ctx.lineTo(4, 3); ctx.lineTo(12, -1); ctx.lineTo(20, 3); ctx.lineTo(26, 1); ctx.quadraticCurveTo(24, -20, 16, -52); ctx.closePath();
-  S(lg(0, -52, 0, 2, ["#3a1d52", "#1a0d28"]), 2);
-  ctx.strokeStyle = "rgba(160,110,220,.35)"; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(0, -48); ctx.lineTo(0, 0); ctx.stroke();
-  // arm holding up a cigarette pack
-  ctx.save(); ctx.translate(13, -46); ctx.rotate(-1.1 + Math.sin(t * 2) * .05); rrS(-3.5, 0, 7, 18, 3.5, "#2a1340", 1.6); circS(0, 19, 3.2, "#efe3e8", 1.2);
-  ctx.translate(0, 22); ctx.rotate(1.1); rrS(-6, -12, 12, 15, 1.5, "#e8395f", 1.4); rr(-6, -12, 12, 4, 1, "#f4efe4"); rr(-3, -15, 2.2, 4, .5, "#f4efe4"); rr(.5, -14.5, 2.2, 3.5, .5, "#f4efe4");
-  ctx.restore();
-  // bone necklace
-  for (let i = 0; i < 5; i++) { const a = Math.PI * (.25 + i * .125); ctx.save(); ctx.translate(Math.cos(a) * 8, -48 + Math.sin(a) * 6); ctx.rotate(a); rrS(-2.2, -.9, 4.4, 1.8, .9, "#efe9d8", .6); ctx.restore(); }
-  // head
-  ctx.translate(0, breath * .3);
-  ctx.beginPath(); ctx.moveTo(-12, -62); ctx.quadraticCurveTo(-16, -40, -12, -30); ctx.lineTo(12, -30); ctx.quadraticCurveTo(16, -40, 12, -62); ctx.closePath(); F("#120a1a");
-  circS(0, -62, 10.5, "#efe3e8", 1.6);
-  ctx.fillStyle = "#120a1a"; ctx.beginPath(); ctx.moveTo(-11, -64); ctx.quadraticCurveTo(-4, -78, 6, -74); ctx.quadraticCurveTo(12, -72, 11, -62); ctx.quadraticCurveTo(4, -70, -11, -64); ctx.fill();
-  ctx.strokeStyle = "#e8e0ff"; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(4, -73); ctx.quadraticCurveTo(10, -68, 10, -60); ctx.stroke(); // white streak
-  // half-lidded, unimpressed eyes
-  [-4, 4].forEach(dx => { ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.ellipse(dx, -62, 2.6, 1.6, 0, 0, TAU); ctx.fill(); circ(dx + .6, -61.6, 1.1, "#7a3ab8"); ctx.strokeStyle = OL; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(dx - 3, -63); ctx.lineTo(dx + 3, -63.2); ctx.stroke(); });
-  ctx.fillStyle = "#5a1a4a"; ctx.beginPath(); ctx.ellipse(1, -56.5, 2.6, talk ? 1.6 : .9, 0, 0, TAU); ctx.fill();
-  // skull hairclip
-  ctx.save(); ctx.translate(-8, -71); circS(0, 0, 3.4, "#efe9d8", 1); circ(-1.2, -.3, .8, "#120a1a"); circ(1.2, -.3, .8, "#120a1a"); ctx.restore();
+// ---------- characters (original humans, loosely inspired by the user's cat references) ----------
+// fluffy shape with an outline only on the outside: stroke every bubble, then fill them all
+function fluff(pts, fill, lw) {
+  ctx.strokeStyle = OL; ctx.lineWidth = lw * 2; ctx.lineJoin = "round";
+  for (const [x, y, r] of pts) { ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.stroke(); }
+  ctx.fillStyle = fill; for (const [x, y, r] of pts) { ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); }
 }
-// Sor Tosca: a nun with round glasses who keeps "confiscated" cigarettes... and coughs a lot
+function curl(x, y, s, dir, col, lw) { // a hair lock that ends in a spiral
+  ctx.strokeStyle = OL; ctx.lineCap = "round"; ctx.lineWidth = lw + 2.4;
+  const path = () => { ctx.beginPath(); ctx.moveTo(x, y); ctx.quadraticCurveTo(x + dir * s * .2, y - s * 1.1, x + dir * s * .9, y - s * 1.2); ctx.arc(x + dir * s * .9, y - s * .85, s * .35, -Math.PI / 2, dir > 0 ? Math.PI * 1.3 : -Math.PI * 2.3, dir < 0); };
+  path(); ctx.stroke(); ctx.strokeStyle = col; ctx.lineWidth = lw; path(); ctx.stroke();
+}
+// Ceniza: a deadpan necromancer with skull face paint and a huge, wild, curly black mane
+function drawCeniza(t, talk) {
+  const br = Math.sin(t * 1.6) * .8, sway = Math.sin(t * 1.1) * 1.5;
+  // a long curled shawl behind her, like a tail
+  ctx.strokeStyle = OL; ctx.lineWidth = 7; ctx.lineCap = "round";
+  const tail = () => { ctx.beginPath(); ctx.moveTo(-10, -14); ctx.quadraticCurveTo(-34, -10, -30 + sway, -34); ctx.arc(-24 + sway, -36, 6, Math.PI, Math.PI * 2.6); };
+  tail(); ctx.stroke(); ctx.strokeStyle = "#1c1722"; ctx.lineWidth = 4.4; tail(); ctx.stroke();
+  // back of the mane
+  ctx.save(); ctx.translate(0, br * .3);
+  fluff([[-15, -58, 10], [15, -58, 10], [-18, -46, 8], [18, -46, 8], [-12, -38, 7], [12, -38, 7], [0, -72, 13], [-11, -70, 10], [11, -70, 10]], "#17121c", 1.6);
+  ctx.restore();
+  // fluffy black dress
+  ctx.beginPath(); ctx.moveTo(-11, -44); ctx.quadraticCurveTo(-20, -22, -24, 0);
+  for (let i = 0; i <= 8; i++) ctx.lineTo(-24 + i * 6, i % 2 ? -4 : 1);
+  ctx.quadraticCurveTo(20, -22, 11, -44); ctx.closePath(); S(lg(0, -44, 0, 0, ["#2a2330", "#120e16"]), 2);
+  ctx.strokeStyle = "rgba(190,170,210,.18)"; ctx.lineWidth = 1; for (let i = -2; i <= 2; i++) { ctx.beginPath(); ctx.moveTo(i * 3, -38); ctx.lineTo(i * 7, -3); ctx.stroke(); }
+  fluff([[-8, -42, 5], [0, -40, 5.5], [8, -42, 5]], "#241e2a", 1.3); // fluffy collar
+  // arm holding up a cigarette pack
+  ctx.save(); ctx.translate(11, -40); ctx.rotate(-1.1 + Math.sin(t * 2) * .05); rrS(-3.5, 0, 7, 17, 3.5, "#221c28", 1.6); circS(0, 18, 3, "#e9dfe6", 1.2);
+  ctx.translate(0, 21); ctx.rotate(1.1); rrS(-6, -12, 12, 15, 1.5, "#e8395f", 1.4); rr(-6, -12, 12, 4, 1, "#f4efe4"); rr(-3, -15, 2.2, 4, .5, "#f4efe4"); rr(.5, -14.5, 2.2, 3.5, .5, "#f4efe4");
+  ctx.restore();
+  // head
+  ctx.save(); ctx.translate(0, br * .3);
+  ctx.beginPath(); ctx.ellipse(0, -57, 10.5, 10, 0, 0, TAU); S("#ece4ea", 1.6);
+  // skull paint: big black sockets, dead-calm gray irises under heavy lids
+  [-1, 1].forEach(s => {
+    ctx.save(); ctx.translate(s * 4.4, -58); ctx.rotate(s * -.25); ctx.fillStyle = "#141018"; ctx.beginPath(); ctx.ellipse(0, 0, 3.8, 3.3, 0, 0, TAU); ctx.fill(); ctx.restore();
+    circ(s * 4.6, -57.2, 1.15, "#bdb6c6"); ctx.fillStyle = "#141018"; ctx.fillRect(s * 4.4 - 3.6, -61.5, 7.2, 2.6);
+  });
+  ctx.fillStyle = "#141018"; ctx.beginPath(); ctx.moveTo(-1.4, -53.6); ctx.lineTo(1.4, -53.6); ctx.lineTo(0, -51.8); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = "#141018"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-4.5, -49.8); ctx.lineTo(4.5, -49.8); for (let x = -3; x <= 3; x += 2) { ctx.moveTo(x, -51.2); ctx.lineTo(x, -48.4); } ctx.stroke();
+  if (talk) { ctx.fillStyle = "#3a1630"; ctx.beginPath(); ctx.ellipse(0, -49.6, 2.4, 1.2, 0, 0, TAU); ctx.fill(); }
+  // front of the mane: messy bangs and two big curled locks on top
+  fluff([[-8, -66, 6], [-1, -68, 6.5], [7, -66, 6], [-11, -60, 4], [11, -60, 4]], "#17121c", 1.4);
+  curl(-7, -70, 13, -1, "#17121c", 5); curl(6, -71, 14, 1, "#17121c", 5);
+  ctx.strokeStyle = "rgba(200,190,220,.25)"; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(-1, -70, 4, Math.PI * 1.1, Math.PI * 1.6); ctx.stroke();
+  ctx.restore();
+}
+// Sor Tosca: a pale, cheerful nun whose veil flares out like wings. Cross on her forehead, big lashy eyes, cat-mouth smile, always a hand near her mouth (cough).
 function drawTosca(t, cough) {
-  const c = cough > 0 ? Math.sin(cough * 30) * 1.5 : 0;
-  ctx.translate(0, c > 0 ? c : 0);
-  ctx.beginPath(); ctx.moveTo(-15, -48); ctx.quadraticCurveTo(-21, -20, -22, 2); ctx.lineTo(22, 2); ctx.quadraticCurveTo(21, -20, 15, -48); ctx.closePath(); S(lg(0, -48, 0, 2, ["#26222e", "#14121a"]), 2);
-  poly([-7, -48, 7, -48, 4, -34, -4, -34]); S("#f4f4f0", 1.2);
-  ctx.strokeStyle = "#c9a24a"; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(0, -36); ctx.lineTo(0, -26); ctx.moveTo(-3, -32); ctx.lineTo(3, -32); ctx.stroke();
-  // hands on the anti-vice box
-  rrS(-14, -22, 28, 16, 2, lg(0, -22, 0, -6, ["#8a5a34", "#5a3a20"]), 1.6); rr(-6, -21, 12, 2, 1, "#120a1a");
-  ctx.fillStyle = "#f4ead2"; ctx.font = "900 4px Nunito, sans-serif"; ctx.textAlign = "center"; ctx.fillText("ANTIVICIO", 0, -11);
-  circS(-14, -16, 3, "#f1dccb", 1); circS(14, -16, 3, "#f1dccb", 1);
-  // head and habit
-  ctx.beginPath(); ctx.moveTo(-14, -52); ctx.quadraticCurveTo(-16, -74, 0, -76); ctx.quadraticCurveTo(16, -74, 14, -52); ctx.quadraticCurveTo(0, -48, -14, -52); S("#1a1620", 1.8);
-  circS(0, -61, 9.5, "#f6e2d0", 1.4); ctx.beginPath(); ctx.arc(0, -62, 10, Math.PI * 1.08, Math.PI * 1.92); ctx.lineTo(9, -61); ctx.lineTo(-9, -61); ctx.closePath(); F("#f4f4f0");
-  ell(-5.5, -58, 2.2, 1.2, "rgba(240,110,120,.55)"); ell(5.5, -58, 2.2, 1.2, "rgba(240,110,120,.55)");
-  ctx.strokeStyle = OL; ctx.lineWidth = 1.1; ctx.beginPath(); ctx.arc(-3.6, -61, 2.8, 0, TAU); ctx.moveTo(6.4, -61); ctx.arc(3.6, -61, 2.8, 0, TAU); ctx.stroke();
-  if (cough > 0) { ctx.beginPath(); ctx.moveTo(-5, -62); ctx.lineTo(-2.5, -61); ctx.moveTo(5, -62); ctx.lineTo(2.5, -61); ctx.stroke(); ctx.fillStyle = "#5a2a2a"; ctx.beginPath(); ctx.ellipse(0, -55.5, 2.2, 1.8, 0, 0, TAU); ctx.fill(); }
-  else { circ(-3.4, -61, 1, "#2a1f33"); circ(3.8, -61, 1, "#2a1f33"); ctx.beginPath(); ctx.arc(0, -56.5, 2, .2, Math.PI - .2); ctx.stroke(); }
+  const c = cough > 0 ? Math.abs(Math.sin(cough * 30)) * 1.5 : 0, bob = Math.sin(t * 2) * .6;
+  ctx.translate(0, c);
+  // winged veil behind the head
+  [-1, 1].forEach(s => {
+    ctx.save(); ctx.translate(s * 6, -64 + bob); ctx.scale(s, 1); ctx.rotate(Math.sin(t * 1.5) * .04);
+    ctx.beginPath(); ctx.moveTo(0, 6); ctx.quadraticCurveTo(10, 4, 18, -6); ctx.lineTo(24, -18); ctx.lineTo(20, -14); ctx.lineTo(21, -22); ctx.lineTo(16, -15); ctx.lineTo(14, -22); ctx.quadraticCurveTo(8, -10, 0, -8); ctx.closePath();
+    S(lg(0, -20, 0, 6, ["#f1edf4", "#c9c2d2"]), 1.8);
+    ctx.strokeStyle = "rgba(120,110,140,.4)"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(3, 0); ctx.quadraticCurveTo(10, -2, 16, -12); ctx.stroke();
+    ctx.restore();
+  });
+  // pale habit
+  ctx.beginPath(); ctx.moveTo(-13, -46); ctx.quadraticCurveTo(-20, -20, -21, 2); ctx.quadraticCurveTo(0, 6, 21, 2); ctx.quadraticCurveTo(20, -20, 13, -46); ctx.closePath(); S(lg(0, -46, 0, 2, ["#e2dce8", "#aaa2b6"]), 2);
+  ctx.strokeStyle = "rgba(110,100,130,.35)"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-6, -30); ctx.quadraticCurveTo(-9, -12, -10, 1); ctx.moveTo(7, -30); ctx.quadraticCurveTo(10, -12, 11, 1); ctx.stroke();
+  poly([-7, -46, 7, -46, 4, -36, -4, -36]); S("#fbfaf6", 1.2);
+  // the anti-vice box, held by her left hand
+  rrS(-20, -24, 24, 15, 2, lg(0, -24, 0, -9, ["#8a5a34", "#5a3a20"]), 1.6); rr(-13, -23, 10, 2, 1, "#120a1a");
+  ctx.fillStyle = "#f4ead2"; ctx.font = "900 3.6px Nunito, sans-serif"; ctx.textAlign = "center"; ctx.fillText("ANTIVICIO", -8, -14);
+  circS(-19, -17, 2.8, "#f6e6dc", 1);
+  // right arm, hand up near the mouth like the reference (covers the mouth while coughing)
+  const hx = cough > 0 ? 2 : 9.5, hy = cough > 0 ? -51 + bob : -47.5 + bob;
+  ctx.strokeStyle = OL; ctx.lineWidth = 6.5; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(10, -40); ctx.quadraticCurveTo(16, -33, hx + 1, hy + 2); ctx.stroke();
+  ctx.strokeStyle = "#d9d2e0"; ctx.lineWidth = 4; ctx.stroke();
+  // head
+  ctx.save(); ctx.translate(0, bob);
+  circS(0, -57, 10.5, "#f6e8de", 1.5);
+  // coif band with a white cross on the forehead
+  ctx.beginPath(); ctx.arc(0, -57, 10.5, Math.PI * 1.03, Math.PI * 1.97); ctx.quadraticCurveTo(0, -62.5, -10.4, -59); ctx.closePath(); S("#cfc8d8", 1.4);
+  rrS(-1, -67, 2, 7, .6, "#ffffff", .8); rrS(-3, -65, 6, 2, .6, "#ffffff", .8);
+  ell(-6.5, -53, 2.2, 1.2, "rgba(240,120,140,.5)"); ell(6.5, -53, 2.2, 1.2, "rgba(240,120,140,.5)");
+  if (cough > 0) {
+    ctx.strokeStyle = OL; ctx.lineWidth = 1.3; ctx.beginPath(); ctx.moveTo(-6.5, -57.5); ctx.lineTo(-3, -56.3); ctx.lineTo(-6.5, -55); ctx.moveTo(6.5, -57.5); ctx.lineTo(3, -56.3); ctx.lineTo(6.5, -55); ctx.stroke();
+  } else {
+    [-1, 1].forEach(s => {
+      circS(s * 4.2, -56.5, 3.3, "#ffffff", 1.1); circ(s * 4.2 + .3, -56.2, 1.1, "#2a2433");
+      ctx.strokeStyle = OL; ctx.lineWidth = .9; ctx.beginPath();
+      for (let k = 0; k < 3; k++) { const a = -Math.PI / 2 + s * (.5 + k * .45); ctx.moveTo(s * 4.2 + Math.cos(a) * 3.3, -56.5 + Math.sin(a) * 3.3); ctx.lineTo(s * 4.2 + Math.cos(a) * 5, -56.5 + Math.sin(a) * 5); }
+      ctx.stroke();
+    });
+    ctx.strokeStyle = OL; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(-1.1, -51.6, 1.1, .2, Math.PI - .2); ctx.arc(1.1, -51.6, 1.1, .2, Math.PI - .2); ctx.stroke(); // :3
+  }
+  ctx.restore();
+  circS(hx, hy, 3, "#f6e6dc", 1.1); // the hand, in front of the face
   // smoke puffs that give her away
-  const ph = (t * .5) % 1; ctx.globalAlpha = .45 * (1 - ph); circ(10 + ph * 8, -66 - ph * 20, 3 + ph * 4, "#b8b0c4"); ctx.globalAlpha = 1;
-  if (cough > 0) { for (let i = 0; i < 3; i++) { ctx.globalAlpha = cough; circ(6 + i * 5, -56 - i * 3, 2.5 + i, "#c8c0d4"); } ctx.globalAlpha = 1; }
+  const ph = (t * .5) % 1; ctx.globalAlpha = .45 * (1 - ph); circ(12 + ph * 8, -70 - ph * 20, 3 + ph * 4, "#b8b0c4"); ctx.globalAlpha = 1;
+  if (cough > 0) { for (let i = 0; i < 3; i++) { ctx.globalAlpha = cough; circ(10 + i * 5, -52 - i * 3, 2.5 + i, "#c8c0d4"); } ctx.globalAlpha = 1; }
 }
 function drawNPCInto(cv, fn, scale, yFrac) {
   const g = cv.getContext("2d"), prev = ctx; ctx = g;
@@ -5308,6 +5390,8 @@ function endGame(won) {
 
 // ================= lobby =================
 function updateLobby(dt) {
+  const sp = LB.spots.find(q => q.id === "vicio");
+  if (sp && G.player) { const near = Math.hypot(G.player.x - sp.x, G.player.y - sp.y) < 230; if (near && !G.nearTosca) toast(pick(TOSCA_NEAR), 2.6); G.nearTosca = near; }
   for (const n of G.npcs) {
     n.boost = Math.max(0, n.boost - dt);
     if (n.type === "cafe") { if (n.sipping > 0) { n.sipping -= dt; if (n.sipping <= 0) n.boost = 2; } else { n.sipT -= dt; if (n.sipT <= 0) { n.sipping = .8; n.sipT = rand(5, 9); } } }
@@ -5321,6 +5405,7 @@ function updateLobby(dt) {
 function useSpot() {
   const s = nearSpot(); if (!s || modalOpen()) return;
   if (s.id === "kiosk") openKiosk();
+  else if (s.id === "vicio") openKiosk("vicio");
   else if (s.id === "closet") openCloset();
   else if (s.id === "gate") openBases();
   else toast("Las misiones de los NPC llegan en una próxima versión", 2.6);
@@ -5610,7 +5695,7 @@ function renderInv() {
   const pc = document.createElement("div"); pc.className = "inv"; pc.appendChild(pieceIcon(160));
   pc.insertAdjacentHTML("beforeend", `<b>${Math.min(SAVE.pieces, 5)}/5</b><span>Próximo festiloco</span><div class="pbar"><i style="width:${Math.min(100, SAVE.pieces * 20)}%"></i></div><span class="fine">${SAVE.pieces >= 5 ? "Completo: se desbloquea cuando exista" : "Se consiguen en el Sobre Dorado"}</span>`);
   g.appendChild(pc);
-  [false, true].forEach(cu => { const d = document.createElement("div"); d.className = "inv"; d.appendChild(cigIcon(cu, 160)); d.insertAdjacentHTML("beforeend", `<b>×${cu ? SAVE.cigars : SAVE.cigs}</b><span>${cu ? "Habanos" : "Cigarrillos"}</span><span class="fine">Se entregan en la Caja Antivicio</span>`); g.appendChild(d); });
+  [false, true].forEach(cu => { const d = document.createElement("div"); d.className = "inv"; d.appendChild(cigIcon(cu, 160)); d.insertAdjacentHTML("beforeend", `<b>×${cu ? SAVE.cigars : SAVE.cigs}</b><span>${cu ? "Habanos" : "Cigarrillos"}</span><span class="fine">Se entregan en la Caja Antivicio, en la otra punta de la plaza</span>`); g.appendChild(d); });
   el.appendChild(g);
 }
 function setTab(t) {
@@ -5618,12 +5703,19 @@ function setTab(t) {
   ["sobres", "vicio", "inv"].forEach(x => $("tab-" + x).hidden = x !== t);
   if (t === "sobres") { renderPacks(); sayCeniza("idle"); } if (t === "inv") renderInv(); if (t === "vicio") { renderAntivicio(); sayTosca("idle"); }
 }
-function openKiosk() { KSTATE.blessing = null; $("kioskOv").hidden = false; $("opening").hidden = true; $("kTabs").hidden = false; $("kCoins").textContent = SAVE.coins.toLocaleString("es-AR"); setTab("sobres"); keys.clear(); }
+let kioskMode = "kiosk";
+function openKiosk(mode) {
+  kioskMode = mode === "vicio" ? "vicio" : "kiosk";
+  KSTATE.blessing = null; $("kioskOv").hidden = false; $("opening").hidden = true; $("kTabs").hidden = false; $("kCoins").textContent = SAVE.coins.toLocaleString("es-AR");
+  $("kTitle").textContent = kioskMode === "vicio" ? "Caja Antivicio" : "Kiosco de Ceniza";
+  document.querySelectorAll("#kTabs .tab").forEach(b => b.hidden = kioskMode === "vicio" ? b.dataset.tab === "sobres" : b.dataset.tab === "vicio");
+  setTab(kioskMode === "vicio" ? "vicio" : "sobres"); keys.clear();
+}
 function closeKiosk() { $("kioskOv").hidden = true; keys.clear(); }
 document.querySelectorAll("#kTabs .tab").forEach(b => b.addEventListener("click", () => setTab(b.dataset.tab)));
 $("kClose").addEventListener("click", closeKiosk);
 $("blessCv").addEventListener("click", tapBlessing);
-$("openDone").addEventListener("click", () => { $("opening").hidden = true; $("kTabs").hidden = false; $("kCoins").textContent = SAVE.coins.toLocaleString("es-AR"); setTab("sobres"); });
+$("openDone").addEventListener("click", () => { $("opening").hidden = true; $("kTabs").hidden = false; $("kCoins").textContent = SAVE.coins.toLocaleString("es-AR"); setTab(kioskMode === "vicio" ? "vicio" : "sobres"); });
 
 // ================= other overlays =================
 function openBases() {
@@ -5635,7 +5727,7 @@ document.querySelectorAll("[data-diff]").forEach(btn => btn.addEventListener("cl
 $("goBtn").addEventListener("click", () => { $("baseOv").hidden = true; newMatch(chosenDiff); portraitHint(); });
 drawFobiInto($("rcFobi"), 2.5, 1.42, { cos: DEFAULT_COS });
 $("baseBack").addEventListener("click", () => { $("baseOv").hidden = true; });
-$("playBtn").addEventListener("click", () => { $("startOv").hidden = true; newLobby(); portraitHint(); toast("Bienvenido a la Plaza Festiva. A la izquierda están el kiosco y el vestidor; la defensa, abajo.", 4); });
+$("playBtn").addEventListener("click", () => { $("startOv").hidden = true; newLobby(); portraitHint(); toast("Bienvenido a la Plaza Festiva. A la izquierda están el kiosco y el vestidor; la defensa, abajo. (En la esquina de abajo está la monja. Nadie va.)", 4); });
 $("againBtn").addEventListener("click", () => { $("endOv").hidden = true; newLobby(); });
 $("pauseBtn").addEventListener("click", () => togglePause());
 $("resumeBtn").addEventListener("click", () => togglePause());
@@ -5851,7 +5943,7 @@ function render() {
     renderLighting(dyn); worldTransform();
     const tt = T(); for (const f of G.fireflies) { if (!inView(f.x, f.y, 0)) continue; circ(f.x, f.y, 2.2, `rgba(${f.c},${.5 + Math.sin(tt * 3 + f.x) * .5})`); }
     const s = nearSpot();
-    for (const sp of LB.spots) { const near = s === sp, b = Math.sin(tt * 3) * 3; label(sp.name, sp.x, sp.y - (sp.id === "gate" ? 280 : sp.id === "kiosk" ? 290 : sp.id === "closet" ? 300 : 180) + b, near ? 20 : 15, near ? "#ffd27a" : "rgba(255,226,184,.75)"); if (near && lastInput === "mouse") label("Espacio", sp.x, sp.y - (sp.id === "gate" ? 258 : sp.id === "kiosk" ? 268 : sp.id === "closet" ? 278 : 158) + b, 12, "#ffffff"); }
+    for (const sp of LB.spots) { const near = s === sp, b = Math.sin(tt * 3) * 3; label(sp.name, sp.x, sp.y - (sp.id === "gate" ? 280 : sp.id === "kiosk" ? 290 : sp.id === "closet" ? 300 : sp.id === "vicio" ? 240 : 180) + b, near ? 20 : 15, near ? "#ffd27a" : "rgba(255,226,184,.75)"); if (near && lastInput === "mouse") label("Espacio", sp.x, sp.y - (sp.id === "gate" ? 258 : sp.id === "kiosk" ? 268 : sp.id === "closet" ? 278 : sp.id === "vicio" ? 218 : 158) + b, 12, "#ffffff"); }
     drawTexts();
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0); vignette(); drawJoy(); return;
   }
@@ -5975,6 +6067,6 @@ function frame(now) {
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
-window.__festi = { get G() { return G; }, get SAVE() { return SAVE; }, startSlotNow() { if (G && G.mode === "match") { G.wave = 4; startSlot(5); } }, spawn: t => spawnEnemy(t), hurt: (t, a) => hurtAlly(t, a), startEscape: () => startEscape(), startObj: t => { G.obj = null; startObjective(t); }, endWaveNow2: () => endWave(), mapShot: () => { const c = document.createElement("canvas"), k = .3; c.width = GY.w * k; c.height = GY.h * k; const g = c.getContext("2d"); g.scale(k, k); g.drawImage(GY.bg, 0, 0); [...GY.props].sort((a, b) => a.y - b.y).forEach(p => g.drawImage(p.img, p.x - p.ax, p.y - p.ay)); g.fillStyle = "#ff8a1f"; for (const kk in BASES) { g.beginPath(); g.arc(BASES[kk].core.x, BASES[kk].core.y, 40, 0, 7); g.fill(); } g.fillStyle = "#7dffa0"; g.beginPath(); g.arc(PHONE_POS.x, PHONE_POS.y, 40, 0, 7); g.fill(); g.fillStyle = "#6ab8ff"; MTOMBS.forEach(t => { g.beginPath(); g.arc(t.x, t.y, 20, 0, 7); g.fill(); }); return c.toDataURL(); }, mt: () => G.mtombs, endWaveNow: () => endWave(), addPick: w => addPick(w), callTeam: () => callTeam(), dropPart: s => dropPart(s), build: w => build(w), selectSlot: i => { G.sel = i; } };
+window.__festi = { get G() { return G; }, get SAVE() { return SAVE; }, startSlotNow() { if (G && G.mode === "match") { G.wave = 4; startSlot(5); } }, spawn: t => spawnEnemy(t), hurt: (t, a) => hurtAlly(t, a), startEscape: () => startEscape(), startObj: t => { G.obj = null; startObjective(t); }, endWaveNow2: () => endWave(), mapShot: () => { const c = document.createElement("canvas"), k = .3; c.width = GY.w * k; c.height = GY.h * k; const g = c.getContext("2d"); g.scale(k, k); g.drawImage(GY.bg, 0, 0); [...GY.props].sort((a, b) => a.y - b.y).forEach(p => g.drawImage(p.img, p.x - p.ax, p.y - p.ay)); g.fillStyle = "#ff8a1f"; for (const kk in BASES) { g.beginPath(); g.arc(BASES[kk].core.x, BASES[kk].core.y, 40, 0, 7); g.fill(); } g.fillStyle = "#7dffa0"; g.beginPath(); g.arc(PHONE_POS.x, PHONE_POS.y, 40, 0, 7); g.fill(); g.fillStyle = "#6ab8ff"; MTOMBS.forEach(t => { g.beginPath(); g.arc(t.x, t.y, 20, 0, 7); g.fill(); }); return c.toDataURL(); }, mt: () => G.mtombs, endWaveNow: () => endWave(), addPick: w => addPick(w), callTeam: () => callTeam(), dropPart: s => dropPart(s), build: w => build(w), selectSlot: i => { G.sel = i; }, npcShot: (c, w) => drawNPCInto(c, () => { ctx.translate(-55, 0); drawCeniza(1, false); ctx.translate(60, 0); drawCeniza(2, true); ctx.translate(55, 0); drawTosca(1, 0); ctx.translate(55, 0); drawTosca(1, .6); }, 4.2, .95) };
 })();
 </script>

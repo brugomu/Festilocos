@@ -173,6 +173,50 @@ kbd{font-family:var(--body);font-weight:900;font-size:11px;background:rgba(255,2
 .reels{display:flex;gap:10px;justify-content:center;padding:12px;border-radius:16px;background:linear-gradient(180deg,#2a1d40,#150d24);border:3px solid var(--outline);box-shadow:inset 0 0 0 3px #c9962a}
 .reels canvas{width:96px;height:96px;border-radius:12px;background:radial-gradient(circle at 50% 35%,#fff6e3,#e6d6bb);border:3px solid var(--outline)}
 .slotres{font-weight:800;color:var(--ink);min-height:40px;font-size:14px;line-height:1.4}
+/* RPG-style shops (like ¡Atacad, Tripulación!) */
+.shopcard{position:relative;width:min(960px,100%);max-height:calc(100% - 8px);overflow:auto;background:#0d0b14;border:4px solid #fff;border-radius:16px;box-shadow:0 8px 0 #000;padding:12px;display:flex;flex-direction:column;gap:10px;color:#fff}
+.sk-top{position:relative;border:4px solid #fff;border-radius:10px;overflow:hidden;height:clamp(150px,34vh,250px);flex:none;background:#1a1028}
+#skCv{width:100%;height:100%;display:block}
+.sk-sign{position:absolute;left:10px;top:8px;transform:rotate(-1.5deg);background:#3a1d52;color:#ffd27a;border:3px solid #120a1a;border-radius:8px;padding:3px 12px;font-family:var(--display);font-size:15px;white-space:nowrap;box-shadow:0 3px 0 #120a1a;max-width:calc(50% - 60px);overflow:hidden;text-overflow:ellipsis}
+.sk-wallet{position:absolute;right:10px;bottom:10px;background:#120a1a;color:#ffd34a;border:3px solid #fff;border-radius:99px;padding:3px 12px;font-family:var(--display);font-size:18px;display:flex;align-items:center;gap:6px}
+.sk-wallet b{font-weight:400}
+.sk-x{position:absolute;right:8px;top:8px;width:40px;height:40px;border-radius:10px;border:3px solid #fff;background:#120a1a;color:#fff;font-size:22px;font-weight:900;cursor:pointer}
+.sk-bottom{display:grid;grid-template-columns:1.3fr 1fr;gap:10px;min-height:0}
+.sk-box{border:4px solid #fff;border-radius:6px;padding:10px 12px;background:#000;min-width:0;display:flex;flex-direction:column;gap:8px}
+.sk-name{font-family:var(--display);color:#ffd27a;font-size:15px}
+.sk-say{font-family:var(--display);font-size:17px;line-height:1.35;min-height:3.1em;margin:0;cursor:pointer;color:#fff}
+.sk-say::before{content:"* ";color:#ffd27a}
+.sk-list,.sk-menu{display:flex;flex-direction:column;gap:2px}
+.sk-list{max-height:250px;overflow-y:auto;border-top:2px dashed rgba(255,255,255,.25);padding-top:6px}
+.sk-opt,.sk-row{background:none;border:0;color:#fff;text-align:left;font-family:var(--display);font-size:18px;padding:5px 6px 5px 4px;display:flex;align-items:center;gap:8px;cursor:pointer;border-radius:6px;min-height:40px}
+.sk-opt small{color:#ffd34a;font-size:13px;margin-left:4px}
+.sk-opt .heart,.sk-row .heart{color:#ff3b3b;width:1em;visibility:hidden;flex:none;font-style:normal}
+.sk-opt:hover .heart,.sk-opt:focus-visible .heart,.sk-row:hover .heart,.sk-row.on .heart{visibility:visible}
+.sk-opt:hover,.sk-row:hover,.sk-row.on{background:rgba(255,255,255,.08)}
+.sk-opt:disabled{opacity:.4;cursor:default}
+.sk-row span{flex:1;min-width:0}
+.sk-row span small{display:block;font-family:Nunito,sans-serif;font-size:12px;color:#b9b4c8;font-weight:800}
+.sk-row em{font-style:normal;color:#ffd34a;font-size:15px;white-space:nowrap;display:inline-flex;align-items:center;gap:4px}
+.sk-row.cant em{color:#ff8a7a}
+.sk-note{color:#b9b4c8;font-size:13px;margin:0;font-weight:700}
+.sk-detail{display:flex;flex-direction:column;gap:6px}
+.sk-detail .kind{color:#ffd27a;font-size:12px;text-transform:uppercase;letter-spacing:.06em;font-weight:900}
+.sk-detail b{font-family:var(--display);font-weight:400;font-size:20px}
+.sk-detail p{margin:0;color:#e8e4f2;font-size:13.5px;font-weight:700}
+.sk-detail canvas{width:110px;height:110px;align-self:center}
+.sk-detail details{font-size:12.5px;color:#d8d2e6}
+.sk-detail .cta{align-self:flex-start}
+.sk-btns{display:flex;gap:8px;flex-wrap:wrap}
+.vbar{height:14px;background:#2d2638;border:2px solid #fff;border-radius:99px;overflow:hidden}
+.vbar i{display:block;height:100%;background:linear-gradient(#ffe680,#ffb21a)}
+.vrow{display:grid;grid-template-columns:44px 1fr;gap:8px;align-items:center;font-weight:800;font-size:13px}
+.vrow canvas{width:44px;height:44px}
+.sk-layer{position:fixed;inset:0;z-index:6;background:rgba(10,6,18,.97);display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:10px;padding:16px;overflow:auto}
+#blessCv{width:min(400px,86%);max-height:46vh;object-fit:contain;cursor:pointer;touch-action:manipulation}
+.bless-tier{font-family:var(--display);font-weight:400;font-size:30px;text-shadow:0 3px 0 #000}
+.bless-msg{font-family:var(--display);font-size:18px;min-height:1.3em}
+@media (max-height:520px){#blessCv{max-height:34vh}.bless-tier{font-size:22px}.sk-layer{gap:6px;padding:10px}.sk-top{height:118px}.sk-say{min-height:2.6em;font-size:15px}.sk-opt,.sk-row{min-height:34px;font-size:16px}}
+@media (max-width:700px){.sk-bottom{grid-template-columns:1fr}.sk-top{height:150px}.sk-say{font-size:15px}.shopcard{padding:8px}}
 /* kiosk */
 .kiosk{max-width:900px}
 .khead{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -424,34 +468,27 @@ details ul{margin:6px 0 0;padding-left:16px;display:flex;flex-direction:column;g
 </div>
 
 <div class="overlay" id="kioskOv" hidden>
-  <div class="panel card kiosk">
-    <div class="khead">
-      <h2 id="kTitle">Kiosco de Ceniza</h2>
-      <div class="panel coins"><span class="coin"></span><span id="kCoins">0</span></div>
-      <button class="panel iconbtn" id="kClose" aria-label="Cerrar kiosco">×</button>
+  <div class="shopcard" role="dialog" aria-labelledby="skName">
+    <div class="sk-top"><canvas id="skCv" aria-hidden="true"></canvas>
+      <div class="sk-sign" id="skSign"></div>
+      <div class="sk-wallet"><span class="coin"></span><b id="kCoins">0</b></div>
+      <button class="sk-x" id="kClose" aria-label="Cerrar">×</button></div>
+    <div class="sk-bottom">
+      <div class="sk-box"><span class="sk-name" id="skName"></span><p class="sk-say" id="skSay" data-act="skip"></p><div id="skLeft"></div></div>
+      <div class="sk-box" id="skRight"></div>
     </div>
-    <div class="tabs" id="kTabs">
-      <button class="tab sel" data-tab="sobres">Paquetes</button>
-      <button class="tab" data-tab="vicio">Caja Antivicio</button>
-      <button class="tab" data-tab="inv">Inventario</button>
-    </div>
-    <div id="tab-sobres">
-      <div class="npcrow"><canvas id="cenizaCv" width="200" height="200"></canvas><div class="bubble"><b>Ceniza, la nigromante</b><span id="kTalk"></span></div></div>
-      <div class="packs" id="packList"></div><p class="fine" style="margin-top:10px">Paquetes de cartas con un cigarrillo de regalo, como se vendían antes. En la versión de tienda, las monedas también se podrán comprar con dinero real. Las probabilidades de cada paquete están siempre a la vista.</p></div>
-    <div id="tab-vicio" hidden>
-      <div class="npcrow"><canvas id="toscaCv" width="200" height="200"></canvas><div class="bubble"><b>Sor Tosca</b><span id="tTalk"></span><i class="fine" id="tAside" style="display:block;margin-top:4px;opacity:.75"></i></div></div>
-      <div class="vices" id="viceCount"></div>
-      <div class="blessstage" id="blessStage" hidden><span class="eyebrow" id="blessTtl"></span><canvas id="blessCv" width="320" height="220"></canvas><span class="fine" id="blessHint"></span><div class="stickers" id="blessItems"></div></div>
-      <details id="blessOdds"><summary>¿Qué puede traer una bendición?</summary><ul>
-        <li>Bendición común (10 cigarrillos), 3 premios: monedas 45% (60 a 250) · decoraciones 35% · cosmético 12% (común 85%, raro 15%) · pieza de festiloco 8%</li>
-        <li>Bendición cubana (3 habanos), 4 premios: monedas 30% (200 a 600) · decoraciones 28% · cosmético 22% (raro 75%, legendario 25%) · pieza 14% · decoración especial 6%</li></ul></details>
-    </div>
-    
-    <div id="tab-inv" hidden><div id="invList"></div></div>
-    <div id="opening" class="opening" hidden>
+    <div id="opening" class="sk-layer" hidden>
       <span class="eyebrow" id="openName"></span>
       <div class="stickers" id="stickers"></div>
-      <button class="cta" id="openDone">Guardar cartas</button>
+      <button class="cta" id="openDone">Guardar todo</button>
+    </div>
+    <div id="blessStage" class="sk-layer" hidden>
+      <span class="eyebrow" id="blessTtl"></span>
+      <b class="bless-tier" id="blessTier"></b>
+      <canvas id="blessCv" width="440" height="300" aria-label="Caja de bendición: tocala"></canvas>
+      <span class="bless-msg" id="blessMsg"></span>
+      <div class="stickers" id="blessItems"></div>
+      <span class="fine" id="blessHint"></span>
     </div>
   </div>
 </div>
@@ -902,17 +939,7 @@ function drawKiosk(x, y) {
   // shelves of packs
   for (let r = 0; r < 2; r++) { rr(-84, -110 + r * 30, 168, 4, 1, "#7a4a2a"); for (let i = 0; i < 9; i++) { const c = ["#ff8a1f", "#9a5ad6", "#e8b23a"][(i + r) % 3]; rrS(-80 + i * 18, -128 + r * 30, 13, 17, 2, c, 1.2); rr(-77 + i * 18, -124 + r * 30, 7, 3, 1, "rgba(255,255,255,.45)"); } }
   // Ceniza, the necromancer who runs the kiosk now
-  ctx.save(); ctx.translate(18, -44); ctx.scale(1.05, 1.05); drawCeniza(t, false); ctx.restore();
-  // Don Hueso, her reanimated skeleton helper, still waving at everyone
-  const wave = Math.sin(t * 3) * .5;
-  ctx.save(); ctx.translate(-48, -62);
-  rrS(-14, -26, 28, 28, 8, "#3a2a4a", 2); poly([-4, -26, 4, -26, 0, -16]); F("#ece7d6"); poly([-7, -25, 7, -25, 0, -20]); S("#d8314a", 1.2);
-  circS(0, -38, 13, "#efe9d8", 2); ctx.fillStyle = "#120a1a"; ctx.beginPath(); ctx.ellipse(-5, -40, 3.6, 4.2, 0, 0, TAU); ctx.fill(); ctx.beginPath(); ctx.ellipse(5, -40, 3.6, 4.2, 0, 0, TAU); ctx.fill();
-  circ(-5, -41, 1.3, "#ffcf57"); circ(5, -41, 1.3, "#ffcf57"); poly([-1.5, -34, 1.5, -34, 0, -36.5]); ctx.fillStyle = "#120a1a"; ctx.fill();
-  ctx.strokeStyle = "#120a1a"; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(-6, -30); ctx.lineTo(6, -30); for (let i = -4; i <= 4; i += 2.6) { ctx.moveTo(i, -32); ctx.lineTo(i, -28); } ctx.stroke();
-  ctx.beginPath(); ctx.ellipse(0, -51, 16, 4, 0, 0, TAU); S("#2b2036", 1.6); rrS(-9, -64, 18, 13, 3, "#2b2036", 1.6); rr(-9, -55, 18, 3, 1, "#ff8a1f");
-  ctx.save(); ctx.translate(14, -18); ctx.rotate(-1.2 + wave); ctx.strokeStyle = OL; ctx.lineWidth = 5; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -16); ctx.stroke(); ctx.strokeStyle = "#efe9d8"; ctx.lineWidth = 2.6; ctx.stroke(); circS(0, -18, 3.4, "#efe9d8", 1.4); ctx.restore();
-  ctx.restore();
+  ctx.save(); ctx.translate(0, -44); ctx.scale(1.05, 1.05); drawCeniza(t, false, false); ctx.restore();
   // counter
   rrS(-140, -58, 280, 18, 5, lg(0, -58, 0, -40, ["#d99a5a", "#a8682e"]), 2.5);
   rrS(-126, -40, 252, 40, 4, lg(0, -40, 0, 0, ["#245f51", "#163e35"]), 2.5);
@@ -4893,7 +4920,7 @@ function drawTorch() {
   if (!h) { const b = Math.sin(t * 3) * 3; label("Antorcha", x, y - 60 + b, 12, "#ffcf57"); }
 }
 
-// ================= mission: Don Hueso's vases =================
+// ================= mission: mysterious vases =================
 function startVases() {
   const n = 6;
   for (let i = 0; i < n; i++) {
@@ -4984,32 +5011,14 @@ function drawPotThrow(b) {
   circ(-2.5, 1, 1.4, "rgba(255,255,255,.8)");
   ctx.restore();
 }
-
-// ================= the kiosk: Ceniza the necromancer sells "cigarette packs" (that's a dead format) =================
-// Each pack: a few collectible cards and one cigarette (or, sometimes, a big cuban cigar).
-// Sor Tosca's anti-vice box takes your cigarettes in exchange for a "blessing" (a reward box you tap open).
-const CIG_FOR_BLESS = 10, CIGAR_FOR_BLESS = 3;
-const CENIZA_LINES = {
-  idle: ["¿Vas a comprar o venís a respirar mi aire?", "Paquetes de cartas con un cigarrillo de regalo. Totalmente legal. Creo.", "Antes se vendían así. Después el formato se murió. Yo resucito cosas muertas, ¿se entiende el chiste?", "No hay devoluciones. Los muertos tampoco vuelven… bueno, los míos sí.", "Don Hueso, dejá de saludar, que espantás a los clientes.", "¿La monja? Está allá, en la otra punta. La pusimos lejos. Por algo.", "Puedo hablar con los muertos, y ni ellos quieren hablar con Sor Tosca.", "Si vas a llevarle los cigarrillos a ella, no me lo cuentes."],
-  buy: ["Excelente decisión. Para mí.", "Otro cliente satisfecho. O resignado, da igual.", "Que lo disfrutes. El cigarrillo va de regalo, la culpa también.", "Gracias por tu dinero. Lo voy a usar para comprar más velas negras."],
-  poor: ["Sin monedas no hay paquete. Ni siquiera yo puedo resucitar tu billetera.", "Volvé cuando tengas plata. O un alma, acepto almas."],
-  cigar: ["Uy, te salió un habano. Escondelo, que la monja tiene olfato.", "¿Un habano? Qué suerte… Que no se entere la de la caja."]
-};
-// Everyone hates Sor Tosca. Absolutely everyone. Nobody says why, but they have good reasons. She hasn't noticed.
-const TOSCA_LINES = {
-  idle: ["¡Hijo mío! ¡Qué alegría! Entregá tus vicios en la caja y Dios te bendecirá. *cof cof*", "Yo solo los guardo. Para que nadie los use. *cof*", "Diez cigarrillos o tres habanos, y recibirás una bendición. *cof cof cof*", "No es humo, es incienso. *cof*", "¡Casi nunca viene nadie! No entiendo por qué. *cof*", "Me pusieron acá, lejos de todo, para que tenga paz. ¡Qué considerados! *cof*", "Hoy alguien me tiró un tomate. Seguro se le resbaló. *cof cof*", "¡Ceniza y yo somos íntimas amigas! Ella todavía no lo sabe. *cof*", "Dejé una tarta en la puerta de Fobi. Me la devolvieron. Por debajo de la puerta. *cof*", "¡Todos me quieren! Lo siento en el aire. *cof cof*"],
-  give: ["Bendito seas. *cof* Esto… esto lo guardo yo.", "Tus pecados están a salvo conmigo. *cof cof*", "Muy bien, hijo. *aspira* *cof cof*", "¡Gracias! Sos el primero que me habla en toda la semana. *cof*"],
-  none: ["No tenés suficientes vicios todavía. Seguí… digo, no sigas. *cof*", "Necesito más pecados para la bendición. *cof*", "¿Ya te vas? Bueno, todos se van rápido. Debe ser la emoción. *cof*"],
-  bless: ["¡Una bendición! Tocá la caja, que se abre sola… con fe. *cof*", "El Señor provee. Y yo me quedo el humo. *cof cof*"]
-};
-// asides: how everyone else reacts to her (never says why)
-const TOSCA_ASIDES = ["(Fobi hace como que no la escuchó.)", "(Desde el kiosco, Don Hueso le hace un gesto feo.)", "(Ceniza, a lo lejos: «No le sonrías, que se queda».)", "(Un empleado de la Corporación cruza la calle para no pasar cerca.)", "(Hasta el viento cambia de dirección para no tocarla.)", "(Fobi se aleja medio paso. Por las dudas.)", "(Alguien escribió «NO» en su cartel. Ella cree que es una firma.)", "(Una paloma se posó en su cartel, la miró y se fue caminando.)"];
+// ================= the kiosk (Ceniza) and the Caja Antivicio (Sor Tosca) =================
+// Packs come with cigarettes (a dead format: cards that came in cigarette packs). Sor Tosca's box takes your vices
+// and gives you a blessing: a floating box that you tap to try to upgrade it, then tap once more to open it.
+const CIG_FOR_BLESS = 25, CIGAR_FOR_BLESS = 10;
+const KSTATE = { blessing: null, t: 0, coughT: 2, cough: 0 };
 const TOSCA_NEAR = ["Fobi la saluda de lejos. Muy de lejos.", "Fobi finge estar mirando el celular.", "Fobi suspira. Otra vez la monja.", "Fobi se pregunta si puede dar la vuelta sin que lo vea. No puede.", "Ni los fantasmas pasan por acá."];
-const KSTATE = { ceniza: "", tosca: "", blessing: null, t: 0, coughT: 2 };
-function sayCeniza(kind) { KSTATE.ceniza = pick(CENIZA_LINES[kind]); setText("kTalk", KSTATE.ceniza); }
-function sayTosca(kind) { KSTATE.tosca = pick(TOSCA_LINES[kind]); setText("tTalk", KSTATE.tosca); setText("tAside", pick(TOSCA_ASIDES)); }
 
-// ---------- characters (original humans, loosely inspired by the user's cat references) ----------
+// ---------- characters (original humans, loosely inspired by the user's references) ----------
 // fluffy shape with an outline only on the outside: stroke every bubble, then fill them all
 function fluff(pts, fill, lw) {
   ctx.strokeStyle = OL; ctx.lineWidth = lw * 2; ctx.lineJoin = "round";
@@ -5021,56 +5030,65 @@ function curl(x, y, s, dir, col, lw) { // a hair lock that ends in a spiral
   const path = () => { ctx.beginPath(); ctx.moveTo(x, y); ctx.quadraticCurveTo(x + dir * s * .2, y - s * 1.1, x + dir * s * .9, y - s * 1.2); ctx.arc(x + dir * s * .9, y - s * .85, s * .35, -Math.PI / 2, dir > 0 ? Math.PI * 1.3 : -Math.PI * 2.3, dir < 0); };
   path(); ctx.stroke(); ctx.strokeStyle = col; ctx.lineWidth = lw; path(); ctx.stroke();
 }
-// Ceniza: a deadpan necromancer with skull face paint and a huge, wild, curly black mane
-function drawCeniza(t, talk) {
+// Ceniza: a deadpan necromancer with a real skull worn on top of her head like a hat
+function drawCeniza(t, talk, hold) {
   const br = Math.sin(t * 1.6) * .8, sway = Math.sin(t * 1.1) * 1.5;
-  // a long curled shawl behind her, like a tail
+  // a long curled shawl behind her
   ctx.strokeStyle = OL; ctx.lineWidth = 7; ctx.lineCap = "round";
-  const tail = () => { ctx.beginPath(); ctx.moveTo(-10, -14); ctx.quadraticCurveTo(-34, -10, -30 + sway, -34); ctx.arc(-24 + sway, -36, 6, Math.PI, Math.PI * 2.6); };
+  const tail = () => { ctx.beginPath(); ctx.moveTo(-10, -14); ctx.quadraticCurveTo(-32, -10, -28 + sway, -30); ctx.arc(-23 + sway, -32, 5, Math.PI, Math.PI * 2.6); };
   tail(); ctx.stroke(); ctx.strokeStyle = "#1c1722"; ctx.lineWidth = 4.4; tail(); ctx.stroke();
-  // back of the mane
+  // back of the hair: dark and wavy, down to the shoulders
   ctx.save(); ctx.translate(0, br * .3);
-  fluff([[-15, -58, 10], [15, -58, 10], [-18, -46, 8], [18, -46, 8], [-12, -38, 7], [12, -38, 7], [0, -72, 13], [-11, -70, 10], [11, -70, 10]], "#17121c", 1.6);
+  fluff([[-11, -60, 8], [11, -60, 8], [-13, -50, 6.5], [13, -50, 6.5], [-12, -42, 5], [12, -42, 5], [0, -66, 10]], "#17121c", 1.6);
   ctx.restore();
-  // fluffy black dress
+  // black dress with a ragged hem
   ctx.beginPath(); ctx.moveTo(-11, -44); ctx.quadraticCurveTo(-20, -22, -24, 0);
   for (let i = 0; i <= 8; i++) ctx.lineTo(-24 + i * 6, i % 2 ? -4 : 1);
   ctx.quadraticCurveTo(20, -22, 11, -44); ctx.closePath(); S(lg(0, -44, 0, 0, ["#2a2330", "#120e16"]), 2);
   ctx.strokeStyle = "rgba(190,170,210,.18)"; ctx.lineWidth = 1; for (let i = -2; i <= 2; i++) { ctx.beginPath(); ctx.moveTo(i * 3, -38); ctx.lineTo(i * 7, -3); ctx.stroke(); }
-  fluff([[-8, -42, 5], [0, -40, 5.5], [8, -42, 5]], "#241e2a", 1.3); // fluffy collar
-  // arm holding up a cigarette pack
-  ctx.save(); ctx.translate(11, -40); ctx.rotate(-1.1 + Math.sin(t * 2) * .05); rrS(-3.5, 0, 7, 17, 3.5, "#221c28", 1.6); circS(0, 18, 3, "#e9dfe6", 1.2);
-  ctx.translate(0, 21); ctx.rotate(1.1); rrS(-6, -12, 12, 15, 1.5, "#e8395f", 1.4); rr(-6, -12, 12, 4, 1, "#f4efe4"); rr(-3, -15, 2.2, 4, .5, "#f4efe4"); rr(.5, -14.5, 2.2, 3.5, .5, "#f4efe4");
-  ctx.restore();
-  // head
+  fluff([[-8, -42, 5], [0, -40, 5.5], [8, -42, 5]], "#241e2a", 1.3);
+  if (hold) { // showing off the pack you just bought
+    ctx.save(); ctx.translate(11, -40); ctx.rotate(-1.1 + Math.sin(t * 2) * .05); rrS(-3.5, 0, 7, 17, 3.5, "#221c28", 1.6); circS(0, 18, 3, "#f2e2de", 1.2);
+    ctx.translate(0, 21); ctx.rotate(1.1); rrS(-6, -12, 12, 15, 1.5, "#e8395f", 1.4); rr(-6, -12, 12, 4, 1, "#f4efe4"); rr(-3, -15, 2.2, 4, .5, "#f4efe4"); rr(.5, -14.5, 2.2, 3.5, .5, "#f4efe4");
+    ctx.restore();
+  } else { // bored, hands together
+    ctx.lineCap = "round";
+    [-1, 1].forEach(s => { ctx.strokeStyle = OL; ctx.lineWidth = 6.5; ctx.beginPath(); ctx.moveTo(s * 10, -40); ctx.quadraticCurveTo(s * 12, -30, s * 2.5, -26); ctx.stroke(); ctx.strokeStyle = "#221c28"; ctx.lineWidth = 4; ctx.stroke(); });
+    circS(-1.8, -26, 2.8, "#f2e2de", 1.1); circS(1.8, -26, 2.8, "#f2e2de", 1.1);
+  }
+  // head: a human face
   ctx.save(); ctx.translate(0, br * .3);
-  ctx.beginPath(); ctx.ellipse(0, -57, 10.5, 10, 0, 0, TAU); S("#ece4ea", 1.6);
-  // skull paint: big black sockets, dead-calm gray irises under heavy lids
+  ctx.beginPath(); ctx.ellipse(0, -57, 9.8, 10.4, 0, 0, TAU); S("#f2e2de", 1.6);
   [-1, 1].forEach(s => {
-    ctx.save(); ctx.translate(s * 4.4, -58); ctx.rotate(s * -.25); ctx.fillStyle = "#141018"; ctx.beginPath(); ctx.ellipse(0, 0, 3.8, 3.3, 0, 0, TAU); ctx.fill(); ctx.restore();
-    circ(s * 4.6, -57.2, 1.15, "#bdb6c6"); ctx.fillStyle = "#141018"; ctx.fillRect(s * 4.4 - 3.6, -61.5, 7.2, 2.6);
+    const ex = s * 4.2, ey = -57.2;
+    ell(ex, ey - 1.5, 3.4, 1.5, "rgba(110,50,140,.35)");
+    ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.ellipse(ex, ey, 2.8, 1.8, 0, 0, TAU); ctx.fill();
+    circ(ex + s * .2, ey + .3, 1.35, "#7a3ab8"); circ(ex + s * .2, ey + .3, .6, "#120a1a");
+    ctx.fillStyle = "#f2e2de"; ctx.fillRect(ex - 3, ey - 2.2, 6, 1.6); // heavy, bored lids
+    ctx.strokeStyle = OL; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(ex - s * 3, ey - .5); ctx.lineTo(ex + s * 3, ey - .7); ctx.lineTo(ex + s * 4.4, ey - 2); ctx.stroke(); // eyeliner with a wing
   });
-  ctx.fillStyle = "#141018"; ctx.beginPath(); ctx.moveTo(-1.4, -53.6); ctx.lineTo(1.4, -53.6); ctx.lineTo(0, -51.8); ctx.closePath(); ctx.fill();
-  ctx.strokeStyle = "#141018"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-4.5, -49.8); ctx.lineTo(4.5, -49.8); for (let x = -3; x <= 3; x += 2) { ctx.moveTo(x, -51.2); ctx.lineTo(x, -48.4); } ctx.stroke();
-  if (talk) { ctx.fillStyle = "#3a1630"; ctx.beginPath(); ctx.ellipse(0, -49.6, 2.4, 1.2, 0, 0, TAU); ctx.fill(); }
-  // front of the mane: messy bangs and two big curled locks on top
-  fluff([[-8, -66, 6], [-1, -68, 6.5], [7, -66, 6], [-11, -60, 4], [11, -60, 4]], "#17121c", 1.4);
-  curl(-7, -70, 13, -1, "#17121c", 5); curl(6, -71, 14, 1, "#17121c", 5);
-  ctx.strokeStyle = "rgba(200,190,220,.25)"; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(-1, -70, 4, Math.PI * 1.1, Math.PI * 1.6); ctx.stroke();
+  ctx.strokeStyle = "rgba(120,80,90,.6)"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(.4, -54.5); ctx.lineTo(-.4, -52.6); ctx.stroke();
+  if (talk) { ctx.fillStyle = "#4a1838"; ctx.beginPath(); ctx.ellipse(0, -50.3, 2, 1.3, 0, 0, TAU); ctx.fill(); }
+  else { ctx.strokeStyle = "#5a1a4a"; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(-2.3, -50.4); ctx.lineTo(2.3, -50.6); ctx.stroke(); }
+  fluff([[-7, -64, 5.5], [0, -66, 6], [7, -64, 5.5], [-10, -59, 3.5], [10, -59, 3.5]], "#17121c", 1.4);
+  // the skull she wears like a hat, a bit tilted
+  ctx.save(); ctx.translate(1.2, -69.5); ctx.rotate(-.14); ctx.scale(.86, .86);
+  ctx.beginPath(); ctx.ellipse(0, -3, 11, 8.5, 0, 0, TAU); S("#efe9d8", 1.6);
+  rrS(-6.5, 1.5, 13, 5, 2, "#efe9d8", 1.4);
+  ctx.strokeStyle = OL; ctx.lineWidth = .9; ctx.beginPath(); for (let x = -4.5; x <= 4.5; x += 2.25) { ctx.moveTo(x, 3); ctx.lineTo(x, 6.3); } ctx.stroke();
+  ctx.fillStyle = "#141018"; ctx.beginPath(); ctx.ellipse(-4.2, -2.4, 3, 2.6, .15, 0, TAU); ctx.fill(); ctx.beginPath(); ctx.ellipse(4.2, -2.4, 3, 2.6, -.15, 0, TAU); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(-1.2, 1.4); ctx.lineTo(1.2, 1.4); ctx.lineTo(0, -.6); ctx.closePath(); ctx.fill();
+  circ(-4, -2.6, .7, "#c7a8ff"); circ(4.4, -2.6, .7, "#c7a8ff"); // a faint glow in the sockets
+  ctx.strokeStyle = "rgba(60,40,30,.55)"; ctx.lineWidth = .9; ctx.beginPath(); ctx.moveTo(3, -10.5); ctx.lineTo(4.5, -8); ctx.lineTo(3.5, -6.5); ctx.stroke();
+  ctx.restore();
   ctx.restore();
 }
-// Sor Tosca: a pale, cheerful nun whose veil flares out like wings. Cross on her forehead, big lashy eyes, cat-mouth smile, always a hand near her mouth (cough).
+// Sor Tosca: a pale, cheerful nun. Cross on her forehead, big lashy eyes, cat-mouth smile, always a hand near her mouth (cough).
 function drawTosca(t, cough) {
   const c = cough > 0 ? Math.abs(Math.sin(cough * 30)) * 1.5 : 0, bob = Math.sin(t * 2) * .6;
   ctx.translate(0, c);
-  // winged veil behind the head
-  [-1, 1].forEach(s => {
-    ctx.save(); ctx.translate(s * 6, -64 + bob); ctx.scale(s, 1); ctx.rotate(Math.sin(t * 1.5) * .04);
-    ctx.beginPath(); ctx.moveTo(0, 6); ctx.quadraticCurveTo(10, 4, 18, -6); ctx.lineTo(24, -18); ctx.lineTo(20, -14); ctx.lineTo(21, -22); ctx.lineTo(16, -15); ctx.lineTo(14, -22); ctx.quadraticCurveTo(8, -10, 0, -8); ctx.closePath();
-    S(lg(0, -20, 0, 6, ["#f1edf4", "#c9c2d2"]), 1.8);
-    ctx.strokeStyle = "rgba(120,110,140,.4)"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(3, 0); ctx.quadraticCurveTo(10, -2, 16, -12); ctx.stroke();
-    ctx.restore();
-  });
+  // a plain soft veil falling over the shoulders
+  ctx.beginPath(); ctx.moveTo(-13, -42); ctx.quadraticCurveTo(-18, -58, -13, -68 + bob); ctx.quadraticCurveTo(0, -77 + bob, 13, -68 + bob); ctx.quadraticCurveTo(18, -58, 13, -42); ctx.quadraticCurveTo(0, -39, -13, -42); S(lg(0, -77, 0, -40, ["#f1edf4", "#c9c2d2"]), 1.8);
   // pale habit
   ctx.beginPath(); ctx.moveTo(-13, -46); ctx.quadraticCurveTo(-20, -20, -21, 2); ctx.quadraticCurveTo(0, 6, 21, 2); ctx.quadraticCurveTo(20, -20, 13, -46); ctx.closePath(); S(lg(0, -46, 0, 2, ["#e2dce8", "#aaa2b6"]), 2);
   ctx.strokeStyle = "rgba(110,100,130,.35)"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(-6, -30); ctx.quadraticCurveTo(-9, -12, -10, 1); ctx.moveTo(7, -30); ctx.quadraticCurveTo(10, -12, 11, 1); ctx.stroke();
@@ -5149,85 +5167,293 @@ function coinIcon(size) {
   return mkCanvas(size, size, () => { ctx.translate(size / 2, size / 2); const k = size / 100; ctx.scale(k, k); [[-14, 14], [10, 10], [-2, -8]].forEach(([x, y]) => { ellS(x, y + 4, 20, 8, "#b8800e", 2); ellS(x, y, 20, 8, "#ffd34a", 2); }); });
 }
 
-// ---------- the anti-vice box and its blessings ----------
-const BLESS = {
-  comun: { name: "Bendición común", rolls: 3, table: [["coins", 45], ["deco", 35], ["cos", 12], ["piece", 8]], coins: [60, 250], decos: [1, 2], cos: [["comun", 85], ["raro", 15]] },
-  cubana: { name: "Bendición cubana", rolls: 4, table: [["coins", 30], ["deco", 28], ["cos", 22], ["piece", 14], ["special", 6]], coins: [200, 600], decos: [2, 4], cos: [["raro", 75], ["leg", 25]] }
+// ---------- blessings: a box that tries to upgrade with each tap, then opens with one more tap ----------
+const BTIERS = [{ n: "Común", c: "#c3c9d6", g: "200,210,230" }, { n: "Rara", c: "#5aa8ff", g: "90,168,255" }, { n: "Épica", c: "#c06ae8", g: "192,106,232" }, { n: "Mítica", c: "#ff4a6a", g: "255,74,106" }, { n: "Legendaria", c: "#ffbf3a", g: "255,191,58" }];
+const BOXES = {
+  cig: { name: "Caja de bendición común", cost: CIG_FOR_BLESS, up: [.45, .30, .20, .12], coinK: 1 },
+  cigar: { name: "Caja de bendición cubana", cost: CIGAR_FOR_BLESS, up: [.70, .55, .40, .25], coinK: 1.5 }
 };
-function rollBlessing(tier) {
-  const B = BLESS[tier], out = [];
-  for (let i = 0; i < B.rolls; i++) {
-    const w = weighted(B.table);
-    if (w === "coins") { const c = Math.round(rand(B.coins[0], B.coins[1]) / 10) * 10; SAVE.coins += c; out.push({ kind: "coins", n: c }); }
-    else if (w === "deco") { const n = B.decos[0] + randi(B.decos[1] - B.decos[0] + 1), k = weighted(DECO_ODDS); SAVE.inv[k] += n; out.push({ kind: "deco", k, n }); }
-    else if (w === "cos") out.push(rollCos(B.cos));
-    else if (w === "piece") { SAVE.pieces++; out.push({ kind: "piece" }); }
-    else { const dup = SAVE.specials.includes("caramel"); if (dup) SAVE.coins += SPECIAL_REFUND; else SAVE.specials.push("caramel"); out.push({ kind: "special", k: "caramel", dup }); }
-  }
-  persist(); return out;
+// one reward per box; each tier: [kind, weight in the common box, weight in the cuban box, value]
+const BREWARDS = [
+  [["coins", 60, 45, [80, 150]], ["deco", 40, 55, 2]],
+  [["coins", 45, 35, [250, 400]], ["deco", 35, 35, 4], ["cos", 20, 30, "comun"]],
+  [["coins", 40, 30, [600, 900]], ["cos", 40, 45, "raro"], ["piece", 20, 25, 1]],
+  [["coins", 35, 20, [1200, 1800]], ["cos", 30, 30, "raro"], ["cos", 20, 25, "leg"], ["piece", 15, 15, 2], ["special", 0, 10]],
+  [["coins", 25, 10, [3000, 3000]], ["cos", 45, 45, "leg"], ["special", 30, 45]]
+];
+const BKIND = { coins: "monedas", deco: "decoraciones", cos: "cosmético", piece: "pieza", special: "decoración especial" };
+function rewardText(r, box) {
+  const [k, , , v] = r;
+  if (k === "coins") return `${Math.round(v[0] * BOXES[box].coinK)}${v[1] !== v[0] ? " a " + Math.round(v[1] * BOXES[box].coinK) : ""} monedas`;
+  if (k === "deco") return `${v} decoraciones`;
+  if (k === "cos") return `cosmético ${RAR[v].name.toLowerCase()}`;
+  if (k === "piece") return v > 1 ? `${v} piezas de festiloco` : "pieza de festiloco";
+  return "decoración especial";
 }
-function giveVices(kind) {
-  const B = kind === "cig" ? CIG_FOR_BLESS : CIGAR_FOR_BLESS, have = kind === "cig" ? SAVE.cigs : SAVE.cigars;
-  if (have < B) { sayTosca("none"); return; }
-  if (kind === "cig") SAVE.cigs -= B; else SAVE.cigars -= B;
-  persist(); sayTosca("bless");
-  KSTATE.blessing = { tier: kind === "cig" ? "comun" : "cubana", items: null, shown: 0, shake: 0, t: 0 };
-  KSTATE.blessing.items = rollBlessing(KSTATE.blessing.tier);
-  renderAntivicio();
+function rollBlessReward(tier, box) {
+  const tab = BREWARDS[tier], col = box === "cig" ? 1 : 2;
+  const r = tab[weightedIdx(tab.map(x => x[col]))], [k, , , v] = r;
+  if (k === "coins") { const c = Math.round(rand(v[0], v[1]) * BOXES[box].coinK / 10) * 10; SAVE.coins += c; return { kind: "coins", n: c }; }
+  if (k === "deco") { const out = {}; for (let i = 0; i < v; i++) { const d = weighted(DECO_ODDS); SAVE.inv[d]++; out[d] = (out[d] || 0) + 1; } const top = Object.keys(out).sort((a, b) => out[b] - out[a])[0]; return { kind: "deco", k: top, n: v, all: out }; }
+  if (k === "cos") return rollCos([[v, 1]]);
+  if (k === "piece") { SAVE.pieces += v; return { kind: "piece", n: v }; }
+  const dup = SAVE.specials.includes("caramel"); if (dup) SAVE.coins += SPECIAL_REFUND; else SAVE.specials.push("caramel"); return { kind: "special", k: "caramel", dup };
+}
+function weightedIdx(ws) { let tot = ws.reduce((a, b) => a + b, 0), r = Math.random() * tot; for (let i = 0; i < ws.length; i++) { r -= ws[i]; if (r < 0) return i; } return ws.length - 1; }
+function startBlessing(box) {
+  const B = BOXES[box], have = box === "cig" ? SAVE.cigs : SAVE.cigars;
+  if (have < B.cost) return false;
+  if (box === "cig") SAVE.cigs -= B.cost; else SAVE.cigars -= B.cost;
+  persist();
+  KSTATE.blessing = { box, tier: 0, settled: false, opened: false, reward: null, t: 0, shake: 0, flash: 0, pop: 0 };
+  $("blessStage").hidden = false; $("blessItems").innerHTML = "";
+  setText("blessTtl", B.name); updateBlessText("Tocá la caja para ver si mejora", "");
+  return true;
+}
+function updateBlessText(hint, msg) {
+  const Bl = KSTATE.blessing, T0 = BTIERS[Bl.tier];
+  const el = $("blessTier"); el.textContent = T0.n; el.style.color = T0.c;
+  setText("blessHint", hint); const m = $("blessMsg"); m.textContent = msg; m.style.color = T0.c;
 }
 function tapBlessing() {
   const Bl = KSTATE.blessing; if (!Bl) return;
-  if (Bl.shown >= Bl.items.length) { KSTATE.blessing = null; sayTosca("give"); renderAntivicio(); return; }
-  Bl.shown++; Bl.shake = .35;
-  const it = Bl.items[Bl.shown - 1], box = $("blessItems");
-  box.appendChild(rewardCard(it, Bl.shown * 0));
-  setText("blessHint", Bl.shown >= Bl.items.length ? "¡Listo! Tocá la caja para guardar todo" : "Tocá la caja otra vez (" + (Bl.items.length - Bl.shown) + " más)");
-  $("kCoins").textContent = SAVE.coins.toLocaleString("es-AR");
+  if (Bl.opened) { KSTATE.blessing = null; $("blessStage").hidden = true; shopSay(shopLine("done")); shopRender(); return; }
+  if (Bl.settled || Bl.tier >= 4) {
+    Bl.opened = true; Bl.pop = 1; Bl.reward = rollBlessReward(Bl.tier, Bl.box); persist();
+    $("blessItems").appendChild(rewardCard(Bl.reward, 0));
+    updateBlessText("Tocá la caja para guardar el premio", "¡Se abrió!");
+    $("kCoins").textContent = SAVE.coins.toLocaleString("es-AR");
+    return;
+  }
+  Bl.shake = .35;
+  if (Math.random() < BOXES[Bl.box].up[Bl.tier]) {
+    Bl.tier++; Bl.flash = 1;
+    if (Bl.tier >= 4) updateBlessText("Calidad máxima. Tocá una vez más para abrirla", "¡LEGENDARIA!");
+    else updateBlessText("¡Subió! Tocá otra vez para ver si sigue mejorando", "¡Mejoró a " + BTIERS[Bl.tier].n + "!");
+  } else {
+    Bl.settled = true;
+    updateBlessText("Ya no mejora más. Tocá una última vez para abrirla", "No mejora más…");
+  }
+}
+function drawBlessBox(cv, dt) {
+  const Bl = KSTATE.blessing; if (!Bl) return;
+  Bl.t += dt; Bl.shake = Math.max(0, Bl.shake - dt); Bl.flash = Math.max(0, Bl.flash - dt * 1.6); Bl.pop = Math.max(0, Bl.pop - dt * 1.2);
+  const g = cv.getContext("2d"), prev = ctx; ctx = g; const W2 = cv.width, H2 = cv.height, t = Bl.t, T0 = BTIERS[Bl.tier], col = T0.g, cub = Bl.box === "cigar";
+  g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, W2, H2);
+  ctx.save(); ctx.translate(W2 / 2 + (Bl.shake > 0 ? Math.sin(t * 80) * 7 * Bl.shake / .35 : 0), H2 / 2 + 10 + Math.sin(t * 2.2) * 9); const k = W2 / 260; ctx.scale(k, k);
+  // aura grows with the tier
+  const ar = 70 + Bl.tier * 14 + Bl.flash * 40;
+  ctx.fillStyle = rg(0, 0, 8, ar, [`rgba(${col},${.5 + Bl.tier * .08})`, `rgba(${col},0)`]); ctx.beginPath(); ctx.arc(0, 0, ar, 0, TAU); ctx.fill();
+  if (Bl.tier >= 2 || Bl.opened) { ctx.save(); ctx.rotate(t * .4); ctx.globalAlpha = .18 + Bl.tier * .04; for (let i = 0; i < 10; i++) { ctx.rotate(TAU / 10); ctx.fillStyle = lg(0, 0, 0, -105, [`rgba(${col},1)`, `rgba(${col},0)`]); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-8, -105); ctx.lineTo(8, -105); ctx.fill(); } ctx.restore(); ctx.globalAlpha = 1; }
+  for (let i = 0; i < 5 + Bl.tier * 3; i++) { const a = t * (1.2 + i * .05) + i * 1.3, r = 55 + (i % 3) * 12; ctx.globalAlpha = .8; circ(Math.cos(a) * r, Math.sin(a) * r * .5, 1.6 + (i % 2), `rgb(${col})`); } ctx.globalAlpha = 1;
+  // the box (tinted by the tier); the lid flies open when opened
+  ell(0, 62, 40, 7, "rgba(0,0,0,.35)");
+  const open = Bl.opened ? 1 : 0;
+  rrS(-40, -18, 80, 50, 6, lg(0, -18, 0, 32, [T0.c, "#2a1a42"]), 3);
+  rr(-40, 0, 80, 6, 1, cub ? "#ffd34a" : "#f4efe4");
+  ctx.save(); ctx.translate(-40, -18); ctx.rotate(-open * .9); rrS(-2, -13, 84, 15, 4, lg(0, -13, 0, 2, ["#ffffff", T0.c]), 3); ctx.restore();
+  ctx.strokeStyle = cub ? "#ffd34a" : "#fff"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(0, 2); ctx.lineTo(0, 26); ctx.moveTo(-8, 10); ctx.lineTo(8, 10); ctx.stroke();
+  if (Bl.opened) { ctx.globalAlpha = .6; ctx.fillStyle = lg(0, -18, 0, -120, [`rgba(${col},.9)`, `rgba(${col},0)`]); poly([-36, -18, 36, -18, 60, -120, -60, -120]); ctx.fill(); ctx.globalAlpha = 1; }
+  // tier pips
+  for (let i = 0; i < 5; i++) circS(-32 + i * 16, 82, 5, i <= Bl.tier ? BTIERS[i].c : "#2d2638", 1.4);
+  if (Bl.settled && !Bl.opened) { ctx.fillStyle = "rgba(255,255,255,.8)"; ctx.font = "900 10px Nunito, sans-serif"; ctx.textAlign = "center"; ctx.fillText("¡tocá para abrir!", 0, -44 + Math.sin(t * 5) * 2); }
+  ctx.restore();
+  const fl = (a, c) => { if (a <= 0) return; g.fillStyle = g.createRadialGradient(W2 / 2, H2 / 2, 0, W2 / 2, H2 / 2, H2 * .5); const gr = g.fillStyle; gr.addColorStop(0, `rgba(${c},${a})`); gr.addColorStop(1, `rgba(${c},0)`); g.fillRect(0, 0, W2, H2); };
+  fl(Bl.flash * .7, col); fl(Bl.pop * .8, "255,255,255");
+  ctx = prev;
 }
 function rewardCard(it, delay) {
   const d = document.createElement("div"); d.className = "stk"; d.style.setProperty("--d", delay + "s");
   let rc, nm, rar, extra = "", icon;
   if (it.kind === "coins") { rc = "#ffd34a"; nm = "+" + it.n + " monedas"; rar = "Monedas"; icon = coinIcon(200); }
-  else if (it.kind === "deco") { rc = "#ff9a4a"; nm = DECO[it.k].name + " ×" + it.n; rar = "Decoraciones"; icon = decoIcon(it.k, 200); }
-  else if (it.kind === "piece") { rc = "#e86bd3"; nm = "Pieza del próximo festiloco"; rar = "Pieza " + Math.min(SAVE.pieces, 5) + "/5"; icon = pieceIcon(200); }
+  else if (it.kind === "deco") { rc = "#ff9a4a"; nm = it.all ? Object.entries(it.all).map(([k, n]) => DECO[k].name + " ×" + n).join(", ") : DECO[it.k].name + " ×" + it.n; rar = "Decoraciones"; icon = decoIcon(it.k, 200); }
+  else if (it.kind === "piece") { rc = "#e86bd3"; nm = (it.n > 1 ? it.n + " piezas" : "Pieza") + " del próximo festiloco"; rar = "Pieza " + Math.min(SAVE.pieces, 5) + "/5"; icon = pieceIcon(200); }
   else if (it.kind === "special") { rc = "#ffd34a"; nm = DECO[it.k].name; rar = "¡Decoración especial!"; icon = decoIcon(it.k, 200); extra = it.dup ? `<em>Repetida · +${SPECIAL_REFUND}</em>` : `<em>¡Tuya para siempre!</em>`; d.classList.add("special"); }
   else { rc = RAR[it.c.rar].c; nm = it.c.name; rar = RAR[it.c.rar].name; icon = cosIcon(it.c, 200); extra = it.dup ? `<em>Repetido · +${it.refund}</em>` : `<em>¡Nuevo!</em>`; }
   d.style.setProperty("--rc", rc); d.appendChild(icon); d.insertAdjacentHTML("beforeend", `<b>${nm}</b><span>${rar}</span>${extra}`);
   return d;
 }
-function renderAntivicio() {
-  const Bl = KSTATE.blessing;
-  $("viceCount").innerHTML = `<div class="vice"><span class="viceslot" data-c="0"></span><b>${SAVE.cigs}</b><span>cigarrillos</span><div class="pbar"><i style="width:${Math.min(100, SAVE.cigs / CIG_FOR_BLESS * 100)}%"></i></div><button class="buy" id="giveCig" ${SAVE.cigs < CIG_FOR_BLESS ? "disabled" : ""}>Entregar ${CIG_FOR_BLESS}</button><span class="fine">Bendición común</span></div>
-  <div class="vice"><span class="viceslot" data-c="1"></span><b>${SAVE.cigars}</b><span>habanos</span><div class="pbar"><i style="width:${Math.min(100, SAVE.cigars / CIGAR_FOR_BLESS * 100)}%"></i></div><button class="buy" id="giveCigar" ${SAVE.cigars < CIGAR_FOR_BLESS ? "disabled" : ""}>Entregar ${CIGAR_FOR_BLESS}</button><span class="fine">Bendición cubana: mejores premios</span></div>`;
-  document.querySelectorAll(".viceslot").forEach(sp => { const c = cigIcon(sp.dataset.c === "1", 120); c.className = "viceic"; sp.replaceWith(c); });
-  $("giveCig").addEventListener("click", () => giveVices("cig")); $("giveCigar").addEventListener("click", () => giveVices("cigar"));
-  $("blessStage").hidden = !Bl; $("viceCount").hidden = !!Bl; $("blessOdds").hidden = !!Bl;
-  if (Bl) { $("blessItems").innerHTML = ""; setText("blessTtl", BLESS[Bl.tier].name); setText("blessHint", "Tocá la caja para abrir la bendición (" + Bl.items.length + " premios)"); }
+// ---------- RPG-style shop (the same layout as the shop in ¡Atacad, Tripulación!) ----------
+const SELL = { cig: 20, cigar: 300, apple: 60, dulce: 60, caldero: 80 };
+const ITEMS = {
+  cig: { name: "Cigarrillo", desc: "Viene de regalo en los paquetes. Juntá " + CIG_FOR_BLESS + " y llevalos a la Caja Antivicio.", get n() { return SAVE.cigs; }, set n(v) { SAVE.cigs = v; }, icon: s => cigIcon(false, s) },
+  cigar: { name: "Habano", desc: "Difícil de conseguir: seguro en el Paquete Corazón Dorado, raro en el Festivo Light. " + CIGAR_FOR_BLESS + " habanos dan una caja cubana.", get n() { return SAVE.cigars; }, set n(v) { SAVE.cigars = v; }, icon: s => cigIcon(true, s) },
+  apple: { name: "Manzana Verduga", desc: "Decoración para la defensa. Se suma a las 2 gratis de cada partida.", get n() { return SAVE.inv.apple; }, set n(v) { SAVE.inv.apple = v; }, icon: s => decoIcon("apple", s) },
+  dulce: { name: "Calabaza Dulce", desc: "Decoración para la defensa. Se suma a las 2 gratis de cada partida.", get n() { return SAVE.inv.dulce; }, set n(v) { SAVE.inv.dulce = v; }, icon: s => decoIcon("dulce", s) },
+  caldero: { name: "Caldera Pocionera", desc: "Decoración para la defensa. Se suma a la gratis de cada partida.", get n() { return SAVE.inv.caldero; }, set n(v) { SAVE.inv.caldero = v; }, icon: s => decoIcon("caldero", s) },
+  caramel: { name: "Manzana Acaramelada", desc: "Decoración especial: se puede colocar en cada partida, con 60 segundos de espera.", get n() { return SAVE.specials.includes("caramel") ? 1 : 0; }, icon: s => decoIcon("caramel", s), nosell: true },
+  piece: { name: "Pieza de festiloco", desc: "Con 5 piezas se completa el próximo festiloco, cuando exista.", get n() { return SAVE.pieces; }, icon: s => pieceIcon(s), nosell: true }
+};
+const SHOPS = {
+  ceniza: {
+    name: "Ceniza, la nigromante", sign: "Kiosco de Ceniza · cartas y otros vicios",
+    menu: [["buy", "Comprar"], ["sell", "Vender"], ["talk", "Hablar"], ["bag", "Mochila"], ["exit", "Salir"]],
+    greet: ["¿Vas a comprar o venís a respirar mi aire?", "Ah. Un cliente. Qué emoción. Mirá cómo salto.", "Bienvenido al Kiosco de Ceniza. Cartas, vicios y mala atención. Todo incluido.", "Volviste. Todos vuelven. Es que soy el único kiosco de la plaza."],
+    say: {
+      buy: "Paquetes de cartas con cigarrillos adentro, como se vendían antes. Totalmente legal. Creo.",
+      sell: "¿Venderme cosas? Te pago poco. No es tacañería: es nigromancia contable.",
+      talk: "¿Hablar? Bueno. Tengo toda la eternidad. Literalmente.",
+      bag: "Lo que llevás encima. Espero que no sea contagioso.",
+      empty: "No tenés nada que me interese. Ni siquiera un alma.",
+      bought: ["Excelente decisión. Para mí.", "Otro cliente satisfecho. O resignado, da igual.", "Que lo disfrutes. La culpa viene de regalo.", "Gracias por tu dinero. Lo voy a usar para comprar más velas negras."],
+      cigar: ["Uy, te salió un habano. Escondelo, que la monja tiene olfato.", "Habanos. Qué suerte… para la de la caja."],
+      poor: ["Sin monedas no hay paquete. Ni siquiera yo puedo resucitar tu billetera.", "Volvé cuando tengas plata. O un alma, acepto almas."],
+      sold: ["Hecho. No preguntes qué hago con esto.", "Lo revendo el doble. Negocios de ultratumba.", "Vendido. Ya lo vas a extrañar. O no."],
+      exit: ["No vuelvas. …Era un chiste. Volvé con plata.", "Chau. Cuidado con la monja.", "Que los muertos te acompañen. Los míos no, que están ocupados."]
+    },
+    topics: [
+      ["Sobre vos", ["Soy nigromante. Levanto muertos. Ahora vendo cartas. La economía está difícil para todos.", "La calavera es de verdad. No, no te voy a decir de quién era. Era muy simpático, eso sí.", "Dicen que la magia está prohibida para los civiles. Yo no soy civil. Soy comerciante."]],
+      ["Sobre los paquetes", ["El chico trae cigarrillos comunes. El mediano, a veces un habano. El dorado siempre trae habanos. Es caro porque los habanos no crecen en los árboles. Crecen en plantas, pero me entendés.", "Las cartas te sirven para la defensa. Los vicios, para la monja. Yo solo cobro."]],
+      ["Sobre la Caja Antivicio", ["Está en la otra punta de la plaza. La pusimos lejos. Por algo.", "Le das tus vicios y te da una caja que brilla. Tocala hasta que deje de mejorar. Lo que hace ella con los cigarrillos… mejor no saber."]],
+      ["Sobre la Corporación", ["Gente de traje que odia las fiestas. Bueno, yo también odio las fiestas, pero no ando apagando corazones.", "Me ofrecieron trabajo una vez. Tenían dental. Casi acepto."]]
+    ]
+  },
+  tosca: {
+    name: "Sor Tosca", sign: "Caja Antivicio · ¡entregá tus vicios con alegría!",
+    menu: [["give", "Entregar vicios"], ["talk", "Hablar"], ["odds", "¿Qué trae una caja?"], ["exit", "Salir"]],
+    greet: ["¡Hijo mío! ¡Qué alegría verte! Casi nunca viene nadie. *cof cof*", "¡Bienvenido a la Caja Antivicio! Entregá tus vicios y Dios te bendecirá. *cof*", "¡Un visitante! Hoy es un gran día. *cof cof cof*"],
+    say: {
+      give: "Yo solo los guardo, para que nadie los use. *cof* ¿Qué me traés?",
+      talk: "¡Me encanta charlar! Nadie se queda a charlar conmigo. Deben estar muy ocupados. *cof*",
+      odds: "Cada caja empieza Común. Cada vez que la tocás, puede mejorar… o no. Cuando ya no mejora, la abrís. *cof*",
+      none: ["Te faltan vicios todavía. Seguí… digo, no sigas. *cof*", "Necesito más pecados para la bendición. *cof*"],
+      bless: ["¡Una bendición! Tocala, que se abre sola… con fe. *cof*", "El Señor provee. Y yo me quedo el humo. *cof cof*"],
+      done: ["Bendito seas. *cof* Esto… esto lo guardo yo.", "Tus pecados están a salvo conmigo. *aspira* *cof cof*", "¡Gracias! Sos el primero que me habla en toda la semana. *cof*"],
+      exit: ["¡Volvé pronto! Bueno, nadie vuelve pronto. ¡Pero vos podrías! *cof*", "¡Que Dios te acompañe! Y que no te acompañe el humo. *cof*"]
+    },
+    topics: [
+      ["Sobre vos", ["Soy Sor Tosca. Cuido esta caja con mucho amor. Y mucha tos. *cof*", "No es humo, es incienso. *cof*"]],
+      ["Sobre la caja", ["Veinticinco cigarrillos o diez habanos. Los habanos traen cajas más benditas: mejoran más seguido. *cof*", "La caja levita por obra divina. O por el humo caliente. Una de las dos. *cof cof*"]],
+      ["Sobre los vicios", ["Fumar es malísimo. Por eso me los quedo todos. Sacrificio personal. *cof cof cof*", "¿Los habanos? Esos los guardo en un lugar muy especial. Mi boca. Digo, mi bolsillo. *cof*"]],
+      ["Sobre la plaza", ["Me pusieron acá, lejos de todo, para que tenga paz. ¡Qué considerados! *cof*", "¡Ceniza y yo somos íntimas amigas! Ella todavía no lo sabe. *cof*"]]
+    ]
+  }
+};
+const SHOP = { who: "ceniza", mode: "menu", sel: 0, say: "", shown: 0, cyc: {}, packT: 0, open: false };
+function shopLine(key) {
+  const L = SHOPS[SHOP.who].say[key]; if (!Array.isArray(L)) return L;
+  const id = SHOP.who + key, c = SHOP.cyc; if (!c[id] || !c[id].length) c[id] = shuffle(L.map((_, i) => i));
+  return L[c[id].pop()];
 }
-// the floating blessing box, animated while the kiosk is open
-function drawBlessBox(cv, dt) {
-  const Bl = KSTATE.blessing; if (!Bl) return;
-  Bl.t += dt; Bl.shake = Math.max(0, Bl.shake - dt);
-  const g = cv.getContext("2d"), prev = ctx; ctx = g; const W2 = cv.width, H2 = cv.height, t = Bl.t;
-  g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, W2, H2);
-  const cub = Bl.tier === "cubana", col = cub ? "255,200,90" : "200,220,255";
-  ctx.save(); ctx.translate(W2 / 2 + (Bl.shake > 0 ? Math.sin(t * 80) * 6 : 0), H2 / 2 + Math.sin(t * 2.2) * 8); const k = W2 / 220; ctx.scale(k, k);
-  ctx.fillStyle = rg(0, 0, 10, 90, [`rgba(${col},.55)`, `rgba(${col},0)`]); ctx.beginPath(); ctx.arc(0, 0, 90, 0, TAU); ctx.fill();
-  for (let i = 0; i < 6; i++) { const a = t * 1.5 + i; ctx.globalAlpha = .7; circ(Math.cos(a) * 60, Math.sin(a) * 30, 2, `rgb(${col})`); } ctx.globalAlpha = 1;
-  const open = Math.min(1, Bl.shown / Bl.items.length);
-  rrS(-40, -20, 80, 50, 5, lg(0, -20, 0, 30, cub ? ["#c98a3a", "#7a4a1a"] : ["#a87444", "#6a4424"]), 3);
-  rr(-40, -2, 80, 6, 1, cub ? "#ffd34a" : "#e8e0cc");
-  ctx.save(); ctx.translate(-40, -20); ctx.rotate(-open * .7); rrS(0, -12, 80, 14, 4, cub ? "#d99a4a" : "#b8844e", 3); ctx.restore();
-  ctx.strokeStyle = cub ? "#ffd34a" : "#f4f4f0"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(0, -2); ctx.lineTo(0, 22); ctx.moveTo(-8, 6); ctx.lineTo(8, 6); ctx.stroke();
+function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = randi(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function shopSay(txt) { SHOP.say = txt; SHOP.shown = 0; $("skSay").textContent = ""; }
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const back = () => `<button class="sk-row" data-act="mode" data-m="menu"><i class="heart">♥</i><span>‹ Volver</span></button>`;
+const coinTxt = n => `<span class="coin"></span>${n.toLocaleString("es-AR")}`;
+function bagKeys() { return Object.keys(ITEMS).filter(k => ITEMS[k].n > 0); }
+function sellKeys() { return Object.keys(ITEMS).filter(k => !ITEMS[k].nosell && ITEMS[k].n > 0); }
+function viceBars() {
+  return [["cig", "cigarrillos", CIG_FOR_BLESS, SAVE.cigs], ["cigar", "habanos", CIGAR_FOR_BLESS, SAVE.cigars]].map(([k, nm, need, have]) =>
+    `<div class="vrow"><span class="vic" data-k="${k}"></span><div><span>${have} / ${need} ${nm}</span><div class="vbar"><i style="width:${Math.min(100, have / need * 100)}%"></i></div></div></div>`).join("");
+}
+function shopRender() {
+  const S0 = SHOPS[SHOP.who], m = SHOP.mode; let L = "", R = "";
+  $("skSign").textContent = S0.sign; $("skName").textContent = S0.name; $("kCoins").textContent = SAVE.coins.toLocaleString("es-AR");
+  const opt = (act, label, extra = "", dis = false) => `<button class="sk-opt" data-act="${act}"${extra}${dis ? " disabled" : ""}><i class="heart">♥</i>${label}</button>`;
+  if (m === "menu") {
+    R = `<div class="sk-menu">${S0.menu.map(([k, nm]) => k === "exit" ? opt("exit", nm) : opt("mode", nm, ` data-m="${k}"`)).join("")}</div>`;
+    if (SHOP.who === "tosca") L = `<div class="sk-list">${viceBars()}</div>`;
+  } else if (m === "buy") {
+    L = `<div class="sk-list">${back()}${PACKS.map((p, i) => `<button class="sk-row${SHOP.sel === i ? " on" : ""}${SAVE.coins < p.price ? " cant" : ""}" data-act="sel" data-i="${i}"><i class="heart">♥</i><span>${p.name}<small>${p.id === "gold" ? "habanos asegurados" : p.id === "fest" ? "cigarrillos, quizás un habano" : "solo cigarrillos"}</small></span><em>${coinTxt(p.price)}</em></button>`).join("")}</div>`;
+    const p = PACKS[SHOP.sel] || PACKS[0];
+    R = `<div class="sk-detail"><span class="kind">Paquete de cartas</span><span class="packslot"></span><b>${p.name}</b><p>${p.desc}</p><details><summary>Probabilidades</summary><ul>${p.odds.map(o => `<li>${o}</li>`).join("")}</ul></details><button class="cta" data-act="buy" ${SAVE.coins < p.price ? "disabled" : ""}>Comprar · ${coinTxt(p.price)}</button></div>`;
+  } else if (m === "sell") {
+    const ks = sellKeys(); if (SHOP.sel >= ks.length) SHOP.sel = 0;
+    L = `<div class="sk-list">${back()}${ks.length ? ks.map((k, i) => `<button class="sk-row${SHOP.sel === i ? " on" : ""}" data-act="sel" data-i="${i}"><i class="heart">♥</i><span>${ITEMS[k].name} ×${ITEMS[k].n}</span><em>+${coinTxt(SELL[k])}</em></button>`).join("") : `<p class="sk-note">No tenés nada para vender.</p>`}</div>`;
+    const k = ks[SHOP.sel];
+    R = k ? `<div class="sk-detail"><span class="kind">Vender</span><span class="icoslot" data-k="${k}"></span><b>${ITEMS[k].name} ×${ITEMS[k].n}</b><p>${ITEMS[k].desc}</p><p>Ceniza te paga ${SELL[k]} por cada uno.</p><div class="sk-btns"><button class="cta" data-act="sell" data-n="1">Vender 1 · +${coinTxt(SELL[k])}</button>${ITEMS[k].n >= 5 ? `<button class="cta" data-act="sell" data-n="5">Vender 5 · +${coinTxt(SELL[k] * 5)}</button>` : ""}</div></div>` : `<p class="sk-note">Cuando tengas cigarrillos, habanos o decoraciones, Ceniza te los compra. Barato.</p>`;
+  } else if (m === "bag") {
+    const ks = bagKeys(); if (SHOP.sel >= ks.length) SHOP.sel = 0;
+    L = `<div class="sk-list">${back()}${ks.map((k, i) => `<button class="sk-row${SHOP.sel === i ? " on" : ""}" data-act="sel" data-i="${i}"><i class="heart">♥</i><span>${ITEMS[k].name}</span><em>×${ITEMS[k].n}</em></button>`).join("")}</div>`;
+    const k = ks[SHOP.sel];
+    R = k ? `<div class="sk-detail"><span class="kind">Mochila</span><span class="icoslot" data-k="${k}"></span><b>${ITEMS[k].name}</b><p>${ITEMS[k].desc}</p>${k === "piece" ? `<div class="vbar"><i style="width:${Math.min(100, SAVE.pieces * 20)}%"></i></div><p>${Math.min(5, SAVE.pieces)}/5</p>` : ""}</div>` : `<p class="sk-note">Vacía.</p>`;
+  } else if (m === "talk") {
+    L = `<div class="sk-list">${back()}${S0.topics.map((tp, i) => `<button class="sk-row" data-act="talk" data-i="${i}"><i class="heart">♥</i><span>${tp[0]}</span></button>`).join("")}</div>`;
+    R = `<p class="sk-note">${SHOP.who === "ceniza" ? "Ceniza te escucha. Más o menos." : "Sor Tosca sonríe muchísimo. Fobi no tanto."}</p>`;
+  } else if (m === "give" || m === "odds") {
+    const ks = ["cig", "cigar"];
+    L = `<div class="sk-list">${back()}${ks.map((k, i) => { const B = BOXES[k], have = k === "cig" ? SAVE.cigs : SAVE.cigars; return `<button class="sk-row${SHOP.sel === i ? " on" : ""}${have < B.cost && m === "give" ? " cant" : ""}" data-act="sel" data-i="${i}"><i class="heart">♥</i><span>${B.name}<small>${B.cost} ${k === "cig" ? "cigarrillos" : "habanos"} · tenés ${have}</small></span></button>`; }).join("")}</div>`;
+    const k = ks[SHOP.sel] || "cig", B = BOXES[k], have = k === "cig" ? SAVE.cigs : SAVE.cigars;
+    const chance = `<p>Probabilidad de mejorar en cada toque: ${B.up.map((u, i) => `${BTIERS[i].n} → ${BTIERS[i + 1].n} ${Math.round(u * 100)}%`).join(" · ")}</p>`;
+    if (m === "give") R = `<div class="sk-detail"><span class="kind">Entregar</span><span class="icoslot" data-k="${k}"></span><b>${B.name}</b><p>${k === "cig" ? "Mejora poco y sus premios son más modestos." : "Mejora mucho más seguido y da mejores premios en cada calidad."}</p>${chance}<button class="cta" data-act="give" ${have < B.cost ? "disabled" : ""}>Entregar ${B.cost} ${k === "cig" ? "cigarrillos" : "habanos"}</button></div>`;
+    else R = `<div class="sk-detail"><span class="kind">Qué puede traer</span><b>${B.name}</b>${chance}<details open><summary>Premio según la calidad final (uno solo)</summary><ul>${BREWARDS.map((tab, ti) => { const col = k === "cig" ? 1 : 2; return `<li><b style="font-size:13px;color:${BTIERS[ti].c}">${BTIERS[ti].n}:</b> ${tab.filter(r => r[col] > 0).map(r => `${rewardText(r, k)} ${r[col]}%`).join(" · ")}</li>`; }).join("")}</ul></details></div>`;
+  }
+  $("skLeft").innerHTML = L; $("skRight").innerHTML = R;
+  document.querySelectorAll("#kioskOv .vic, #kioskOv .icoslot").forEach(sp => { const k = sp.dataset.k, c = sp.classList.contains("vic") ? cigIcon(k === "cigar", 88) : ITEMS[k].icon(220); sp.replaceWith(c); });
+  const ps = document.querySelector("#kioskOv .packslot"); if (ps) ps.replaceWith(cigPackArt(PACKS[SHOP.sel] || PACKS[0], 220));
+}
+function shopAct(el) {
+  const a = el.dataset.act, S0 = SHOPS[SHOP.who];
+  if (a === "skip") { SHOP.shown = SHOP.say.length; return; }
+  if (a === "mode") { SHOP.mode = el.dataset.m; SHOP.sel = 0; if (SHOP.mode === "menu") shopSay(pick(S0.greet)); else if (SHOP.mode === "sell" && !sellKeys().length) shopSay(shopLine("empty")); else shopSay(shopLine(SHOP.mode)); }
+  else if (a === "sel") SHOP.sel = +el.dataset.i;
+  else if (a === "buy") {
+    const p = PACKS[SHOP.sel], items = buyPack(p);
+    if (!items) shopSay(shopLine("poor"));
+    else { SHOP.packT = 3; shopSay(shopLine(items.some(i => i.kind === "cig" && i.cuban) ? "cigar" : "bought")); showOpening(p, items); }
+  } else if (a === "sell") {
+    const k = sellKeys()[SHOP.sel]; if (!k) return; const n = Math.min(+el.dataset.n, ITEMS[k].n);
+    ITEMS[k].n -= n; SAVE.coins += SELL[k] * n; persist(); shopSay(shopLine("sold"));
+  } else if (a === "talk") { const tp = S0.topics[+el.dataset.i], id = "t" + SHOP.who + el.dataset.i, c = SHOP.cyc; if (!c[id] || !c[id].length) c[id] = shuffle(tp[1].map((_, i) => i)); shopSay(tp[1][c[id].pop()]); }
+  else if (a === "give") { const k = SHOP.sel ? "cigar" : "cig"; if (startBlessing(k)) shopSay(shopLine("bless")); else shopSay(shopLine("none")); }
+  else if (a === "exit") { const bye = shopLine("exit"); closeKiosk(); toast(S0.name.split(",")[0] + ": «" + bye + "»", 3); return; }
+  shopRender();
+}
+function openKiosk(who) {
+  SHOP.who = who === "vicio" ? "tosca" : "ceniza"; SHOP.mode = "menu"; SHOP.sel = 0; SHOP.open = true;
+  KSTATE.blessing = null; $("blessStage").hidden = true; $("opening").hidden = true; $("kioskOv").hidden = false;
+  const cv = $("skCv"), dpr = Math.min(2, devicePixelRatio || 1); cv.width = Math.max(1, cv.clientWidth * dpr | 0); cv.height = Math.max(1, cv.clientHeight * dpr | 0);
+  shopSay(pick(SHOPS[SHOP.who].greet)); shopRender(); keys.clear();
+}
+function closeKiosk() { $("kioskOv").hidden = true; SHOP.open = false; keys.clear(); }
+$("kioskOv").addEventListener("click", e => { const el = e.target.closest("[data-act]"); if (el && !el.disabled) shopAct(el); });
+$("kClose").addEventListener("click", closeKiosk);
+$("blessCv").addEventListener("click", tapBlessing);
+$("openDone").addEventListener("click", () => { $("opening").hidden = true; shopRender(); });
+addEventListener("resize", () => { if (!SHOP.open) return; const cv = $("skCv"), dpr = Math.min(2, devicePixelRatio || 1); cv.width = Math.max(1, cv.clientWidth * dpr | 0); cv.height = Math.max(1, cv.clientHeight * dpr | 0); });
+
+// the scene above the dialogue: the shopkeeper behind her counter
+function drawShopScene(cv, t, talk) {
+  const g = cv.getContext("2d"), prev = ctx; ctx = g; const W2 = cv.width, H2 = cv.height;
+  g.setTransform(1, 0, 0, 1, 0, 0);
+  const cz = SHOP.who === "ceniza", cy = H2 * .8, k = H2 / 72;
+  g.fillStyle = cz ? lg(0, 0, 0, H2, ["#3a1d52", "#120a1a"]) : lg(0, 0, 0, H2, ["#8a8498", "#4a4458"]); g.fillRect(0, 0, W2, H2);
+  ctx.save(); ctx.scale(k, k); const w = W2 / k, h = H2 / k;
+  if (cz) {
+    // shelves of cigarette packs on both sides, candles
+    for (const side of [-1, 1]) for (let r = 0; r < 2; r++) {
+      const sx = w / 2 + side * w * .3, y = h * (.3 + r * .24);
+      rrS(sx - 30, y, 60, 3, 1, "#7a4a2a", 1); for (let i = 0; i < 5; i++) { const p = PACKS[(i + r) % 3]; rrS(sx - 26 + i * 11, y - 11, 8, 11, 1, p.color, .8); rr(sx - 25 + i * 11, y - 8, 6, 2, .5, "rgba(255,255,255,.6)"); }
+    }
+    for (const x of [w * .1, w * .9]) { rrS(x - 2.5, h * .22, 5, 12, 1, "#e8e0d0", .8); const f = Math.sin(t * 13 + x) * .6; ctx.fillStyle = rg(x, h * .2, 0, 14, ["rgba(255,200,120,.45)", "rgba(255,200,120,0)"]); ctx.beginPath(); ctx.arc(x, h * .2, 14, 0, TAU); ctx.fill(); ctx.beginPath(); ctx.ellipse(x + f * .4, h * .2, 1.6, 3, 0, 0, TAU); F("#ffcf57"); }
+    ctx.save(); ctx.translate(w / 2, cy / k + 40); drawCeniza(t, talk, SHOP.packT > 0); ctx.restore();
+  } else {
+    // a little stained-glass window with rain behind it, and her "NO" poster
+    const wx = w * .14, wy = h * .36;
+    rrS(wx - 14, wy, 28, 34, 12, "#3a3446", 1.6); ctx.save(); ctx.beginPath(); ctx.roundRect(wx - 12, wy + 2, 24, 30, 10); ctx.clip();
+    ["#5aa8ff", "#ffd34a", "#e86bd3", "#7dffa0"].forEach((c, i) => { ctx.globalAlpha = .55; ctx.fillStyle = c; ctx.fillRect(wx - 12 + (i % 2) * 12, wy + 2 + (i >> 1) * 15, 12, 15); }); ctx.globalAlpha = 1;
+    ctx.strokeStyle = "rgba(200,220,255,.6)"; ctx.lineWidth = .7; for (let i = 0; i < 6; i++) { const ph = (t * 1.3 + i * .29) % 1; ctx.beginPath(); ctx.moveTo(wx - 10 + i * 4, wy + ph * 34); ctx.lineTo(wx - 11 + i * 4, wy + 4 + ph * 34); ctx.stroke(); }
+    ctx.restore(); ctx.strokeStyle = OL; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(wx, wy + 2); ctx.lineTo(wx, wy + 32); ctx.moveTo(wx - 12, wy + 17); ctx.lineTo(wx + 12, wy + 17); ctx.stroke();
+    const px = w * .8; rrS(px - 12, h * .2, 24, 30, 2, "#fff6e3", 1.2); circS(px, h * .2 + 12, 6, "#cfc8d8", .8); ctx.strokeStyle = "#1a1a1a"; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(px - 9, h * .2 + 3); ctx.lineTo(px + 9, h * .2 + 26); ctx.moveTo(px + 9, h * .2 + 3); ctx.lineTo(px - 9, h * .2 + 26); ctx.stroke();
+    ctx.save(); ctx.translate(w / 2, cy / k + 33); drawTosca(t, KSTATE.cough); ctx.restore();
+  }
+  // counter
+  const cc = cy / k;
+  rrS(-4, cc, w + 8, h - cc + 4, 0, lg(0, cc, 0, h, cz ? ["#5a3a6a", "#2a1a3a"] : ["#9a6a42", "#5e3e24"]), 2.5);
+  ctx.strokeStyle = "rgba(0,0,0,.25)"; ctx.lineWidth = 1.2; for (let x = 20; x < w; x += 34) { ctx.beginPath(); ctx.moveTo(x, cc + 3); ctx.lineTo(x, h); ctx.stroke(); }
+  if (cz) { // ashtray with a smoking cigarette
+    const ax = w * .74; ellS(ax, cc - 1.5, 9, 3, "#8a8ea0", 1.2); rrS(ax - 2, cc - 4, 11, 2.4, 1, "#f4efe4", .8); circ(ax + 9, cc - 2.8, 1.2, "#ff7a3a");
+    for (let i = 0; i < 2; i++) { const ph = (t * .5 + i * .5) % 1; ctx.globalAlpha = .5 * (1 - ph); circ(ax + 9 + Math.sin(ph * 6 + i) * 3, cc - 6 - ph * 18, 1.5 + ph * 3, "#c8c0d4"); } ctx.globalAlpha = 1;
+  }
   ctx.restore(); ctx = prev;
 }
 function drawKioskFrame(dt) {
-  KSTATE.t += dt; KSTATE.coughT -= dt;
+  KSTATE.t += dt; KSTATE.coughT -= dt; SHOP.packT = Math.max(0, SHOP.packT - dt);
   if (KSTATE.coughT <= 0) { KSTATE.coughT = rand(2.5, 5); KSTATE.cough = .8; }
-  KSTATE.cough = Math.max(0, (KSTATE.cough || 0) - dt);
-  const kc = $("cenizaCv"), tc = $("toscaCv");
-  if (kc && kc.offsetParent) drawNPCInto(kc, () => drawCeniza(KSTATE.t, Math.sin(KSTATE.t * 9) > .4), 2.1, .97);
-  if (tc && tc.offsetParent) drawNPCInto(tc, () => drawTosca(KSTATE.t, KSTATE.cough), 2.1, .97);
+  KSTATE.cough = Math.max(0, KSTATE.cough - dt);
+  if (SHOP.shown < SHOP.say.length) { SHOP.shown = Math.min(SHOP.say.length, SHOP.shown + dt * 48); $("skSay").textContent = SHOP.say.slice(0, Math.floor(SHOP.shown)); }
+  const talking = SHOP.shown < SHOP.say.length && Math.sin(KSTATE.t * 22) > 0;
+  const cv = $("skCv"); if (cv && cv.offsetParent) drawShopScene(cv, KSTATE.t, talking);
   const bc = $("blessCv"); if (bc && bc.offsetParent) drawBlessBox(bc, dt);
 }
 
@@ -5236,7 +5462,7 @@ const OBJ_INFO = {
   auditor: { title: "El auditor infiltrado", desc: "Un auditor se disfrazó de empleado común: lo vas a reconocer porque se pasa unos papeles de una mano a la otra. Despedilo antes de que llegue al Corazón." },
   escotilla: { title: "El baño portátil", desc: "Pusieron un baño portátil lejos de la base: los empleados que entran salen por la alcantarilla que está al lado del Corazón. Rompé el baño antes de que termine la oleada." },
   velas: { title: "Encendé las velas", desc: "Agarrá la antorcha que apareció junto al Corazón y prendé las 4 velas apagadas del cementerio antes de que termine la oleada." },
-  jarrones: { title: "Los jarrones de Don Hueso", desc: "Don Hueso te mandó jarrones misteriosos alrededor del Corazón. Rompelos todos: pueden salir monedas, caramelos, pociones… o cosas peores." }
+  jarrones: { title: "Jarrones misteriosos", desc: "Aparecieron jarrones misteriosos alrededor del Corazón. Rompelos todos: pueden salir monedas, caramelos, pociones… o cosas peores." }
 };
 const OBJ_REWARD = 200;
 function waveComposition(n) {
@@ -5603,37 +5829,15 @@ function pieceIcon(size) {
 const DECO_ODDS = [["apple", 40], ["dulce", 36], ["caldero", 24]];
 // special decorations are extremely rare: once per pack at most, 1% in the decoration pack, 5% in the mixed ones
 const SPECIAL_REFUND = 1000;
+// Packs: the small one only has cigarettes, the medium one might hide a cuban cigar, the big one always has cigars.
 const PACKS = [
-  { id: "deco", name: "Paquete Decorette", brand: "Decorette", price: 250, color: "#ff8a1f", cigar: .04, desc: "5 cartas de decoración para la defensa. Y un cigarrillo de regalo.", rolls: [{ kind: "deco", n: 5 }], special: .01,
-    odds: ["Cada pegatina: Manzana Verduga 40% · Calabaza Dulce 36% · Caldera Pocionera 24%", "Decoración especial (Manzana Acaramelada): 1% por paquete. Reemplaza a una de las cartas. Si ya la tenés, se cambia por " + SPECIAL_REFUND + " monedas", "Regalo: cigarrillo 96% · habano 4%"] },
-  { id: "fest", name: "Paquete Festivo Light", brand: "Festivo", price: 1000, color: "#9a5ad6", cigar: .2, desc: "4 decoraciones y 1 cosmético para Fobi. Y un cigarrillo de regalo.", rolls: [{ kind: "deco", n: 4 }, { kind: "cos", odds: [["comun", 70], ["raro", 25], ["leg", 5]] }], special: .05,
-    odds: ["4 decoraciones con las probabilidades del sobre de decoraciones", "Decoración especial (Manzana Acaramelada): 5% por paquete, en lugar de una decoración", "1 cosmético: Común 70% · Raro 25% · Legendario 5%", "Si te sale uno repetido, se cambia por monedas", "Regalo: cigarrillo 80% · habano 20%"] },
-  { id: "gold", name: "Paquete Corazón Dorado", brand: "Dorado", price: 3000, color: "#e8b23a", cigar: 1, desc: "3 decoraciones, 1 pieza del próximo festiloco y 2 cosméticos, uno raro o mejor. Viene con un habano.", rolls: [{ kind: "deco", n: 3 }, { kind: "piece" }, { kind: "cos", odds: [["raro", 80], ["leg", 20]] }, { kind: "cos", odds: [["comun", 60], ["raro", 30], ["leg", 10]] }], special: .05,
-    odds: ["3 decoraciones con las probabilidades del sobre de decoraciones", "Decoración especial (Manzana Acaramelada): 5% por paquete, en lugar de una decoración", "1 pieza del próximo festiloco: 100%", "Cosmético 1: Raro 80% · Legendario 20%", "Cosmético 2: Común 60% · Raro 30% · Legendario 10%", "Regalo: habano 100%"] }
+  { id: "deco", name: "Paquete Decorette", brand: "Decorette", price: 500, color: "#ff8a1f", cigs: [2, 3], cigar: 0, cigars: [0, 0], desc: "5 cartas de decoración para la defensa. Trae 2 o 3 cigarrillos comunes.", rolls: [{ kind: "deco", n: 5 }], special: .01,
+    odds: ["Cada carta: Manzana Verduga 40% · Calabaza Dulce 36% · Caldera Pocionera 24%", "Decoración especial (Manzana Acaramelada): 1% por paquete, en lugar de una carta. Si ya la tenés, se cambia por " + SPECIAL_REFUND + " monedas", "Vicios: 2 o 3 cigarrillos (mitad y mitad). Nunca trae habanos"] },
+  { id: "fest", name: "Paquete Festivo Light", brand: "Festivo", price: 1500, color: "#9a5ad6", cigs: [4, 6], cigar: .15, cigars: [1, 1], desc: "4 decoraciones y 1 cosmético para Fobi. Trae de 4 a 6 cigarrillos y, a veces, un habano.", rolls: [{ kind: "deco", n: 4 }, { kind: "cos", odds: [["comun", 70], ["raro", 25], ["leg", 5]] }], special: .05,
+    odds: ["4 decoraciones con las probabilidades del Paquete Decorette", "Decoración especial (Manzana Acaramelada): 5% por paquete, en lugar de una decoración", "1 cosmético: Común 70% · Raro 25% · Legendario 5%. Si te sale repetido, se cambia por monedas", "Vicios: de 4 a 6 cigarrillos (un tercio cada uno) y 15% de que venga 1 habano además"] },
+  { id: "gold", name: "Paquete Corazón Dorado", brand: "Dorado", price: 4000, color: "#e8b23a", cigs: [0, 0], cigar: 1, cigars: [1, 2], desc: "3 decoraciones, 1 pieza del próximo festiloco y 2 cosméticos, uno raro o mejor. Siempre trae habanos.", rolls: [{ kind: "deco", n: 3 }, { kind: "piece" }, { kind: "cos", odds: [["raro", 80], ["leg", 20]] }, { kind: "cos", odds: [["comun", 60], ["raro", 30], ["leg", 10]] }], special: .05,
+    odds: ["3 decoraciones con las probabilidades del Paquete Decorette", "Decoración especial (Manzana Acaramelada): 5% por paquete, en lugar de una decoración", "1 pieza del próximo festiloco: 100%", "Cosmético 1: Raro 80% · Legendario 20%", "Cosmético 2: Común 60% · Raro 30% · Legendario 10%", "Vicios: habanos asegurados. 1 habano 75% · 2 habanos 25%"] }
 ];
-function packArt(p, size) {
-  return mkCanvas(size, size, () => {
-    ctx.translate(size / 2, size / 2); const k = size / 180; ctx.scale(k, k); ctx.rotate(-.06);
-    rrS(-56, -76, 112, 152, 12, lg(-56, -76, 56, 76, [p.color, "#2a1a42"]), 4);
-    ctx.save(); ctx.beginPath(); ctx.roundRect(-56, -76, 112, 152, 12); ctx.clip(); ctx.fillStyle = "rgba(255,255,255,.12)"; for (let i = -6; i < 8; i++) ctx.fillRect(-80 + i * 22, -90, 8, 200); ctx.restore();
-    for (let i = 0; i < 9; i++) { const x = -52 + i * 13; poly([x, -76, x + 6.5, -84, x + 13, -76]); S("#e6dcc8", 1.4); }
-    ctx.save(); ctx.translate(0, 8); ctx.beginPath(); ctx.moveTo(0, 30); ctx.bezierCurveTo(-46, 4, -32, -36, 0, -14); ctx.bezierCurveTo(32, -36, 46, 4, 0, 30); S("#fff4dc", 3); ctx.restore();
-    label(p.id === "deco" ? "DECO" : p.id === "fest" ? "FESTIVO" : "DORADO", 0, 16, 20, p.color);
-    label("FESTILOCOS", 0, -50, 14, "#fff4dc");
-  });
-}
-function renderPacks() {
-  const el = $("packList"); el.innerHTML = "";
-  PACKS.forEach(p => {
-    const d = document.createElement("div"); d.className = "pack";
-    d.appendChild(cigPackArt(p, 360));
-    d.insertAdjacentHTML("beforeend", `<b>${p.name}</b><p>${p.desc}</p><details><summary>Probabilidades</summary><ul>${p.odds.map(o => `<li>${o}</li>`).join("")}</ul></details>`);
-    const b = document.createElement("button"); b.className = "buy"; b.id = "buy-" + p.id;
-    b.innerHTML = `<span class="coin"></span>${p.price.toLocaleString("es-AR")}`;
-    b.disabled = SAVE.coins < p.price; b.addEventListener("click", () => buyPack(p));
-    d.appendChild(b); el.appendChild(d);
-  });
-}
 function rollCos(odds) {
   const rar = weighted(odds), pool = COSMETICS.filter(c => c.rar === rar), c = pick(pool);
   const dup = SAVE.owned.includes(c.id);
@@ -5641,7 +5845,7 @@ function rollCos(odds) {
   return { kind: "cos", c, dup, refund: dup ? DUP_REFUND[rar] : 0 };
 }
 function buyPack(p) {
-  if (SAVE.coins < p.price) { sayCeniza("poor"); return; }
+  if (SAVE.coins < p.price) return null;
   SAVE.coins -= p.price;
   const items = [];
   let special = Math.random() < (p.special || 0);
@@ -5657,24 +5861,23 @@ function buyPack(p) {
     else if (r.kind === "piece") { SAVE.pieces++; items.push({ kind: "piece" }); }
     else items.push(rollCos(r.odds));
   });
-  // the "free gift" in every pack
-  const cuban = Math.random() < (p.cigar || 0);
-  if (cuban) SAVE.cigars = (SAVE.cigars || 0) + 1; else SAVE.cigs = (SAVE.cigs || 0) + 1;
-  items.push({ kind: "cig", cuban });
-  sayCeniza(cuban ? "cigar" : "buy");
-  persist(); showOpening(p, items);
+  // the vices that come inside
+  const nc = p.cigs[0] + randi(p.cigs[1] - p.cigs[0] + 1);
+  const nh = Math.random() < p.cigar ? (p.id === "gold" ? (Math.random() < .25 ? 2 : 1) : 1) : 0;
+  if (nc) { SAVE.cigs += nc; items.push({ kind: "cig", cuban: false, n: nc }); }
+  if (nh) { SAVE.cigars += nh; items.push({ kind: "cig", cuban: true, n: nh }); }
+  persist(); return items;
 }
 function showOpening(p, items) {
-  ["tab-sobres", "tab-vicio", "tab-inv", "kTabs"].forEach(id => $(id).hidden = true);
   $("opening").hidden = false; $("openName").textContent = p.name;
   const box = $("stickers"); box.innerHTML = "";
   items.sort((a, b) => (a.kind === "deco") - (b.kind === "deco")).reverse();
   const sp = items.findIndex(it => it.kind === "special"); if (sp >= 0) items.push(items.splice(sp, 1)[0]);
-  const cg = items.findIndex(it => it.kind === "cig"); if (cg >= 0) items.push(items.splice(cg, 1)[0]);
+  for (const cu of [false, true]) { const cg = items.findIndex(it => it.kind === "cig" && it.cuban === cu); if (cg >= 0) items.push(items.splice(cg, 1)[0]); }
   items.forEach((it, i) => {
     const d = document.createElement("div"); d.className = "stk"; d.style.setProperty("--d", (i * .22) + "s");
     let rc, nm, rar, extra = "", icon;
-    if (it.kind === "cig") { rc = it.cuban ? "#ffd34a" : "#d9cfc0"; nm = it.cuban ? "Habano" : "Cigarrillo"; rar = it.cuban ? "¡Regalo cubano!" : "Regalo"; icon = cigIcon(it.cuban, 200); extra = `<em>Llevalo a la Caja Antivicio</em>`; }
+    if (it.kind === "cig") { rc = it.cuban ? "#ffd34a" : "#d9cfc0"; nm = (it.cuban ? "Habano" : "Cigarrillo") + (it.n > 1 ? "s ×" + it.n : ""); rar = it.cuban ? "¡Cubano!" : "Vicio"; icon = cigIcon(it.cuban, 200); extra = `<em>Para la Caja Antivicio</em>`; if (it.cuban) d.classList.add("special"); }
     else if (it.kind === "special") { rc = "#ffd34a"; nm = DECO[it.k].name; rar = "¡Decoración especial!"; icon = decoIcon(it.k, 200); extra = it.dup ? `<em>Repetida · +${SPECIAL_REFUND}</em>` : `<em>¡Tuya para siempre!</em>`; d.classList.add("special"); }
     else if (it.kind === "deco") { rc = "#ff9a4a"; nm = DECO[it.k].name; rar = "Decoración"; icon = decoIcon(it.k, 200); }
     else if (it.kind === "piece") { rc = "#e86bd3"; nm = "Pieza del próximo festiloco"; rar = "Pieza " + SAVE.pieces + "/5"; icon = pieceIcon(200); }
@@ -5686,36 +5889,6 @@ function showOpening(p, items) {
   $("kCoins").textContent = SAVE.coins.toLocaleString("es-AR");
   $("openDone").focus();
 }
-function renderInv() {
-  const el = $("invList"); el.innerHTML = "";
-  el.insertAdjacentHTML("beforeend", `<p style="margin-bottom:10px">Cada defensa te da 2 Manzanas, 2 Calabazas y 1 Caldera Pocionera gratis. Lo que tenés acá se suma, y se gasta solo cuando lo colocás.</p>`);
-  const g = document.createElement("div"); g.className = "invgrid";
-  ["apple", "dulce", "caldero"].forEach(k => { const d = document.createElement("div"); d.className = "inv"; d.appendChild(decoIcon(k, 160)); d.insertAdjacentHTML("beforeend", `<b>×${SAVE.inv[k]}</b><span>${DECO[k].name}</span>`); g.appendChild(d); });
-  { const has = SAVE.specials.includes("caramel"), d = document.createElement("div"); d.className = "inv" + (has ? "" : " locked"); d.appendChild(decoIcon("caramel", 160)); d.insertAdjacentHTML("beforeend", `<b>${has ? "Tuya" : "Bloqueada"}</b><span>${DECO.caramel.name}</span><span class="fine">${has ? "Especial: se puede colocar en cada partida, con 60 s de espera" : "Especial y muy rara: 1% en el sobre de decoraciones, 5% en los otros sobres"}</span>`); g.appendChild(d); }
-  const pc = document.createElement("div"); pc.className = "inv"; pc.appendChild(pieceIcon(160));
-  pc.insertAdjacentHTML("beforeend", `<b>${Math.min(SAVE.pieces, 5)}/5</b><span>Próximo festiloco</span><div class="pbar"><i style="width:${Math.min(100, SAVE.pieces * 20)}%"></i></div><span class="fine">${SAVE.pieces >= 5 ? "Completo: se desbloquea cuando exista" : "Se consiguen en el Sobre Dorado"}</span>`);
-  g.appendChild(pc);
-  [false, true].forEach(cu => { const d = document.createElement("div"); d.className = "inv"; d.appendChild(cigIcon(cu, 160)); d.insertAdjacentHTML("beforeend", `<b>×${cu ? SAVE.cigars : SAVE.cigs}</b><span>${cu ? "Habanos" : "Cigarrillos"}</span><span class="fine">Se entregan en la Caja Antivicio, en la otra punta de la plaza</span>`); g.appendChild(d); });
-  el.appendChild(g);
-}
-function setTab(t) {
-  document.querySelectorAll("#kTabs .tab").forEach(b => b.classList.toggle("sel", b.dataset.tab === t));
-  ["sobres", "vicio", "inv"].forEach(x => $("tab-" + x).hidden = x !== t);
-  if (t === "sobres") { renderPacks(); sayCeniza("idle"); } if (t === "inv") renderInv(); if (t === "vicio") { renderAntivicio(); sayTosca("idle"); }
-}
-let kioskMode = "kiosk";
-function openKiosk(mode) {
-  kioskMode = mode === "vicio" ? "vicio" : "kiosk";
-  KSTATE.blessing = null; $("kioskOv").hidden = false; $("opening").hidden = true; $("kTabs").hidden = false; $("kCoins").textContent = SAVE.coins.toLocaleString("es-AR");
-  $("kTitle").textContent = kioskMode === "vicio" ? "Caja Antivicio" : "Kiosco de Ceniza";
-  document.querySelectorAll("#kTabs .tab").forEach(b => b.hidden = kioskMode === "vicio" ? b.dataset.tab === "sobres" : b.dataset.tab === "vicio");
-  setTab(kioskMode === "vicio" ? "vicio" : "sobres"); keys.clear();
-}
-function closeKiosk() { $("kioskOv").hidden = true; keys.clear(); }
-document.querySelectorAll("#kTabs .tab").forEach(b => b.addEventListener("click", () => setTab(b.dataset.tab)));
-$("kClose").addEventListener("click", closeKiosk);
-$("blessCv").addEventListener("click", tapBlessing);
-$("openDone").addEventListener("click", () => { $("opening").hidden = true; $("kTabs").hidden = false; $("kCoins").textContent = SAVE.coins.toLocaleString("es-AR"); setTab(kioskMode === "vicio" ? "vicio" : "sobres"); });
 
 // ================= other overlays =================
 function openBases() {
@@ -6067,6 +6240,6 @@ function frame(now) {
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
-window.__festi = { get G() { return G; }, get SAVE() { return SAVE; }, startSlotNow() { if (G && G.mode === "match") { G.wave = 4; startSlot(5); } }, spawn: t => spawnEnemy(t), hurt: (t, a) => hurtAlly(t, a), startEscape: () => startEscape(), startObj: t => { G.obj = null; startObjective(t); }, endWaveNow2: () => endWave(), mapShot: () => { const c = document.createElement("canvas"), k = .3; c.width = GY.w * k; c.height = GY.h * k; const g = c.getContext("2d"); g.scale(k, k); g.drawImage(GY.bg, 0, 0); [...GY.props].sort((a, b) => a.y - b.y).forEach(p => g.drawImage(p.img, p.x - p.ax, p.y - p.ay)); g.fillStyle = "#ff8a1f"; for (const kk in BASES) { g.beginPath(); g.arc(BASES[kk].core.x, BASES[kk].core.y, 40, 0, 7); g.fill(); } g.fillStyle = "#7dffa0"; g.beginPath(); g.arc(PHONE_POS.x, PHONE_POS.y, 40, 0, 7); g.fill(); g.fillStyle = "#6ab8ff"; MTOMBS.forEach(t => { g.beginPath(); g.arc(t.x, t.y, 20, 0, 7); g.fill(); }); return c.toDataURL(); }, mt: () => G.mtombs, endWaveNow: () => endWave(), addPick: w => addPick(w), callTeam: () => callTeam(), dropPart: s => dropPart(s), build: w => build(w), selectSlot: i => { G.sel = i; }, npcShot: (c, w) => drawNPCInto(c, () => { ctx.translate(-55, 0); drawCeniza(1, false); ctx.translate(60, 0); drawCeniza(2, true); ctx.translate(55, 0); drawTosca(1, 0); ctx.translate(55, 0); drawTosca(1, .6); }, 4.2, .95) };
+window.__festi = { get G() { return G; }, get SAVE() { return SAVE; }, startSlotNow() { if (G && G.mode === "match") { G.wave = 4; startSlot(5); } }, spawn: t => spawnEnemy(t), hurt: (t, a) => hurtAlly(t, a), startEscape: () => startEscape(), startObj: t => { G.obj = null; startObjective(t); }, endWaveNow2: () => endWave(), mapShot: () => { const c = document.createElement("canvas"), k = .3; c.width = GY.w * k; c.height = GY.h * k; const g = c.getContext("2d"); g.scale(k, k); g.drawImage(GY.bg, 0, 0); [...GY.props].sort((a, b) => a.y - b.y).forEach(p => g.drawImage(p.img, p.x - p.ax, p.y - p.ay)); g.fillStyle = "#ff8a1f"; for (const kk in BASES) { g.beginPath(); g.arc(BASES[kk].core.x, BASES[kk].core.y, 40, 0, 7); g.fill(); } g.fillStyle = "#7dffa0"; g.beginPath(); g.arc(PHONE_POS.x, PHONE_POS.y, 40, 0, 7); g.fill(); g.fillStyle = "#6ab8ff"; MTOMBS.forEach(t => { g.beginPath(); g.arc(t.x, t.y, 20, 0, 7); g.fill(); }); return c.toDataURL(); }, mt: () => G.mtombs, endWaveNow: () => endWave(), addPick: w => addPick(w), callTeam: () => callTeam(), dropPart: s => dropPart(s), build: w => build(w), selectSlot: i => { G.sel = i; }, npcShot: (c, w) => drawNPCInto(c, () => { ctx.translate(-55, 0); drawCeniza(1, false); ctx.translate(60, 0); drawCeniza(2, true, true); ctx.translate(55, 0); drawTosca(1, 0); ctx.translate(55, 0); drawTosca(1, .6); }, 4.2, .95) };
 })();
 </script>

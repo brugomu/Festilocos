@@ -303,6 +303,29 @@ details ul{margin:6px 0 0;padding-left:16px;display:flex;flex-direction:column;g
   .pad{transform:scale(.9)}.movehint{width:96px;height:96px}.use{height:80px;min-width:80px}
   .ctx{margin-top:4px;padding:6px}.bosses{display:none}
 }
+/* skill buttons are glowing carved pumpkins (semi-transparent); --lit is the candle color inside */
+.skill{--lit:255,214,120;border-radius:50% 50% 47% 47%/54% 54% 46% 46%!important;overflow:visible!important;border:3px solid rgba(70,24,6,.75)!important;
+  background:radial-gradient(circle at 50% 56%,rgba(var(--lit),.82) 0 26%,rgba(var(--lit),.25) 40%,rgba(var(--lit),0) 50%),
+  radial-gradient(ellipse 25% 49% at 35% 54%,transparent 90%,rgba(90,28,4,.6) 94%,transparent 98%),
+  radial-gradient(ellipse 25% 49% at 65% 54%,transparent 90%,rgba(90,28,4,.6) 94%,transparent 98%),
+  radial-gradient(ellipse 20% 46% at 19% 55%,rgba(214,96,26,.62) 0 96%,transparent 100%),
+  radial-gradient(ellipse 20% 46% at 81% 55%,rgba(214,96,26,.62) 0 96%,transparent 100%),
+  radial-gradient(ellipse 25% 49% at 35% 54%,rgba(240,124,36,.62) 0 96%,transparent 100%),
+  radial-gradient(ellipse 25% 49% at 65% 54%,rgba(240,124,36,.62) 0 96%,transparent 100%),
+  radial-gradient(ellipse 27% 50% at 50% 53%,rgba(255,150,50,.66) 0 96%,transparent 100%),rgba(170,70,20,.4)!important;
+  box-shadow:0 3px 0 rgba(40,12,2,.8),0 0 16px rgba(var(--lit),.25)!important}
+.skill::before{content:"";position:absolute;top:-9px;left:calc(50% - 5px);width:10px;height:13px;border-radius:3px 3px 2px 2px;background:linear-gradient(#7a8a3a,#4a5a22);border:2px solid #241406;transform:rotate(12deg);z-index:1;pointer-events:none}
+.skill::after{inset:8%!important}
+.skill .key{top:12px!important;color:#fff2cf!important;text-shadow:0 1px 0 #3a1404,0 0 3px #3a1404}
+.skill .nm{color:#fff2cf!important;text-shadow:0 1px 0 #3a1404,0 0 3px #3a1404}
+.skill svg{stroke:#3a1404!important}
+.skill.atk{--lit:166,244,232}.skill.atk svg{stroke:#123a36!important}
+#bF{--lit:184,245,154}
+.skill.pot{--lit:255,226,160}
+.skill.ready{box-shadow:0 3px 0 rgba(40,12,2,.8),0 0 22px rgba(155,227,122,.85)!important}
+.skill.ultmode{--lit:200,255,150}
+.skill.rage{--lit:255,120,80;border-color:#ff5a46!important}
+.skill.rage::before{background:linear-gradient(#7a8a3a,#4a5a22);inset:auto;animation:none}
 @media (max-height:400px){.pad{transform:scale(.8)}.skill .nm{display:none}}
 @media (pointer:fine){.movehint{display:none}}
 </style>

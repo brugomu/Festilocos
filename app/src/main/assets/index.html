@@ -2097,12 +2097,14 @@ function drawBecario(e) {
 }
 const BOSS_SCALE = { mocha: 1.8, becario: 1.6 };
 const DRAWERS = { fumador: drawFumador, fiestero: drawFiestero, emp: drawEmployee, cafe: drawCafetero, friki: drawFriki, manitas: drawManitas, memo: drawMemo, auditor: drawAuditor, mocha: drawMocha, becario: drawBecario };
-const LEARN_NAMES = { cig: "cigarrillo", ash: "escupitajo de ceniza", smoke: "humareda", dash: "varita de luz", breakdance: "breakdance", monkey: "mono", portal: "portal", sip: "café", kick: "patada", nails: "clavos", hammer: "martillazo", plane: "avión", spray: "chorro", share: "compartir", shout: "grito", kame: "Mame-Mame-Ka", bomb: "cafetera", helmets: "cascos", tremble: "temblor", puff: "vapor", ladder: "escalera" };
+const LEARN_NAMES = { pucho: "pausa para el pucho", conga: "conga lunar", parlante: "parlante", cig: "cigarrillo", ash: "escupitajo de ceniza", smoke: "humareda", dash: "varita de luz", breakdance: "breakdance", monkey: "mono", portal: "portal", sip: "café", kick: "patada", nails: "clavos", hammer: "martillazo", plane: "avión", spray: "chorro", share: "compartir", shout: "grito", kame: "Mame-Mame-Ka", bomb: "cafetera", helmets: "cascos", tremble: "temblor", puff: "vapor", ladder: "escalera" };
 function drawEnemy(e) {
   if (e.hidden) return;
   if (e.type === "portal") { drawPortalDoor(e); return; }
   if (e.type === "hatch") { drawHatchEnt(e); return; }
   if (e.type === "vase") { drawVase(e); return; }
+  if (e.type === "speaker") { drawSpeaker(e); return; }
+  if (e.type === "fiestero") drawCongaLine(e);
   if (e.type === "monkey") { drawMonkey(e); return; }
   if (e.type === "memo") { if (e.blue) drawBlueDoor(e.x, e.y, e.doorOpen || 0, undefined, 0, "orange"); else drawDoor(e); }
   drawBreakZone(e);
@@ -2114,6 +2116,7 @@ function drawEnemy(e) {
   if (e.boost > 0 || (e.action && e.action.name === "sip")) ctx.translate(Math.sin(T() * 60) * 1.4, 0);
   ctx.scale(e.face * k, k);
   (DRAWERS[e.type] || drawEmployee)(e);
+  if (e.pucho > 0 && e.type !== "fumador") drawPucho(e);
   if (e.flash > 0) { ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = .45; circ(0, -45, 10.5, "#fff"); rr(-12, -34, 24, 26, 4, "#fff"); }
   ctx.restore();
   drawHelmet(e); drawKameCharge(e);
@@ -2158,6 +2161,7 @@ const ETYPES = {
   manitas: { hp: 125, spd: 44, dmg: 4, atk: 1.1, coin: 15, r: 16 },
   fumador: { hp: 95, spd: 50, dmg: 3, atk: 1.1, coin: 15, r: 15 },
   fiestero: { hp: 105, spd: 60, dmg: 4, atk: 1, coin: 15, r: 15 },
+  speaker: { hp: 70, spd: 0, dmg: 0, atk: 1, coin: 5, r: 16 },
   memo: { hp: 60, spd: 0, dmg: 0, atk: 1, coin: 18, r: 14 },
   monkey: { hp: 22, spd: 0, dmg: 0, atk: 1, coin: 2, r: 10 },
   portal: { hp: 110, spd: 0, dmg: 0, atk: 1, coin: 6, r: 18 },
@@ -2547,7 +2551,7 @@ function tickFesti(u, dt) {
   if (u.reload > 0) { u.reload -= dt; if (u.reload <= 0) { u.reload = 0; u.ammo = magOf(u); } }
   else if (u.ammo < magOf(u) && u.idleFire > 2.5) u.reload = reloadOf(u);
   u.fireCd -= dt;
-  if (G.mode === "match") tickStatus(u, dt);
+  if (G.mode === "match") { tickStatus(u, dt); tickKnock(u, dt); }
   if (G.mode !== "match" || !u.alive) return;
   let milked = false;
   u.puddleT -= dt;
@@ -2682,7 +2686,11 @@ function updateEnemy(e, dt) {
   if (e.breakT > 0) { e.breakT -= dt; reflectAround(e); }
   if (e.stun > 0) { if (e.prep) { e.prep = null; e.tell = null; e.aimAt = null; } return; }
   if (e.prep) { e.prep.t -= dt; if (e.prep.t <= 0) { const f = e.prep.fn; e.prep = null; e.aimAt = null; f(); } return; }
+  // taken over by a smoke break or a conga
+  if (e.puchoOf && updatePuchoMate(e, dt)) return;
+  if (e.congaOf) { const f = e.congaOf; if (f.dead || !f.conga) { e.congaOf = null; if (f.dead) { e.stun = Math.max(e.stun, 1.5); text(e.x, e.y - 70, "¿eh?", "#ffe2b8", 11); } } else if (f.stun > 0) endConga(f, true); else return; }
   switch (e.type) {
+    case "speaker": updateSpeaker(e, dt); break;
     case "emp": defaultAI(e, dt); break;
     case "cafe": updateCafetero(e, dt); break;
     case "friki": updateFriki(e, dt); break;
@@ -2767,6 +2775,9 @@ function becarioUse(e, abil) {
     else if (abil === "smoke") bigSmoke(e.x, e.y - 10);
     else if (abil === "dash") { const u = findEnemyTarget(e, 360, true) || t; e.action = { name: "leap", t: .45, tx: u.x, ty: u.y }; }
     else if (abil === "breakdance") { e.breakT = 3; }
+    else if (abil === "pucho") { e.hp = Math.min(e.maxhp, e.hp + e.maxhp * .12); text(e.x, e.y - 120, "*fuuu* Ahora sí.", "#d9d2e0", 14); }
+    else if (abil === "conga") { for (const o of G.enemies) if (!o.dead && !o.boss && !o.prop && dist(o, e) < 300) o.speedBuff = 4; text(e.x, e.y - 120, "¡Todos a bailar!", "#ff9ae6", 14); }
+    else if (abil === "parlante") placeSpeaker(e);
     else if (abil === "tremble") { e.tremble = 4; }
     else if (abil === "puff") { e.action = { name: "spray", t: 1.2, ang: 0 }; }
   }
@@ -4580,7 +4591,7 @@ const isGuest = () => !!(G && G.net === "guest");
 const isHost = () => NET.role === "host";
 
 // ---------- packing the match into plain data ----------
-const NET_SKIP = new Set(["path", "fn", "gaps", "candies", "learned2"]);
+const NET_SKIP = new Set(["path", "fn", "gaps", "candies", "learned2", "puchoOf", "congaOf", "pauseTo", "conga", "hitIds"]);
 const LISTS = ["smokes", "potThrows", "booms", "enemies", "shots", "eshots", "bats", "bigbats", "tombs", "skeletons", "ghosts", "decos", "cleavers", "pickups", "velas", "puddles", "wolves", "ladders", "drops", "duckFalls", "bubbles", "runDucks", "tombFly", "shadows", "spirits", "ducks"];
 function nid(o) { return o._id || (o._id = ++NET.ids); }
 const isEnt = v => v && typeof v === "object" && typeof v.x === "number" && typeof v.y === "number" && (v.kind !== undefined || v.type !== undefined || v.hp !== undefined);
@@ -4800,6 +4811,9 @@ function guestUpdate(dt) {
   const p = G.player, k = Math.min(1, dt * 14);
   for (const key of LISTS) for (const o of G[key]) if (o._tx !== undefined) { o.x += (o._tx - o.x) * k; o.y += (o._ty - o.y) * k; }
   for (const a of G.allies) if (a._tx !== undefined) { a.x += (a._tx - a.x) * k; a.y += (a._ty - a.y) * k; }
+  // shoves from the host (like the Partier's speaker) are applied here, since I move myself
+  if ((p.kbId || 0) !== (NET.kbId || 0)) { NET.kbId = p.kbId || 0; NET.kb = { x: p.kbx || 0, y: p.kby || 0, t: .3 }; }
+  if (NET.kb && NET.kb.t > 0) { NET.kb.t -= dt; const px = p.x; p.x += NET.kb.x * dt; p.y += NET.kb.y * dt; collideWorld(p, px); if (G.core) pushFromCore(p); }
   if (p.alive && !(p.stun > 0) && !p.enter) {
     let mx = 0, my = 0;
     if (keys.has("KeyA") || keys.has("ArrowLeft")) mx -= 1;
@@ -5607,7 +5621,7 @@ function drawKioskFrame(dt) {
 // After every even horde Gancho sets up next to the Heart. Each skill (not the ultimate) has two upgrade paths of
 // three levels; picking one path locks the other. Prices go up with each level and with each horde (like Brotato).
 // The next horde only starts when every player has rung the megaphone (bots follow the humans).
-const BAJA = { emp: 1, fumador: 2, fiestero: 2, cafe: 2, friki: 2, manitas: 2, memo: 2, auditor: 3, hatch: 3, portal: 1, mocha: 15, becario: 15 };
+const BAJA = { speaker: 1, emp: 1, fumador: 2, fiestero: 2, cafe: 2, friki: 2, manitas: 2, memo: 2, auditor: 3, hatch: 3, portal: 1, mocha: 15, becario: 15 };
 const UPG_COST = [8, 14, 22];
 // more festilocos on the field = everyone's kills are split, so Gancho lowers his prices
 const partySize = () => Math.min(4, 1 + (G && G.allies ? G.allies.filter(a => a.alive || a.remote).length : 0));
@@ -5902,6 +5916,9 @@ function spitAsh(e, t) {
 }
 function bigSmoke(x, y) { G.smokes.push({ kind: "smoke", x, y, r: SMOKE_R, life: 10, max: 10, seed: rand(0, 100) }); ring(x, y, 20, SMOKE_R, "rgba(200,195,210,.6)", .7); }
 function updateFumador(e, dt) {
+  if (updatePucho(e, dt)) return;
+  e.puchoCd = (e.puchoCd ?? 4) - dt;
+  if (e.hp < e.maxhp * .6 && e.puchoCd <= 0) { e.puchoCd = 22; startPucho(e); return; }
   e.cigCd = (e.cigCd ?? rand(.8, 1.6)) - dt; e.ashCd = (e.ashCd ?? rand(5, 8)) - dt; e.smokeCd = (e.smokeCd ?? rand(6, 9)) - dt;
   const u = fsNear(e, 340);
   // smokes the whole thing in one pull and leaves a huge cloud behind
@@ -5937,7 +5954,13 @@ function updateFiestero(e, dt) {
     if (e.t <= 0) { e.state = "walk"; text(e.x, e.y - 80, "¡Fiesta!", "#ff9ae6", 13); }
     return;
   }
+  if (e.conga && updateConga(e, dt)) return;
+  e.congaCd = (e.congaCd ?? rand(3, 6)) - dt; e.speakerCd = (e.speakerCd ?? rand(5, 8)) - dt;
   const u = fsNear(e, 420);
+  // moonwalk conga: gathers the employees around him and pushes them to the Heart, with him at the back
+  if (e.congaCd <= 0 && !u && dist(e, G.core) > 380) { e.congaCd = 16; if (e.prep) return; prepare(e, "congawind", .5, "255,107,214", () => { if (!startConga(e)) e.congaCd = 3; }); return; }
+  // the speaker
+  if (u && e.speakerCd <= 0) { e.speakerCd = 15; prepare(e, "speaker", .6, "107,214,255", () => placeSpeaker(e)); return; }
   // breakdance when things are flying his way
   const incoming = G.shots.some(s => !s.dead && Math.hypot(s.x - e.x, s.y - e.y) < 320) || G.bats.some(b => !b.dead && (b.state === "fly" || b.state === "chase") && Math.hypot(b.x - e.x, b.y - e.y) < 320);
   if (e.breakCd <= 0 && u && incoming) { e.breakCd = 13; prepare(e, "drop", .35, "255,107,214", () => { e.state = "break"; e.t = 4; e.spin = 0; text(e.x, e.y - 90, "¡Breakdance!", "#ff9ae6", 15); notifyAbility(e, "breakdance"); }); return; }
@@ -6036,6 +6059,128 @@ function drawBreakZone(e) {
   ctx.beginPath(); ctx.ellipse(0, -10, BREAK_R, BREAK_R * .8, 0, 0, TAU); ctx.stroke(); ctx.setLineDash([]);
   ctx.globalAlpha = .12; ctx.fillStyle = `hsl(${(t * 200 + 120) % 360},90%,65%)`; ctx.beginPath(); ctx.ellipse(0, -10, BREAK_R, BREAK_R * .8, 0, 0, TAU); ctx.fill();
   ctx.restore();
+}
+
+// ================= Smoker: smoke break =================
+// When he's hurt he walks away from the fight to smoke. He heals, and calls a few nearby employees, who stop
+// to smoke with him and heal a little too. If you hit him during the break he gets furious and runs much faster.
+function startPucho(e) {
+  const u = fsNear(e, 600), a = u ? Math.atan2(e.y - u.y, e.x - u.x) : rand(0, TAU);
+  e.state = "toPause"; e.t = 1.4; e.pauseTo = { x: clamp(e.x + Math.cos(a) * 160, 60, W.w - 60), y: clamp(e.y + Math.sin(a) * 110, 80, W.h - 60) };
+  const mates = G.enemies.filter(o => o !== e && !o.dead && !o.boss && !o.prop && !o.hidden && !o.congaOf && !o.puchoOf && ["emp", "cafe", "friki", "manitas", "fumador", "fiestero"].includes(o.type) && dist(o, e) < 240).slice(0, 3);
+  mates.forEach((o, i) => { o.puchoOf = e; o.puchoSpot = i; });
+  text(e.x, e.y - 90, mates.length ? "¡Pausa para el pucho! ¿Vienen?" : "Pausa para el pucho…", "#d9d2e0", 14); notifyAbility(e, "pucho");
+}
+function puchoSpot(e, i) { const a = -Math.PI / 2 + (i - 1) * 1.2; return { x: e.x + Math.cos(a) * 46, y: e.y + 22 + Math.sin(a) * 20 }; }
+function endPucho(e, angry) {
+  for (const o of G.enemies) if (o.puchoOf === e) { o.puchoOf = null; o.pucho = 0; if (angry) o.speedBuff = 3; }
+  e.state = "walk"; e.pucho = 0;
+  if (angry) { e.speedBuff = 7; e.boost = 7; text(e.x, e.y - 95, "¡¿NI FUMAR TRANQUILO?!", "#ff8a6a", 16); ring(e.x, e.y, 10, 90, "rgba(255,120,90,.7)", .4); }
+}
+// returns true when the smoke break took over this frame
+function updatePucho(e, dt) {
+  if (e.state === "toPause") {
+    e.t -= dt; stepToward(e, e.pauseTo.x, e.pauseTo.y, enemySpeed(e) * 1.3, dt);
+    if (e.t <= 0 || dist(e, e.pauseTo) < 10) { e.state = "pause"; e.t = 6; e.pauseHp = e.hp; e.pucho = 6; }
+    return true;
+  }
+  if (e.state === "pause") {
+    e.t -= dt; e.pucho = e.t;
+    if (e.hp < e.pauseHp - .5) { endPucho(e, true); return true; }
+    e.hp = Math.min(e.maxhp, e.hp + e.maxhp * .045 * dt); e.pauseHp = e.hp;
+    if (Math.random() < dt * 3) G.parts.push({ x: e.x + e.face * 14, y: e.y - 50, vx: rand(-8, 8), vy: -30, life: 1.2, max: 1.2, color: "rgba(210,205,220,.7)", size: 5 });
+    if (e.t <= 0) endPucho(e, false);
+    return true;
+  }
+  return false;
+}
+// the employees who joined the break
+function updatePuchoMate(o, dt) {
+  const e = o.puchoOf;
+  if (!e || e.dead || (e.state !== "pause" && e.state !== "toPause")) { o.puchoOf = null; o.pucho = 0; return false; }
+  if (o.stun > 0) return true;
+  const s = puchoSpot(e, o.puchoSpot);
+  if (dist(o, s) > 8) stepToward(o, s.x, s.y, enemySpeed(o) * 1.2, dt);
+  else { o.face = e.x >= o.x ? 1 : -1; if (e.state === "pause") { o.pucho = 1; o.hp = Math.min(o.maxhp, o.hp + o.maxhp * .02 * dt); } }
+  return true;
+}
+
+// ================= Partier: moonwalk conga and the speaker =================
+// The conga: nearby employees line up IN FRONT of him and moonwalk toward the Heart much faster. He stays at the
+// very back, so to break it you have to get to him (stun him or take him down); then everyone ends up dizzy.
+const CONGA_GAP = 34;
+function startConga(e) {
+  const goal = G.core || e;
+  const mates = G.enemies.filter(o => o !== e && !o.dead && !o.boss && !o.prop && !o.hidden && !o.congaOf && !o.puchoOf && !o.conga && ["emp", "cafe", "friki", "manitas", "fumador"].includes(o.type) && dist(o, e) < 280)
+    .sort((a, b) => dist(a, goal) - dist(b, goal)).slice(0, 5);
+  if (mates.length < 2) return false;
+  e.conga = { ids: mates.map(m => nid(m)), t: 9 };
+  mates.forEach(m => { m.congaOf = e; m.prep = null; m.state = m.state === "away" ? m.state : "walk"; });
+  text(e.x, e.y - 95, "¡CONGA LUNAR!", "#ff9ae6", 17); ring(e.x, e.y, 10, 150, "rgba(255,107,214,.7)", .6); notifyAbility(e, "conga");
+  return true;
+}
+function congaChain(e) { const byId = new Map(G.enemies.map(o => [nid(o), o])); return e.conga.ids.map(id => byId.get(id)).filter(o => o && !o.dead && o.congaOf === e); }
+function endConga(e, broken) {
+  for (const o of G.enemies) if (o.congaOf === e) { o.congaOf = null; if (broken) { o.stun = Math.max(o.stun, 1.5); text(o.x, o.y - 70, "¿eh?", "#ffe2b8", 11); } }
+  if (broken) text(e.x, e.y - 95, "¡Se rompió la conga!", "#ffd27a", 15);
+  e.conga = null;
+}
+function updateConga(e, dt) {
+  const C = e.conga; C.t -= dt;
+  const chain = congaChain(e);
+  if (e.stun > 0) { endConga(e, true); return true; }
+  if (C.t <= 0 || chain.length < 1) { endConga(e, false); return false; }
+  // the head goes for the Heart (or whoever is right in front of it); everyone else follows the one ahead
+  const head = chain[0], tgt = findEnemyTarget(head, 120) || G.core;
+  if (tgt && dist(head, tgt) - tgt.r - head.r < 8) { endConga(e, false); return false; } // they arrived: the dance is over, time to attack
+  const moon = (o, gx, gy, spd) => { const px = o.x; o.walk = (o.walk || 0) + dt * 3; stepToward(o, gx, gy, spd, dt); o.face = gx >= o.x ? -1 : 1; o.moon = .3; }; // facing backwards: moonwalk
+  const spd = enemySpeed(head) * 1.7;
+  moon(head, tgt.x, tgt.y, spd);
+  for (let i = 1; i < chain.length; i++) { const a = chain[i - 1], o = chain[i]; if (dist(o, a) > CONGA_GAP) moon(o, a.x, a.y, spd * 1.15); }
+  const last = chain[chain.length - 1]; if (dist(e, last) > CONGA_GAP) moon(e, last.x, last.y, spd * 1.15);
+  if (Math.random() < dt * 5) { const o = pick(chain.concat([e])); text(o.x + rand(-10, 10), o.y - 75, "♪", pick(["#ff9ae6", "#7dff8a", "#6bd6ff"]), 13); }
+  return true;
+}
+// the speaker: a bass wave every so often that shoves festilocos away (you can break it)
+function placeSpeaker(e) {
+  const x = clamp(e.x + e.face * 46, 60, W.w - 60), y = e.y + 8;
+  makeProp("speaker", x, y, 70, { life: 12, pulseT: .8, prop: true });
+  burst(x, y - 20, "#ff6bd6", 12, 140); text(x, y - 70, "¡Que suene!", "#ff9ae6", 14); notifyAbility(e, "parlante");
+}
+function knockFesti(u, ax, ay, power) {
+  if (!isFesti(u) || !u.alive || u.intangible > 0) return;
+  const d = Math.hypot(ax, ay) || 1; u.kbx = ax / d * power; u.kby = ay / d * power; u.kbT = .3; u.kbId = (u.kbId || 0) + 1;
+}
+function tickKnock(u, dt) { if (!(u.kbT > 0) || u.remote) return; u.kbT -= dt; const px = u.x; u.x += u.kbx * dt; u.y += u.kby * dt; collideWorld(u, px); if (G.core) pushFromCore(u); }
+function updateSpeaker(s, dt) {
+  s.life -= dt; s.beat = Math.max(0, (s.beat || 0) - dt);
+  if (s.life <= 0) { s.dead = true; burst(s.x, s.y - 20, "#3a3446", 14, 140); return; }
+  s.pulseT -= dt;
+  if (s.pulseT <= 0) {
+    s.pulseT = 1.8; s.beat = .3; ring(s.x, s.y, 20, 175, "rgba(255,107,214,.75)", .45); ring(s.x, s.y, 10, 120, "rgba(107,214,255,.6)", .35);
+    for (const u of festis()) { const d = dist(u, s); if (d < 175 + u.r) { knockFesti(u, u.x - s.x, u.y - s.y, 560); hurtAlly(u, 2); } }
+  }
+}
+function drawSpeaker(s) {
+  const t = T(), b = s.beat > 0 ? 1 + s.beat * .5 : 1 + Math.sin(t * 8) * .02;
+  ctx.save(); ctx.translate(s.x, s.y); ell(0, 3, 22, 7, "rgba(4,2,12,.45)");
+  rrS(-18, -52, 36, 54, 4, lg(0, -52, 0, 2, ["#3a3446", "#1a1622"]), 2);
+  ctx.save(); ctx.translate(0, -18); ctx.scale(b, b); circS(0, 0, 12, "#2a2632", 1.6); circS(0, 0, 6, "#4a4458", 1.2); circ(0, 0, 2.4, "#6bd6ff"); ctx.restore();
+  circS(0, -42, 5.5, "#2a2632", 1.2); circ(0, -42, 2, "#ff6bd6");
+  ctx.fillStyle = `hsl(${(t * 220) % 360},90%,65%)`; ctx.fillRect(-15, -3, 30, 2.5);
+  ctx.restore();
+  if (s.hp < s.maxhp) hpBar(s.x, s.y - 62, 34, s.hp / s.maxhp, "#ff6b6b", 5);
+}
+function drawCongaLine(e) {
+  if (!e.conga) return;
+  const chain = congaChain(e); if (!chain.length) return;
+  const t = T(); ctx.save(); ctx.setLineDash([6, 8]); ctx.lineDashOffset = -t * 50; ctx.lineCap = "round";
+  ctx.strokeStyle = `hsla(${(t * 200) % 360},90%,65%,.7)`; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(e.x, e.y - 4); for (let i = chain.length - 1; i >= 0; i--) ctx.lineTo(chain[i].x, chain[i].y - 4); ctx.stroke();
+  ctx.restore();
+}
+function drawPucho(e) { // a cigarette in the mouth of anyone on the smoke break (drawn in the employee's own space)
+  ctx.save(); ctx.translate(3, -39); ctx.rotate(.2); rrS(0, -1.1, 10, 2.2, .8, "#f4efe4", .7); rr(0, -1.1, 3, 2.2, .5, "#d9a06a"); circ(10.2, 0, 1.6, "#ff7a3a"); ctx.restore();
 }
 
 // ================= waves, objectives, slot machine =================

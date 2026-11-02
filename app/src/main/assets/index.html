@@ -1840,7 +1840,7 @@ function drawPuddle(p) {
   ctx.restore();
 }
 function drawEShot(s) {
-  if (drawEShotX(s)) return;
+  if (drawEShotNew(s) || drawEShotX(s)) return;
   ctx.save(); ctx.translate(s.x, s.y); ctx.rotate(s.a);
   if (s.type === "nail") { rrS(-7, -1.2, 12, 2.4, 1, "#b9c0cc", 1); rrS(4, -2.6, 3, 5.2, 1, "#8a919c", 1); }
   else {
@@ -2096,8 +2096,8 @@ function drawBecario(e) {
   mouth(e.learned && e.learned.length ? "grin" : "flat");
 }
 const BOSS_SCALE = { mocha: 1.8, becario: 1.6 };
-const DRAWERS = { emp: drawEmployee, cafe: drawCafetero, friki: drawFriki, manitas: drawManitas, memo: drawMemo, auditor: drawAuditor, mocha: drawMocha, becario: drawBecario };
-const LEARN_NAMES = { monkey: "mono", portal: "portal", sip: "café", kick: "patada", nails: "clavos", hammer: "martillazo", plane: "avión", spray: "chorro", share: "compartir", shout: "grito", kame: "Mame-Mame-Ka", bomb: "cafetera", helmets: "cascos", tremble: "temblor", puff: "vapor", ladder: "escalera" };
+const DRAWERS = { fumador: drawFumador, fiestero: drawFiestero, emp: drawEmployee, cafe: drawCafetero, friki: drawFriki, manitas: drawManitas, memo: drawMemo, auditor: drawAuditor, mocha: drawMocha, becario: drawBecario };
+const LEARN_NAMES = { cig: "cigarrillo", ash: "escupitajo de ceniza", smoke: "humareda", dash: "varita de luz", breakdance: "breakdance", monkey: "mono", portal: "portal", sip: "café", kick: "patada", nails: "clavos", hammer: "martillazo", plane: "avión", spray: "chorro", share: "compartir", shout: "grito", kame: "Mame-Mame-Ka", bomb: "cafetera", helmets: "cascos", tremble: "temblor", puff: "vapor", ladder: "escalera" };
 function drawEnemy(e) {
   if (e.hidden) return;
   if (e.type === "portal") { drawPortalDoor(e); return; }
@@ -2105,7 +2105,9 @@ function drawEnemy(e) {
   if (e.type === "vase") { drawVase(e); return; }
   if (e.type === "monkey") { drawMonkey(e); return; }
   if (e.type === "memo") { if (e.blue) drawBlueDoor(e.x, e.y, e.doorOpen || 0, undefined, 0, "orange"); else drawDoor(e); }
+  drawBreakZone(e);
   const k = (BOSS_SCALE[e.type] || 1) * 1.25;
+  if (e.disguise > 0 && !e.boss) { ctx.save(); ctx.translate(e.x, e.y); shadowE(0, 2, 15); ctx.scale(e.face * k, k); drawDisguised(e); ctx.restore(); drawTell(e, k); return; }
   if (e.type === "becario") { ctx.strokeStyle = "rgba(180,220,255,.35)"; ctx.setLineDash([10, 8]); ctx.lineWidth = 2.5; ctx.beginPath(); ctx.ellipse(e.x, e.y, e.auraR, e.auraR * .55, 0, 0, TAU); ctx.stroke(); ctx.setLineDash([]); }
   ctx.save(); ctx.translate(e.x, e.y);
   shadowE(0, 2, 15 * (BOSS_SCALE[e.type] || 1));
@@ -2154,6 +2156,8 @@ const ETYPES = {
   cafe: { hp: 90, spd: 58, dmg: 3, atk: .9, coin: 12, r: 15 },
   friki: { hp: 100, spd: 60, dmg: 3, atk: 1, coin: 15, r: 15 },
   manitas: { hp: 125, spd: 44, dmg: 4, atk: 1.1, coin: 15, r: 16 },
+  fumador: { hp: 95, spd: 50, dmg: 3, atk: 1.1, coin: 15, r: 15 },
+  fiestero: { hp: 105, spd: 60, dmg: 4, atk: 1, coin: 15, r: 15 },
   memo: { hp: 60, spd: 0, dmg: 0, atk: 1, coin: 18, r: 14 },
   monkey: { hp: 22, spd: 0, dmg: 0, atk: 1, coin: 2, r: 10 },
   portal: { hp: 110, spd: 0, dmg: 0, atk: 1, coin: 6, r: 18 },
@@ -2174,7 +2178,7 @@ const teamSpd = () => 1 + .07 * allyCount();
 function rescaleTeam(oldN, newN) { const k = teamHp(newN) / teamHp(oldN); for (const e of G.enemies) { if (e.dead) continue; e.hp *= k; e.maxhp *= k; } }
 function blankState(mode) {
   return { mode, t: 0, paused: false, over: false, kills: 0, fx: { hurt: 0, heal: 0 }, earn: { kills: 0, obj: 0, slot: 0 },
-    allies: [], enemies: [], shots: [], bubbles: [], ducks: [], duckFalls: [], ladders: [], drops: [], spirits: [], wolves: [], tombFly: [], shadows: [], runDucks: [], booms: [], potThrows: [], portals: [], eshots: [], bats: [], tombs: [], skeletons: [], ghosts: [], decos: [], cleavers: [], pickups: [], bigbats: [], velas: [], puddles: [],
+    allies: [], enemies: [], shots: [], bubbles: [], ducks: [], duckFalls: [], ladders: [], drops: [], spirits: [], wolves: [], tombFly: [], shadows: [], runDucks: [], booms: [], potThrows: [], smokes: [], portals: [], eshots: [], bats: [], tombs: [], skeletons: [], ghosts: [], decos: [], cleavers: [], pickups: [], bigbats: [], velas: [], puddles: [],
     monster: null, parts: [], rings: [], texts: [], fireflies: [], npcs: [], slots: [], aim: null, targets: [] };
 }
 function makeFobi(x, y, cos, ai) {
@@ -2543,6 +2547,7 @@ function tickFesti(u, dt) {
   if (u.reload > 0) { u.reload -= dt; if (u.reload <= 0) { u.reload = 0; u.ammo = magOf(u); } }
   else if (u.ammo < magOf(u) && u.idleFire > 2.5) u.reload = reloadOf(u);
   u.fireCd -= dt;
+  if (G.mode === "match") tickStatus(u, dt);
   if (G.mode !== "match" || !u.alive) return;
   let milked = false;
   u.puddleT -= dt;
@@ -2667,13 +2672,14 @@ function share(e, mode, power) {
 }
 function updateEnemy(e, dt) {
   e.flash = Math.max(0, e.flash - dt); e.swing = Math.max(0, e.swing - dt);
-  for (const k of ["slow", "weak", "fragile", "boost", "speedBuff", "stun", "noclip", "tremble", "paranoid"]) e[k] = Math.max(0, e[k] - dt);
+  for (const k of ["slow", "weak", "fragile", "boost", "speedBuff", "stun", "noclip", "tremble", "paranoid", "disguise"]) e[k] = Math.max(0, e[k] - dt);
   if (!(e.fragile > 0)) e.fragStack = 0;
   e.atkT -= dt;
   const dp = Math.hypot(e.x - PIT.x, (e.y - PIT.y) / .82);
   e.mud = dp > PIT.r0 && dp < PIT.r1 + 10 && e.type !== "memo" && !e.prop;
   if (e.mud && Math.random() < dt * 4) G.parts.push({ x: e.x + rand(-8, 8), y: e.y, vx: rand(-20, 20), vy: rand(-60, -20), life: .4, max: .4, color: "#3a2414", size: 3 });
   if (e.tell) { e.tell.t -= dt; if (e.tell.t <= 0) e.tell = null; }
+  if (e.breakT > 0) { e.breakT -= dt; reflectAround(e); }
   if (e.stun > 0) { if (e.prep) { e.prep = null; e.tell = null; e.aimAt = null; } return; }
   if (e.prep) { e.prep.t -= dt; if (e.prep.t <= 0) { const f = e.prep.fn; e.prep = null; e.aimAt = null; f(); } return; }
   switch (e.type) {
@@ -2681,6 +2687,8 @@ function updateEnemy(e, dt) {
     case "cafe": updateCafetero(e, dt); break;
     case "friki": updateFriki(e, dt); break;
     case "manitas": updateManitas(e, dt); break;
+    case "fumador": updateFumador(e, dt); break;
+    case "fiestero": updateFiestero(e, dt); break;
     case "memo": updateMemo(e, dt); break;
     case "monkey": updateMonkey(e, dt); break;
     case "portal": case "hatch": case "vase": break;
@@ -2754,6 +2762,11 @@ function becarioUse(e, abil) {
     else if (abil === "kame") { e.action = { name: "kame", t: 1.4 }; }
     else if (abil === "bomb") { const fs = festis(); for (let i = 0; i < 3; i++) { const u = fs.length ? pick(fs) : t; lobBomb(e, u.x + rand(-60, 60), u.y + rand(-40, 40)); } }
     else if (abil === "helmets") { giveHelmets(e, 5, 40); }
+    else if (abil === "cig") { const fs = festis(); for (let i = 0; i < 3; i++) if (fs.length) throwCig(e, pick(fs)); }
+    else if (abil === "ash") { const u = findEnemyTarget(e, 420, true); if (u) spitAsh(e, u); }
+    else if (abil === "smoke") bigSmoke(e.x, e.y - 10);
+    else if (abil === "dash") { const u = findEnemyTarget(e, 360, true) || t; e.action = { name: "leap", t: .45, tx: u.x, ty: u.y }; }
+    else if (abil === "breakdance") { e.breakT = 3; }
     else if (abil === "tremble") { e.tremble = 4; }
     else if (abil === "puff") { e.action = { name: "spray", t: 1.2, ang: 0 }; }
   }
@@ -3156,7 +3169,7 @@ function updateEShots(dt) {
       if (t.dead || t.intangible > 0) continue;
       if (Math.hypot(t.x - s.x, t.y - 26 - s.y) < (t.r || 12) + (s.r || 8)) {
         if (s.type === "kame") { explodeKame(s); break; }
-        hurtAlly(t, s.dmg); s.dead = true; burst(s.x, s.y, s.type === "nail" ? "#b9c0cc" : "#f6f2ea", 6, 100, 2); break;
+        hurtAlly(t, s.dmg); eshotHit(s, t); s.dead = true; burst(s.x, s.y, s.type === "nail" ? "#b9c0cc" : "#f6f2ea", 6, 100, 2); break;
       }
     }
   }
@@ -3752,6 +3765,7 @@ function drawScreenFx() {
   };
   edge("200,20,30", red, .22 - low * .08);
   edge("70,230,110", f.heal * .45, .3);
+  drawStatusScreen();
 }
 
 // ================= Memo, el hombre de la puerta =================
@@ -4567,7 +4581,7 @@ const isHost = () => NET.role === "host";
 
 // ---------- packing the match into plain data ----------
 const NET_SKIP = new Set(["path", "fn", "gaps", "candies", "learned2"]);
-const LISTS = ["potThrows", "booms", "enemies", "shots", "eshots", "bats", "bigbats", "tombs", "skeletons", "ghosts", "decos", "cleavers", "pickups", "velas", "puddles", "wolves", "ladders", "drops", "duckFalls", "bubbles", "runDucks", "tombFly", "shadows", "spirits", "ducks"];
+const LISTS = ["smokes", "potThrows", "booms", "enemies", "shots", "eshots", "bats", "bigbats", "tombs", "skeletons", "ghosts", "decos", "cleavers", "pickups", "velas", "puddles", "wolves", "ladders", "drops", "duckFalls", "bubbles", "runDucks", "tombFly", "shadows", "spirits", "ducks"];
 function nid(o) { return o._id || (o._id = ++NET.ids); }
 const isEnt = v => v && typeof v === "object" && typeof v.x === "number" && typeof v.y === "number" && (v.kind !== undefined || v.type !== undefined || v.hp !== undefined);
 const rnd = v => Math.round(v * 100) / 100;
@@ -4674,6 +4688,7 @@ function netDoAct(u, m) {
   else if (m.a === "build" && DECO[m.k]) buildFor(u, m.k);
   else if (m.a === "upg" && G.ustand) buyUp(u, m.k, +m.p);
   else if (m.a === "ready" && G.ustand) u.ready = !!m.v;
+  else if (m.a === "douse" && u.burn > 0) u.burn--;
 }
 // remote festilocos on the host: they move where their phone says, and come back after falling
 function updateRemote(a, dt) {
@@ -5592,9 +5607,12 @@ function drawKioskFrame(dt) {
 // After every even horde Gancho sets up next to the Heart. Each skill (not the ultimate) has two upgrade paths of
 // three levels; picking one path locks the other. Prices go up with each level and with each horde (like Brotato).
 // The next horde only starts when every player has rung the megaphone (bots follow the humans).
-const BAJA = { emp: 1, cafe: 2, friki: 2, manitas: 2, memo: 2, auditor: 3, hatch: 3, portal: 1, mocha: 15, becario: 15 };
+const BAJA = { emp: 1, fumador: 2, fiestero: 2, cafe: 2, friki: 2, manitas: 2, memo: 2, auditor: 3, hatch: 3, portal: 1, mocha: 15, becario: 15 };
 const UPG_COST = [8, 14, 22];
-const upCost = lv => Math.round(UPG_COST[lv] * (1 + .12 * Math.max(0, (G.wave || 1) - 1)));
+// more festilocos on the field = everyone's kills are split, so Gancho lowers his prices
+const partySize = () => Math.min(4, 1 + (G && G.allies ? G.allies.filter(a => a.alive || a.remote).length : 0));
+const partyDiscount = () => [1, .8, .68, .6][partySize() - 1];
+const upCost = lv => Math.max(1, Math.round(UPG_COST[lv] * (1 + .12 * Math.max(0, (G.wave || 1) - 1)) * partyDiscount()));
 const UPG = {
   atk: { name: "Ataque", key: "Clic", desc: "Fobi tira manos y botas desde su cubeta. Cada disparo hace 35 de daño. Tiene 4 disparos y recarga en 1,5 s; si dejás de disparar un rato, recarga solo.",
     paths: [{ name: "Puño pesado", lv: ["+20% de daño", "+40% de daño y cada disparo atraviesa a 1 empleado", "+60% de daño, atraviesa a 2 y el último disparo del cargador explota"] },
@@ -5666,7 +5684,8 @@ function toggleReady() {
 }
 function readyCount() { const hs = humans(); return [hs.filter(h => h.ready).length, hs.length]; }
 
-// Gancho: a scruffy scavenger kid with a hooded coat (two little bone horns on the hood), a huge iron hook and a bone between the teeth
+// Gancho: a scruffy scavenger with a hooded coat (two little bone horns on the hood), a huge iron hook, and a dark carved mask
+// with a gnawed bone in its mouth slot. Nobody has seen his face. Nobody asks what he eats.
 function drawGancho(t, talk) {
   const br = Math.sin(t * 2.2) * .8;
   // the hook over the shoulder
@@ -5685,15 +5704,17 @@ function drawGancho(t, talk) {
   ctx.save(); ctx.translate(0, br * .3);
   [-1, 1].forEach(s => { ctx.beginPath(); ctx.moveTo(s * 5, -66); ctx.quadraticCurveTo(s * 12, -74, s * 9, -80); ctx.quadraticCurveTo(s * 7, -72, s * 2, -68); ctx.closePath(); S("#efe2cc", 1.4); }); // little bone horns
   circS(0, -57, 13, "#7a1c2e", 1.8);
-  ctx.beginPath(); ctx.ellipse(0, -55, 9.6, 9.2, 0, 0, TAU); S("#f6e3d6", 1.4);
-  ctx.fillStyle = "#3a1a14"; ctx.beginPath(); ctx.moveTo(-9, -58); ctx.quadraticCurveTo(-4, -66, 2, -63); ctx.quadraticCurveTo(6, -66, 9, -58); ctx.quadraticCurveTo(3, -61, -9, -58); ctx.fill(); // messy bangs
-  // mismatched, slightly unhinged eyes
-  circS(-3.8, -56, 3.3, "#fff", 1); circ(-3.4, -55.6, 1.3, "#2a1018"); circ(-3, -56.3, .45, "#fff");
-  circS(4.2, -56.5, 2.4, "#fff", 1); circ(4.4, -56.2, 1, "#2a1018");
-  ell(-6.5, -51.5, 2.2, 1.2, "rgba(255,90,120,.55)"); ell(6.8, -51.5, 2.2, 1.2, "rgba(255,90,120,.55)");
-  // grin with a bone between the teeth
-  ctx.strokeStyle = OL; ctx.lineWidth = 1.1; ctx.beginPath(); ctx.arc(0, talk ? -50.5 : -51, 3.6, .15, Math.PI - .15); ctx.stroke();
-  ctx.save(); ctx.translate(0, -49.6); ctx.rotate(-.08); rrS(-10, -1.3, 20, 2.6, 1.2, "#f4ecd8", .9); [-10, 10].forEach(x => { circS(x, -1.4, 1.7, "#f4ecd8", .8); circS(x, 1.4, 1.7, "#f4ecd8", .8); }); ctx.restore();
+  ctx.fillStyle = "#3a1a14"; ctx.beginPath(); ctx.moveTo(-9, -60); ctx.quadraticCurveTo(-4, -68, 2, -64); ctx.quadraticCurveTo(6, -68, 9, -60); ctx.closePath(); ctx.fill(); // messy hair under the hood
+  // a dark, crudely carved mask tied over the whole face
+  ctx.strokeStyle = "#2a1208"; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(-11, -57); ctx.lineTo(-13, -60); ctx.moveTo(11, -57); ctx.lineTo(13, -60); ctx.stroke(); // the strap
+  ctx.beginPath(); ctx.moveTo(-10, -60); ctx.quadraticCurveTo(-11, -46, 0, -43); ctx.quadraticCurveTo(11, -46, 10, -60); ctx.quadraticCurveTo(0, -64, -10, -60); S(lg(0, -64, 0, -43, ["#3e2a22", "#1c100c"]), 1.6);
+  ctx.strokeStyle = "rgba(120,80,60,.35)"; ctx.lineWidth = .7; ctx.beginPath(); ctx.moveTo(-6, -61); ctx.quadraticCurveTo(-8, -52, -5, -45); ctx.moveTo(5, -61.5); ctx.quadraticCurveTo(7, -53, 4, -45); ctx.stroke(); // wood grain
+  ctx.fillStyle = "#080404"; ctx.beginPath(); ctx.ellipse(-4, -56, 3.2, 2.6, -.2, 0, TAU); ctx.fill(); ctx.beginPath(); ctx.ellipse(4.3, -56.3, 2.4, 2, .2, 0, TAU); ctx.fill();
+  circ(-3.6, -55.8, .9, "#ffe9c8"); circ(4.5, -56.1, .7, "#ffe9c8"); // eyes glinting inside the holes
+  ell(-6.4, -51.2, 2.1, 1.3, "rgba(255,110,140,.75)"); ell(6.6, -51.2, 2.1, 1.3, "rgba(255,110,140,.75)"); // painted cheeks
+  ctx.fillStyle = "#080404"; rr(-5, -49.4, 10, 2.4, 1, "#080404"); ctx.strokeStyle = "#6a4a3a"; ctx.lineWidth = .8; ctx.beginPath(); for (let x = -4; x <= 4; x += 2) { ctx.moveTo(x, -50.4); ctx.lineTo(x, -46.6); } ctx.stroke(); // stitched mouth slot
+  // and a gnawed bone stuck in the mouth slot
+  ctx.save(); ctx.translate(talk ? .6 : 0, -48.2); ctx.rotate(-.08); rrS(-10, -1.3, 20, 2.6, 1.2, "#efe4cc", .9); [-10, 10].forEach(x => { circS(x, -1.4, 1.7, "#efe4cc", .8); circS(x, 1.4, 1.7, "#efe4cc", .8); }); ctx.fillStyle = "rgba(150,40,40,.55)"; ctx.fillRect(5, -1, 2.5, 1.4); ctx.restore();
   ctx.restore();
 }
 function drawStand() {
@@ -5723,8 +5744,8 @@ function updateStandFx(dt) { if (G.ustand && G.ustand.ring > 0) G.ustand.ring = 
 
 // ---------- the shop window (same layout as Ceniza's) ----------
 const GANCHO = {
-  greet: ["¡Bajas, bajas, bajas! ¿Cuántas traés? A ver, a ver…", "¡Hola, hola! Yo no cobro en monedas. Cobro en despidos. ¿Cuántos despediste?", "¡Volviste! Y oliendo a oficina. Me encanta.", "Pasá, pasá. Todo se paga con bajas. Las monedas no me sirven: no se pueden morder."],
-  buy: ["¡Hecho! Ahora pega más fuerte. O más seguido. Algo hace, seguro.", "¡Mejorado! Andá a usarlo en alguien con corbata.", "Excelente. Me quedo con tus bajas. Las cuento de noche."],
+  greet: ["¡Bajas, bajas, bajas! ¿Cuántas traés? A ver, a ver…", "Perdón, estaba cocinando. ¿Qué querés? ¿Guiso? No, no, el guiso no se vende.", "¿Las corbatas colgadas? Recuerdos. De clientes. De… gente.", "¡Hola, hola! Yo no cobro en monedas. Cobro en despidos. ¿Cuántos despediste?", "¡Volviste! Y oliendo a oficina. Me encanta.", "Pasá, pasá. Todo se paga con bajas. Las monedas no me sirven: no se pueden morder."],
+  buy: ["¡Hecho! Ahora pega más fuerte. O más seguido. Algo hace, seguro.", "Trato hecho. Y si dejás algún empleado tirado por ahí… avisame. Para limpiar. Solo para limpiar.", "¡Mejorado! Andá a usarlo en alguien con corbata.", "Excelente. Me quedo con tus bajas. Las cuento de noche."],
   poor: ["No te alcanzan las bajas. ¡Andá a despedir gente y volvé!", "Faltan bajas. Los empleados no se despiden solos… bueno, a veces sí, pero no cuenta."],
   locked: "Ese camino lo cerraste cuando elegiste el otro. Así es la vida: un gancho, una dirección.",
   max: "Esa ya está al máximo. Más no se puede. Bueno, se puede, pero explota.",
@@ -5751,7 +5772,7 @@ function upRender() {
       `<button class="cta" data-act="buy" data-p="${p}" ${st === "poor" ? "disabled" : ""}>${lv ? "Nivel " + (lv + 1) : "Elegir"} · ☠ ${upCost(lv)}</button>`;
     return `<div class="upath${st === "locked" ? " locked" : ""}"><b>${P.name}</b><ol>${items}</ol>${btn}</div>`;
   }).join("");
-  $("upRight").innerHTML = `<div class="sk-detail"><span class="kind">Habilidad · ${D.key}</span><b>${D.name}</b><p>${D.desc}</p><div class="upaths">${paths}</div><p class="sk-note">Elegir un camino cierra el otro. Los precios suben con cada nivel y con cada horda.</p></div>`;
+  $("upRight").innerHTML = `<div class="sk-detail"><span class="kind">Habilidad · ${D.key}</span><b>${D.name}</b><p>${D.desc}</p><div class="upaths">${paths}</div><p class="sk-note">Elegir un camino cierra el otro. Los precios suben con cada nivel y con cada horda${partySize() > 1 ? " · con " + partySize() + " festilocos en la partida, todo sale " + Math.round((1 - partyDiscount()) * 100) + "% más barato" : ""}.</p></div>`;
 }
 function upAct(el) {
   const a = el.dataset.act;
@@ -5783,9 +5804,238 @@ function drawUpFrame(dt) {
   ctx.save(); ctx.scale(k, k);
   // hanging trophies: employee ties and lanyards
   for (let i = 0; i < 9; i++) { const x = w * (.08 + i * .105); if (Math.abs(x - w / 2) < 26) continue; ctx.strokeStyle = "rgba(255,255,255,.25)"; ctx.lineWidth = .6; ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 10 + (i % 3) * 4); ctx.stroke(); const ty = 10 + (i % 3) * 4; if (i % 2) { poly([x - 2, ty, x + 2, ty, x + 3, ty + 12, x, ty + 15, x - 3, ty + 12]); S(["#c2273c", "#2a62c9", "#2f8a5a"][i % 3], .7); } else { rrS(x - 4, ty, 8, 10, 1, "#f4f6f8", .7); rr(x - 3, ty + 2, 6, 2, .5, "#2a62c9"); } }
+  // a pot of stew simmering in the corner (don't ask)
+  { const px = w * .82, py = cc - 2; ctx.fillStyle = rg(px, py + 4, 0, 14, ["rgba(255,140,60,.6)", "rgba(255,140,60,0)"]); ctx.beginPath(); ctx.arc(px, py + 4, 14, 0, TAU); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(px - 11, py - 9); ctx.lineTo(px + 11, py - 9); ctx.quadraticCurveTo(px + 12, py + 2, px, py + 2); ctx.quadraticCurveTo(px - 12, py + 2, px - 11, py - 9); S("#2a2a30", 1.4); ell(px, py - 9, 11, 2.6, "#6a2a1a");
+    ctx.save(); ctx.translate(px + 4, py - 11); ctx.rotate(-.7); rrS(-1, -6, 2, 8, 1, "#efe4cc", .6); circS(-1, -6.5, 1.2, "#efe4cc", .5); circS(1, -6.5, 1.2, "#efe4cc", .5); ctx.restore();
+    for (let i = 0; i < 2; i++) { const ph = (t * .6 + i * .5) % 1; ctx.globalAlpha = .5 * (1 - ph); circ(px - 4 + i * 6 + Math.sin(ph * 6) * 2, py - 12 - ph * 16, 2 + ph * 3, "#d8d0dc"); } ctx.globalAlpha = 1; }
   ctx.save(); ctx.translate(w / 2, cc + 40); drawGancho(t, USHOP.shown < USHOP.say.length && Math.sin(t * 22) > 0); ctx.restore();
   rrS(-4, cc, w + 8, h - cc + 4, 0, lg(0, cc, 0, h, ["#7a4a2a", "#3e2414"]), 2.5);
   ctx.restore(); ctx = prev;
+}
+// ================= new employees: the Smoker and the Partier =================
+// SMOKER: throws lit cigarettes (burn: little flames on your screen that you have to wipe away), smokes a whole
+// cigarette in one go to leave a huge smoke cloud (employees inside it become unrecognizable shadows), and spits
+// the ash from his ashtray (film-burn blindness that eats part of the screen and slowly grows back).
+// PARTIER: dashes with a glowstick, and breakdances in a small circle that bounces almost anything thrown at it
+// back at whoever threw it, turned into very fast confetti that still hurts.
+const BURN_FIRES = 4, BURN_DPS = 2, BREAK_R = 78, SMOKE_R = 150;
+
+// ---------- burn and blindness on festilocos ----------
+function burnFesti(u) {
+  if (!isFesti(u) || u.intangible > 0 || !u.alive) return;
+  u.burn = Math.min(BURN_FIRES + 2, (u.burn || 0) + BURN_FIRES); u.burnId = (u.burnId || 0) + 1; u.burnT = u.burnT || 0;
+  u.botWipe = 2.2; text(u.x, u.y - 84, "¡Quemadura!", "#ff9a4a", 14);
+}
+function blindFesti(u, s) {
+  if (!isFesti(u) || u.intangible > 0 || !u.alive) return;
+  u.blindT = s; u.blindMax = s; u.blindId = (u.blindId || 0) + 1; text(u.x, u.y - 84, "¡Ceniza en los ojos!", "#d9cfc0", 14);
+}
+function tickStatus(u, dt) {
+  if (u.blindT > 0) u.blindT = Math.max(0, u.blindT - dt);
+  if (!(u.burn > 0) || !u.alive) { if (!u.alive) u.burn = 0; return; }
+  u.burnT += dt;
+  if (u.burnT >= .5) { u.burnT -= .5; hurtAlly(u, BURN_DPS * .5 / ((G.diff && G.diff.dmg) || 1) / teamDmg()); }
+  if (Math.random() < dt * 10) G.parts.push({ x: u.x + rand(-12, 12), y: u.y - rand(20, 60), vx: rand(-10, 10), vy: -70, life: .5, max: .5, color: pick(["#ff9a3a", "#ffd34a", "#ff5a3a"]), size: 3 });
+  // bots (and remote festilocos the host can't see the screen of) wipe their flames on their own
+  if (u.ai) { u.botWipe -= dt; if (u.botWipe <= 0) { u.botWipe = .7; u.burn--; } }
+}
+function douse() { const p = G.player; if (!(p.burn > 0)) return; if (netIntercept("douse")) { p.burn--; return; } p.burn--; }
+// local flames on the player's own screen (positions are just for this screen)
+const SFX = { fires: [], burnId: 0, blindId: 0, blots: [] };
+function syncFires() {
+  const p = G.player, n = Math.max(0, p.burn || 0);
+  if ((p.burnId || 0) !== SFX.burnId) { SFX.burnId = p.burnId || 0; SFX.fires = []; }
+  while (SFX.fires.length < n) SFX.fires.push({ x: rand(.18, .72) * VW, y: rand(.2, .62) * VH, t: 0, ph: rand(0, TAU) });
+  while (SFX.fires.length > n) SFX.fires.pop();
+}
+function hitFire(x, y, touch) {
+  if (!G || G.mode !== "match") return false;
+  syncFires();
+  const i = SFX.fires.findIndex(f => Math.hypot(f.x - x, f.y - 10 - y) < (touch ? 48 : 36));
+  if (i < 0) return false;
+  const f = SFX.fires.splice(i, 1)[0]; douse(); SFX.puffs = (SFX.puffs || []).concat([{ x: f.x, y: f.y, t: 0 }]);
+  return true;
+}
+cv.addEventListener("pointerdown", e => { if (G && G.player && G.player.burn > 0 && hitFire(e.clientX, e.clientY, e.pointerType !== "mouse")) { e.stopImmediatePropagation(); e.preventDefault(); } }, true);
+cv.addEventListener("pointermove", e => { if (e.pointerType === "mouse" && G && G.player && G.player.burn > 0) hitFire(e.clientX, e.clientY, false); }, true);
+function drawStatusScreen() {
+  if (!G || G.mode !== "match" || !G.player) return;
+  const p = G.player, t = T();
+  // film burn: blotches eat the picture fast, then the picture grows back
+  if (p.blindT > 0) {
+    if ((p.blindId || 0) !== SFX.blindId) { SFX.blindId = p.blindId || 0; SFX.blots = []; for (let i = 0; i < 7; i++) SFX.blots.push({ x: rand(.1, .9), y: rand(.15, .85), r: rand(.18, .34), w: rand(0, TAU) }); }
+    const k = 1 - p.blindT / (p.blindMax || 5), grow = Math.min(1, k / .08), heal = k < .35 ? 1 : 1 - (k - .35) / .65, cover = grow * heal;
+    const S0 = Math.max(VW, VH);
+    for (const b of SFX.blots) {
+      const r = b.r * S0 * cover * (1 + Math.sin(t * 3 + b.w) * .04), x = b.x * VW, y = b.y * VH; if (r < 2) continue;
+      const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+      g.addColorStop(0, "rgba(8,4,2,.98)"); g.addColorStop(.72, "rgba(30,14,6,.96)"); g.addColorStop(.86, "rgba(150,70,20,.9)"); g.addColorStop(.94, "rgba(255,190,90,.85)"); g.addColorStop(1, "rgba(255,190,90,0)");
+      ctx.fillStyle = g; ctx.beginPath(); for (let i = 0; i <= 18; i++) { const a = i / 18 * TAU, rr2 = r * (1 + Math.sin(a * 5 + b.w + t * 2) * .07); i ? ctx.lineTo(x + Math.cos(a) * rr2, y + Math.sin(a) * rr2) : ctx.moveTo(x + Math.cos(a) * rr2, y + Math.sin(a) * rr2); } ctx.fill();
+    }
+    ctx.globalAlpha = .25 * cover; ctx.fillStyle = "#000"; for (let i = 0; i < 6; i++) ctx.fillRect(((t * 300 + i * 197) % VW), 0, 1.5, VH); ctx.globalAlpha = 1;
+  }
+  // flames to wipe: hover them with the mouse or tap them
+  if (p.burn > 0 || SFX.fires.length) syncFires();
+  for (const f of SFX.fires) {
+    f.t += 1 / 60; const fl = Math.sin(t * 18 + f.ph) * 2, s = 1 + Math.sin(t * 9 + f.ph) * .06;
+    ctx.save(); ctx.translate(f.x, f.y); ctx.scale(s, s);
+    ctx.fillStyle = "rgba(255,120,40,.25)"; ctx.beginPath(); ctx.arc(0, -6, 34, 0, TAU); ctx.fill();
+    const flame = (h, w, c) => { ctx.beginPath(); ctx.moveTo(0, 8); ctx.quadraticCurveTo(-w, -h * .2, -w * .3, -h * .6); ctx.quadraticCurveTo(-w * .1, -h * .85, fl * .5, -h); ctx.quadraticCurveTo(w * .2, -h * .7, w * .4, -h * .55); ctx.quadraticCurveTo(w, -h * .2, 0, 8); ctx.fillStyle = c; ctx.fill(); };
+    flame(44, 22, "#ff5a2a"); flame(32, 15, "#ffa63a"); flame(18, 9, "#ffe27a");
+    ctx.strokeStyle = "rgba(60,20,5,.9)"; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(0, 8); ctx.quadraticCurveTo(-22, -8.8, -6.6, -26.4); ctx.stroke();
+    ctx.restore();
+  }
+  SFX.puffs = (SFX.puffs || []).filter(q => (q.t += 1 / 60) < .5);
+  for (const q of SFX.puffs) { ctx.globalAlpha = 1 - q.t * 2; for (let i = 0; i < 6; i++) { const a = i / 6 * TAU; circ(q.x + Math.cos(a) * q.t * 70, q.y + Math.sin(a) * q.t * 50 - q.t * 30, 8 - q.t * 8, "#c8c0d4"); } ctx.globalAlpha = 1; }
+  if (SFX.fires.length) label(lastInput === "touch" ? "¡Tocá las llamas para apagarlas!" : "¡Pasá el mouse por las llamas!", VW / 2, VH * .72, 16, "#ffb070");
+}
+
+// ---------- the Smoker ----------
+function throwCig(e, t) {
+  const a = Math.atan2(t.y - 26 - (e.y - 46), t.x - e.x);
+  G.eshots.push({ type: "cig", x: e.x + e.face * 10, y: e.y - 46, vx: Math.cos(a) * 380, vy: Math.sin(a) * 380, a, dmg: 2, life: 1.3, r: 7, spin: 0 });
+}
+function spitAsh(e, t) {
+  const a = Math.atan2(t.y - 26 - (e.y - 44), t.x - e.x);
+  G.eshots.push({ type: "ash", x: e.x + e.face * 8, y: e.y - 44, vx: Math.cos(a) * 470, vy: Math.sin(a) * 470, a, dmg: 3, life: 1.1, r: 10 });
+}
+function bigSmoke(x, y) { G.smokes.push({ kind: "smoke", x, y, r: SMOKE_R, life: 10, max: 10, seed: rand(0, 100) }); ring(x, y, 20, SMOKE_R, "rgba(200,195,210,.6)", .7); }
+function updateFumador(e, dt) {
+  e.cigCd = (e.cigCd ?? rand(.8, 1.6)) - dt; e.ashCd = (e.ashCd ?? rand(5, 8)) - dt; e.smokeCd = (e.smokeCd ?? rand(6, 9)) - dt;
+  const u = fsNear(e, 340);
+  // smokes the whole thing in one pull and leaves a huge cloud behind
+  if (e.smokeCd <= 0 && (u || dist(e, G.core) < 520)) { e.smokeCd = 18; prepare(e, "inhale", 1.1, "200,195,210", () => { bigSmoke(e.x, e.y - 10); text(e.x, e.y - 90, "*fuuuu*", "#d9d2e0", 15); notifyAbility(e, "smoke"); }); return; }
+  // coughs badly and spits the ashtray's ashes
+  if (u && e.ashCd <= 0 && dist(e, u) < 300) { e.ashCd = 9; e.face = u.x >= e.x ? 1 : -1; prepare(e, "hack", .8, "160,150,140", () => { const t2 = fsNear(e, 400) || u; spitAsh(e, t2); text(e.x, e.y - 80, "*COF* ¡ptuh!", "#d9cfc0", 13); notifyAbility(e, "ash"); }); return; }
+  // basic attack: flicks a lit cigarette
+  const t = findEnemyTarget(e, 260);
+  if (t && e.cigCd <= 0) { e.cigCd = 2.4; e.face = t.x >= e.x ? 1 : -1; prepare(e, "flick", .35, null, () => { const t2 = findEnemyTarget(e, 320) || t; throwCig(e, t2); notifyAbility(e, "cig"); }); return; }
+  defaultAI(e, dt, t && dist(e, t) < 200 ? .3 : 1);
+}
+function updateSmokes(dt) {
+  for (const s of G.smokes) {
+    if (s.dead) continue;
+    s.life -= dt; if (s.life <= 0) { s.dead = true; continue; }
+    for (const e of G.enemies) if (!e.dead && !e.boss && !e.prop && Math.hypot(e.x - s.x, (e.y - s.y) / .7) < s.r) e.disguise = 3.5;
+  }
+}
+// ---------- the Partier ----------
+function updateFiestero(e, dt) {
+  e.dashCd = (e.dashCd ?? rand(1, 2)) - dt; e.breakCd = (e.breakCd ?? rand(3, 5)) - dt;
+  if (e.state === "dash") {
+    e.t -= dt; const px = e.x; e.x += Math.cos(e.dashA) * 520 * dt; e.y += Math.sin(e.dashA) * 520 * dt; e.walk += dt * 18; collideWorld(e, px);
+    for (const t of G.targets) { if (t.dead || (e.hitIds || []).includes(nid(t))) continue; if (dist(t, e) < (t.r || 12) + e.r + 10) { (e.hitIds = e.hitIds || []).push(nid(t)); hurtAlly(t, 7); burst(t.x, t.y - 30, pick(["#7dff8a", "#ff6bd6", "#6bd6ff"]), 8, 120); } }
+    if (Math.random() < dt * 30) G.parts.push({ x: e.x, y: e.y - 30, vx: 0, vy: 0, life: .35, max: .35, color: pick(["#7dff8a", "#ff6bd6", "#6bd6ff"]), size: 4 });
+    if (e.t <= 0) e.state = "walk";
+    return;
+  }
+  if (e.state === "break") {
+    e.t -= dt; e.spin = (e.spin || 0) + dt * 14;
+    reflectAround(e);
+    if (Math.random() < dt * 12) G.parts.push({ x: e.x + rand(-BREAK_R, BREAK_R) * .8, y: e.y + rand(-20, 20), vx: rand(-30, 30), vy: rand(-90, -40), life: .7, max: .7, color: pick(["#ffd34a", "#ff6bd6", "#6bd6ff", "#7dff8a"]), size: 3 });
+    if (e.t <= 0) { e.state = "walk"; text(e.x, e.y - 80, "¡Fiesta!", "#ff9ae6", 13); }
+    return;
+  }
+  const u = fsNear(e, 420);
+  // breakdance when things are flying his way
+  const incoming = G.shots.some(s => !s.dead && Math.hypot(s.x - e.x, s.y - e.y) < 320) || G.bats.some(b => !b.dead && (b.state === "fly" || b.state === "chase") && Math.hypot(b.x - e.x, b.y - e.y) < 320);
+  if (e.breakCd <= 0 && u && incoming) { e.breakCd = 13; prepare(e, "drop", .35, "255,107,214", () => { e.state = "break"; e.t = 4; e.spin = 0; text(e.x, e.y - 90, "¡Breakdance!", "#ff9ae6", 15); notifyAbility(e, "breakdance"); }); return; }
+  // basic attack: a short dash swinging a glowstick
+  if (u && e.dashCd <= 0 && dist(e, u) < 240) { e.dashCd = 3.2; e.face = u.x >= e.x ? 1 : -1; prepare(e, "glow", .45, "125,255,138", () => { const t2 = fsNear(e, 320) || u; e.state = "dash"; e.t = Math.min(.55, dist(e, t2) / 520 + .12); e.dashA = Math.atan2(t2.y - e.y, t2.x - e.x); e.hitIds = []; notifyAbility(e, "dash"); }); return; }
+  defaultAI(e, dt);
+}
+function confettiBack(x, y, to, dmg) {
+  const tx = to && to.x !== undefined ? to.x : x + rand(-100, 100), ty = to && to.y !== undefined ? to.y - 26 : y + rand(-100, 100), a = Math.atan2(ty - y, tx - x);
+  G.eshots.push({ type: "confetti", x, y, vx: Math.cos(a) * 600, vy: Math.sin(a) * 600, a, dmg: Math.max(4, dmg), life: 1.6, r: 9, hue: randi(4) });
+}
+function reflectAround(e) {
+  const inR = o => Math.hypot(o.x - e.x, (o.y - (e.y - 20)) / .8) < BREAK_R;
+  for (const s of G.shots) if (!s.dead && inR(s)) { s.dead = true; confettiBack(s.x, s.y, s.from, (s.dmg || 20) * .3); }
+  for (const b of G.bats) if (!b.dead && (b.state === "fly" || b.state === "chase" || b.state === "hover") && inR(b)) { b.dead = true; confettiBack(b.x, b.y, b.from, 6); }
+  for (const b of G.potThrows) if (!b.dead && inR(b)) { b.dead = true; confettiBack(b.x, b.y, b.from, 8); }
+  for (const f of G.tombFly) if (!f.dead && inR(f)) { f.dead = true; confettiBack(f.x, f.y, f.from, 10); }
+}
+// what special enemy shots do when they land on someone
+function eshotHit(s, t) {
+  if (s.type === "cig") { burnFesti(t); burst(s.x, s.y, "#ff9a3a", 8, 100); }
+  else if (s.type === "ash") { blindFesti(t, 5); burst(s.x, s.y, "#6a625a", 14, 120); }
+  else if (s.type === "confetti") burst(s.x, s.y, pick(["#ffd34a", "#ff6bd6", "#6bd6ff", "#7dff8a"]), 8, 120);
+}
+
+// ---------- art ----------
+function drawFumador(e) {
+  const { st, bob } = walkBob(e), inhale = e.prep && e.prep.name === "inhale", hack = e.prep && e.prep.name === "hack", flick = e.prep && e.prep.name === "flick";
+  ctx.translate(0, -bob + (hack ? Math.sin(T() * 40) * 1.2 : 0));
+  wLegs(st, "#3a3632", "#16141a");
+  wArm(-13, -31, .15, "#5e5850");
+  wTorso("#7a7268", "#58524a");
+  poly([-5, -34, 5, -34, 0, -21]); F("#e8e2c8"); // yellowed shirt
+  ctx.save(); ctx.translate(1, -31); ctx.rotate(.35); poly([-2, 0, 2, 0, 3, 13, 0, 16, -3, 13]); S("#6a4a8a", 1.2); ctx.restore(); // loose tie
+  rrS(-10, -27, 7, 8, 1, "#c2273c", 1); rr(-10, -27, 7, 2.5, .5, "#f4efe4"); rrS(-8.5, -30, 1.6, 4, .4, "#f4efe4", .5); // a pack in the pocket
+  ctx.save(); ctx.translate(12, -31); ctx.rotate(flick ? -2.2 : hack ? -2.6 : inhale ? -2.4 : -.1); rrS(-3, 0, 6, 17, 3, "#7a7268", 1.6); circS(0, 18, 3, "#e2c4a0", 1.2);
+  if (hack) { ctx.translate(0, 18); ellS(0, 3, 6, 2.5, "#8a8ea0", 1); } ctx.restore();
+  wHead("#e2c4a0");
+  ctx.fillStyle = "#4a4038"; ctx.beginPath(); ctx.arc(0, -48, 10.5, Math.PI * 1.05, TAU * .97); ctx.fill(); // greasy hair
+  ctx.fillStyle = "rgba(60,50,40,.35)"; ctx.beginPath(); ctx.arc(0, -40, 8, .15, Math.PI - .15); ctx.fill(); // stubble
+  if (hack) { ctx.strokeStyle = OL; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(-6, -47); ctx.lineTo(-2, -45); ctx.lineTo(-6, -43); ctx.moveTo(6, -47); ctx.lineTo(2, -45); ctx.lineTo(6, -43); ctx.stroke(); }
+  else { eyesTired(); ctx.fillStyle = "rgba(120,80,90,.55)"; ctx.fillRect(-6.5, -43, 4.5, 1.6); ctx.fillRect(2, -43, 4.5, 1.6); }
+  if (inhale) { circS(-6, -39, 3, "#e8bfa0", 1); circS(6, -39, 3, "#e8bfa0", 1); }
+  // the cigarette always hanging from his lips
+  ctx.save(); ctx.translate(3, -39); ctx.rotate(.2); rrS(0, -1.1, 10, 2.2, .8, "#f4efe4", .7); rr(0, -1.1, 3, 2.2, .5, "#d9a06a");
+  const ember = inhale ? "#ffdd55" : "#ff6a3a"; circ(10.2, 0, inhale ? 2 : 1.4, ember); ctx.restore();
+  if (!hack) { const ph = (T() * .8) % 1; ctx.globalAlpha = .45 * (1 - ph); circ(14 + ph * 6, -42 - ph * 18, 2 + ph * 3, "#c8c0d4"); ctx.globalAlpha = 1; }
+}
+function drawFiestero(e) {
+  if (e.state === "break") { // spinning on his back like a top
+    ctx.translate(0, -14); ctx.rotate(e.spin || 0); ctx.scale(1, .8); ctx.translate(0, 30);
+  }
+  const { st, bob } = walkBob(e), glow = e.prep && e.prep.name === "glow", dash = e.state === "dash";
+  ctx.translate(0, -bob);
+  wLegs(st, "#2a2e3a", "#f4f4f4"); // sneakers
+  wArm(-13, -31, dash ? -1.2 : .1, "#f0f2f4");
+  // untucked shirt, open collar, tie tied around the head
+  wTorso("#f0f2f4", "#d4d6dc"); poly([-4, -34, 4, -34, 0, -27]); F(SKIN);
+  ctx.fillStyle = "rgba(255,107,214,.6)"; [[-6, -22], [5, -16], [-2, -12], [6, -28]].forEach(([x, y]) => ctx.fillRect(x, y, 2.2, 2.2)); // confetti stuck on the shirt
+  ctx.save(); ctx.translate(12, -31); ctx.rotate(dash ? -1.6 : glow ? -2.4 : -.3); rrS(-3, 0, 6, 17, 3, "#f0f2f4", 1.6); circS(0, 18, 3, SKIN, 1.2);
+  ctx.translate(0, 20); ctx.rotate(.3); const gc = Math.sin(T() * 6) > 0 ? "#7dff8a" : "#ff6bd6";
+  ctx.shadowColor = gc; ctx.shadowBlur = 10; rrS(-2, -2, 4, 24, 2, gc, 1.2); ctx.shadowBlur = 0; ctx.restore();
+  wHead();
+  ctx.fillStyle = "#c46a2a"; ctx.beginPath(); ctx.arc(0, -48, 10.5, Math.PI, TAU); ctx.fill(); for (let i = 0; i < 4; i++) { poly([-8 + i * 5, -55, -6 + i * 5, -62, -3 + i * 5, -55]); ctx.fill(); } // spiky hair
+  rrS(-11, -53, 22, 3.4, 1.4, "#c2273c", 1); ctx.save(); ctx.translate(-10, -51.5); ctx.rotate(.9 + Math.sin(T() * 8) * .2); poly([0, 0, 2, 0, 3, 10, 0, 12, -2, 10]); S("#c2273c", 1); ctx.restore(); // tie headband
+  // shutter shades
+  rrS(-8, -48, 7, 4.5, 1, "#ff6bd6", 1); rrS(1, -48, 7, 4.5, 1, "#ff6bd6", 1); ctx.fillStyle = OL; for (let i = 0; i < 3; i++) { ctx.fillRect(-8, -47.2 + i * 1.4, 7, .55); ctx.fillRect(1, -47.2 + i * 1.4, 7, .55); }
+  mouth(dash || e.state === "break" ? "grin" : "grin");
+}
+function drawDisguised(e) { // inside the smoke you can't tell what kind of employee it is
+  const { bob } = walkBob(e); ctx.translate(0, -bob);
+  ctx.globalAlpha = .9; ctx.fillStyle = "#3a3640";
+  ctx.beginPath(); ctx.ellipse(0, -22, 13, 20, 0, 0, TAU); ctx.fill(); ctx.beginPath(); ctx.arc(0, -46, 11, 0, TAU); ctx.fill();
+  ctx.globalAlpha = 1; label("?", 0, -42, 14, "#d9d2e0");
+}
+function drawSmoke(s) {
+  const t = T(), k = Math.min(1, (s.max - s.life) / .6) * Math.min(1, s.life / 1.5);
+  ctx.save(); ctx.globalAlpha = .82 * k;
+  for (let i = 0; i < 22; i++) {
+    const a = i * 2.39996 + s.seed, d = Math.sqrt((i + .5) / 22) * s.r * .85, x = s.x + Math.cos(a + t * .08) * d, y = s.y - 20 + Math.sin(a + t * .08) * d * .7, r = 34 + ((i * 37) % 22) + Math.sin(t * .9 + i) * 4;
+    const g = ctx.createRadialGradient(x, y - r * .3, r * .1, x, y, r); g.addColorStop(0, "rgba(232,228,236,1)"); g.addColorStop(.7, "rgba(170,165,180,.9)"); g.addColorStop(1, "rgba(150,145,160,0)");
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
+  }
+  ctx.restore();
+}
+function drawEShotNew(s) {
+  if (s.type === "cig") { ctx.save(); ctx.translate(s.x, s.y); s.spin = (s.spin || 0) + .3; ctx.rotate(s.spin); rrS(-6, -1.3, 12, 2.6, 1, "#f4efe4", .8); rr(-6, -1.3, 4, 2.6, .6, "#d9a06a"); circ(6.3, 0, 1.8, "#ff6a3a"); ctx.restore(); return true; }
+  if (s.type === "ash") { ctx.save(); ctx.translate(s.x, s.y); for (let i = 0; i < 6; i++) circ(Math.cos(i * 1.7) * 5, Math.sin(i * 2.3) * 4, 3.5 + (i % 2), i % 2 ? "#4a443e" : "#7a726a"); ctx.restore(); return true; }
+  if (s.type === "confetti") { ctx.save(); ctx.translate(s.x, s.y); const cs = ["#ffd34a", "#ff6bd6", "#6bd6ff", "#7dff8a"]; for (let i = 0; i < 5; i++) { ctx.save(); ctx.rotate(T() * 12 + i); ctx.fillStyle = cs[(i + s.hue) % 4]; ctx.fillRect(-9 + i * 3.6, -2.5, 6, 5); ctx.restore(); } ctx.restore(); return true; }
+  return false;
+}
+function drawBreakZone(e) {
+  if (e.state !== "break" && !(e.breakT > 0)) return;
+  const t = T(); ctx.save(); ctx.translate(e.x, e.y);
+  ctx.strokeStyle = `hsla(${(t * 200) % 360},90%,65%,.85)`; ctx.lineWidth = 3; ctx.setLineDash([8, 6]); ctx.lineDashOffset = -t * 60;
+  ctx.beginPath(); ctx.ellipse(0, -10, BREAK_R, BREAK_R * .8, 0, 0, TAU); ctx.stroke(); ctx.setLineDash([]);
+  ctx.globalAlpha = .12; ctx.fillStyle = `hsl(${(t * 200 + 120) % 360},90%,65%)`; ctx.beginPath(); ctx.ellipse(0, -10, BREAK_R, BREAK_R * .8, 0, 0, TAU); ctx.fill();
+  ctx.restore();
 }
 
 // ================= waves, objectives, slot machine =================
@@ -5800,8 +6050,10 @@ const OBJ_REWARD = 200;
 // New employees just get a row here (from: first horde they show up in).
 const SPEC_TIERS = [
   { k: "cafe", tier: "fácil", from: 2, base: 1.5, grow: .45, max: 7 },
+  { k: "fiestero", tier: "fácil", from: 4, base: 1.3, grow: .35, max: 5 },
   { k: "manitas", tier: "media", from: 6, base: 1.4, grow: .4, max: 6 },
   { k: "friki", tier: "media", from: 8, base: 1.3, grow: .4, max: 6 },
+  { k: "fumador", tier: "media", from: 9, base: 1.3, grow: .35, max: 5 },
   { k: "memo", tier: "difícil", from: 11, base: 1.2, grow: .35, max: 4 }
 ];
 // more basic employees at the start (so the first hordes aren't boring), a gentler climb in the middle
@@ -5810,7 +6062,7 @@ function waveComposition(n) {
   for (const S0 of SPEC_TIERS) c[S0.k] = n >= S0.from ? Math.min(S0.max, Math.round(S0.base + S0.grow * (n - S0.from))) : 0;
   return c;
 }
-const SPECIALS = ["cafe", "friki", "manitas", "memo"];
+const SPECIALS = ["cafe", "friki", "manitas", "memo", "fumador", "fiestero"];
 // every horde comes in three batches (tandas), like Garden Ops
 function startWave(mods) {
   mods = mods || {};
@@ -5998,7 +6250,7 @@ function update(dt) {
   G.targets = allyTargets();
   updateWaves(dt);
   if (G.phase === "slot") { updateFx(dt); return; }
-  updatePlayer(dt); updateAllies(dt); updateCasts(dt); updateEnemies(dt); updatePortals(dt); updateMTombs(dt); updateShadows(dt); updateRunDucks(dt); updateBooms(dt); updatePotThrows(dt); updateHatch(dt); updateCandles(dt); tickUltMsg(dt); if (NET.role === "host") netHostTick(dt); updateShots(dt); updateEShots(dt); updatePuddles(dt); updateDrops(dt); updateSpirits(dt); updateWolves(dt); updateLadders(dt); updateBubbles(dt); updateDucks(dt); updatePotionPuddles(); G.specialCd.caramel = Math.max(0, G.specialCd.caramel - dt); updateBats(dt); updateTombs(dt);
+  updateSmokes(dt); updatePlayer(dt); updateAllies(dt); updateCasts(dt); updateEnemies(dt); updatePortals(dt); updateMTombs(dt); updateShadows(dt); updateRunDucks(dt); updateBooms(dt); updatePotThrows(dt); updateHatch(dt); updateCandles(dt); tickUltMsg(dt); if (NET.role === "host") netHostTick(dt); updateShots(dt); updateEShots(dt); updatePuddles(dt); updateDrops(dt); updateSpirits(dt); updateWolves(dt); updateLadders(dt); updateBubbles(dt); updateDucks(dt); updatePotionPuddles(); G.specialCd.caramel = Math.max(0, G.specialCd.caramel - dt); updateBats(dt); updateTombs(dt);
   updateSkeletons(dt); updateGhosts(dt); updateDecos(dt); updateCleavers(dt); updateMonster(dt); updateBigBats(dt); updatePickups(dt); updateFx(dt); cleanup();
 }
 
@@ -6535,6 +6787,7 @@ function render() {
   G.allies.forEach(a => list.push({ y: a.y, f: () => drawFobi(a) }));
   if (G.escape) list.push({ y: 1e6, f: drawEscapeBeam });
   if (G.ustand) { list.push({ y: G.ustand.y, f: drawStand }); }
+  G.smokes.forEach(s => { if (!s.dead) list.push({ y: 1e6 - 1, f: () => drawSmoke(s) }); });
   G.spirits.forEach(g => { if (g.attached && g.from) list.push({ y: g.from.y - .5, f: () => drawSpirit(g) }); });
   list.sort((a, b) => a.y - b.y).forEach(o => o.f());
   drawAim();
@@ -6632,6 +6885,6 @@ function frame(now) {
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
-window.__festi = { get G() { return G; }, get SAVE() { return SAVE; }, startSlotNow() { if (G && G.mode === "match") { G.wave = 4; startSlot(5); } }, spawn: t => spawnEnemy(t), hurt: (t, a) => hurtAlly(t, a), startEscape: () => startEscape(), startObj: t => { G.obj = null; startObjective(t); }, endWaveNow2: () => endWave(), mapShot: () => { const c = document.createElement("canvas"), k = .3; c.width = GY.w * k; c.height = GY.h * k; const g = c.getContext("2d"); g.scale(k, k); g.drawImage(GY.bg, 0, 0); [...GY.props].sort((a, b) => a.y - b.y).forEach(p => g.drawImage(p.img, p.x - p.ax, p.y - p.ay)); g.fillStyle = "#ff8a1f"; for (const kk in BASES) { g.beginPath(); g.arc(BASES[kk].core.x, BASES[kk].core.y, 40, 0, 7); g.fill(); } g.fillStyle = "#7dffa0"; g.beginPath(); g.arc(PHONE_POS.x, PHONE_POS.y, 40, 0, 7); g.fill(); g.fillStyle = "#6ab8ff"; MTOMBS.forEach(t => { g.beginPath(); g.arc(t.x, t.y, 20, 0, 7); g.fill(); }); return c.toDataURL(); }, mt: () => G.mtombs, endWaveNow: () => endWave(), addPick: w => addPick(w), callTeam: () => callTeam(), dropPart: s => dropPart(s), build: w => build(w), selectSlot: i => { G.sel = i; }, iconShot: c => drawFestiIcon(c, { cos: playerCos() }), npcShot: (c, w) => drawNPCInto(c, () => { ctx.translate(-55, 0); drawCeniza(1, false); ctx.translate(60, 0); drawCeniza(2, true, true); ctx.translate(55, 0); drawTosca(1, 0); ctx.translate(55, 0); drawTosca(1, .6); }, 4.2, .95) };
+window.__festi = { get G() { return G; }, get SAVE() { return SAVE; }, startSlotNow() { if (G && G.mode === "match") { G.wave = 4; startSlot(5); } }, spawn: t => spawnEnemy(t), hurt: (t, a) => hurtAlly(t, a), startEscape: () => startEscape(), startObj: t => { G.obj = null; startObjective(t); }, endWaveNow2: () => endWave(), mapShot: () => { const c = document.createElement("canvas"), k = .3; c.width = GY.w * k; c.height = GY.h * k; const g = c.getContext("2d"); g.scale(k, k); g.drawImage(GY.bg, 0, 0); [...GY.props].sort((a, b) => a.y - b.y).forEach(p => g.drawImage(p.img, p.x - p.ax, p.y - p.ay)); g.fillStyle = "#ff8a1f"; for (const kk in BASES) { g.beginPath(); g.arc(BASES[kk].core.x, BASES[kk].core.y, 40, 0, 7); g.fill(); } g.fillStyle = "#7dffa0"; g.beginPath(); g.arc(PHONE_POS.x, PHONE_POS.y, 40, 0, 7); g.fill(); g.fillStyle = "#6ab8ff"; MTOMBS.forEach(t => { g.beginPath(); g.arc(t.x, t.y, 20, 0, 7); g.fill(); }); return c.toDataURL(); }, mt: () => G.mtombs, endWaveNow: () => endWave(), addPick: w => addPick(w), callTeam: () => callTeam(), dropPart: s => dropPart(s), build: w => build(w), selectSlot: i => { G.sel = i; }, sfx: () => SFX, burn: () => burnFesti(G.player), iconShot: c => drawFestiIcon(c, { cos: playerCos() }), npcShot: (c, w) => drawNPCInto(c, () => { ctx.translate(-55, 0); drawCeniza(1, false); ctx.translate(60, 0); drawCeniza(2, true, true); ctx.translate(55, 0); drawTosca(1, 0); ctx.translate(55, 0); drawTosca(1, .6); }, 4.2, .95) };
 })();
 </script>

@@ -176,7 +176,16 @@ kbd{font-family:var(--body);font-weight:900;font-size:11px;background:rgba(255,2
 .slotres{font-weight:800;color:var(--ink);min-height:40px;font-size:14px;line-height:1.4}
 .bajas{font-family:var(--display);font-size:13px;color:#ff9ab0;text-shadow:0 2px 0 var(--outline);line-height:1}
 #standPanel .cta{font-size:16px;padding:7px 16px}
-#readyBtn.on{background:#9be37a;color:#13240c}
+.readytop{pointer-events:auto;cursor:pointer;font-family:var(--display);font-size:15px;color:#2a0e18;background:linear-gradient(#ffb3c8,#ff7aa0);border:3px solid var(--outline);border-radius:999px;padding:5px 14px;box-shadow:0 3px 0 var(--outline),0 0 16px rgba(255,122,160,.6);animation:rtPulse 1.2s ease-in-out infinite}
+.readytop b{font-weight:400}.readytop span{font-family:Nunito,sans-serif;font-weight:900;font-size:12px;background:rgba(255,255,255,.6);border-radius:999px;padding:1px 7px;margin-left:4px}
+.readytop.on{background:linear-gradient(#c9f5b3,#7fd35a);animation:none;box-shadow:0 3px 0 var(--outline)}
+@keyframes rtPulse{50%{transform:scale(1.05)}}
+.standbanner{position:fixed;left:50%;top:40%;transform:translate(-50%,-50%);z-index:40;pointer-events:none;text-align:center;background:linear-gradient(#4a1424,#2a0a16);border:4px solid #ff9ab0;border-radius:18px;padding:12px 26px;box-shadow:0 6px 0 #000,0 0 40px rgba(255,120,160,.7);color:#fff}
+.standbanner b{display:block;font-family:var(--display);font-weight:400;font-size:26px;color:#ffb3c8;text-shadow:0 3px 0 #000}
+.standbanner span{font-size:13px;font-weight:800;color:#ffe2ea}
+.standbanner.go{animation:sbIn 4.6s ease forwards}
+@keyframes sbIn{0%{opacity:0;transform:translate(-50%,-50%) scale(.6) rotate(-4deg)}8%{opacity:1;transform:translate(-50%,-50%) scale(1.08) rotate(1deg)}14%{transform:translate(-50%,-50%) scale(1) rotate(0)}85%{opacity:1}100%{opacity:0;transform:translate(-50%,-60%) scale(.95)}}
+@media (prefers-reduced-motion:reduce){.readytop{animation:none}.standbanner.go{animation:none}}
 .skl{color:#ff9ab0;font-size:18px}
 .upcard .sk-sign{background:#4a1424;color:#ffb3c4}
 .upcard .sk-say{background:#fff3a8;color:#2a2010;font-family:"Special Elite",monospace;font-size:16px;white-space:pre-line;padding:8px 12px;border-radius:2px;transform:rotate(-1deg);box-shadow:2px 3px 0 rgba(0,0,0,.4);align-self:flex-start;min-height:0;max-width:95%}
@@ -367,6 +376,7 @@ details ul{margin:6px 0 0;padding-left:16px;display:flex;flex-direction:column;g
         <div class="panel plaza lobbyonly">Plaza Festiva</div>
         <div class="panel wave matchonly" id="waveTxt">Oleada 0/10</div>
         <div class="status" id="statusTxt"></div>
+        <button class="readytop matchonly" id="readyTop" hidden>📣 <b id="readyLbl">¡Listo para la próxima horda!</b> <span id="readyN">0/1</span></button>
         <canvas class="matchonly" id="hordeBar" width="640" height="68" hidden></canvas>
         <div class="panel obj matchonly" id="objBox" hidden></div>
         <div class="bosses matchonly" id="bossBox"></div>
@@ -403,8 +413,7 @@ details ul{margin:6px 0 0;padding-left:16px;display:flex;flex-direction:column;g
       <div class="panel ctx matchonly" id="standPanel" hidden>
         <div class="ttl">Tienda de mejoras</div>
         <button class="cta" id="upBtn">Mejorar · ☠ <span id="upBtnN">0</span></button>
-        <button class="cta" id="readyBtn">Megáfono: ¡listo!</button>
-        <span class="fine" id="readyTxt" style="width:100%;text-align:center"></span>
+
       </div>
       <div class="panel ctx matchonly" id="heartPanel" hidden>
         <div class="ttl" id="heartTtl"></div>
@@ -538,6 +547,8 @@ details ul{margin:6px 0 0;padding-left:16px;display:flex;flex-direction:column;g
     </div>
   </div>
 </div>
+
+<div class="standbanner" id="standBanner" hidden><b>¡Llegó el vendedor de mejoras!</b><span id="sbSub"></span></div>
 
 <div class="overlay" id="upOv" hidden>
   <div class="shopcard upcard" role="dialog" aria-labelledby="upName">
@@ -2311,7 +2322,8 @@ window.addEventListener("keydown", e => {
     if (e.code === "Space") placeHeart(nearMarker());
     return;
   }
-  if (G.ustand && nearStand()) { if (e.code === "Space") { openUpShop(); return; } if (e.code === "Enter") { toggleReady(); return; } }
+  if (G.ustand && e.code === "Enter") { toggleReady(); return; } // ready from anywhere
+  if (G.ustand && nearStand() && e.code === "Space") { openUpShop(); return; }
   if (e.code === "Space") usePotion();
   const n = { Digit1: 1, Digit2: 2, Digit3: 3, Digit4: 4 }[e.code];
   if (n) build(["apple", "dulce", "caldero", "caramel"][n - 1]);
@@ -2365,7 +2377,7 @@ function tapBtn(id, fn) {
 tapBtn("bF", useUlt); tapBtn("bP", usePotion);
 tapBtn("o1", () => build("apple")); tapBtn("o2", () => build("dulce")); tapBtn("o3", () => build("caldero")); tapBtn("o4", () => build("caramel"));
 tapBtn("addFobi", () => addPick("fobi")); tapBtn("callBtn", () => callTeam()); tapBtn("placeBtn", () => placeHeart(nearMarker()));
-tapBtn("useBtn", useSpot); tapBtn("upBtn", openUpShop); tapBtn("readyBtn", toggleReady);
+tapBtn("useBtn", useSpot); tapBtn("upBtn", openUpShop); tapBtn("readyTop", toggleReady);
 function togglePause() { if (!G || G.over) return; G.paused = !G.paused; $("pauseOv").hidden = !G.paused; }
 
 // ================= combat =================
@@ -2390,6 +2402,7 @@ function hurtEnemy(e, amt, opts) {
   // stacking guard-down: each stack makes them take 15% more damage (other sources count as about 3 stacks)
   if (e.fragile > 0) amt *= e.fragStack > 0 ? 1 + .15 * e.fragStack : 1.5;
   if (e.tremble > 0) amt *= .4;
+  if (e.batMark > 0) amt *= 1.25;
   if (e.shield > 0) { const ab = Math.min(e.shield, amt); e.shield -= ab; amt -= ab; e.flash = .1; if (e.shield <= 0) { burst(e.x, e.y - 60, "#ffd34a", 8, 120); text(e.x, e.y - 80, "¡Casco roto!", "#ffd34a", 12); } if (amt <= 0) return; }
   e.hp -= amt; e.flash = .1;
   if (opts.from && (opts.from === G.player || opts.from.remote) && !G.monster) opts.from.ult = Math.min(100, opts.from.ult + amt / 15);
@@ -2680,7 +2693,7 @@ function share(e, mode, power) {
 }
 function updateEnemy(e, dt) {
   e.flash = Math.max(0, e.flash - dt); e.swing = Math.max(0, e.swing - dt);
-  for (const k of ["slow", "weak", "fragile", "boost", "speedBuff", "stun", "noclip", "tremble", "paranoid", "disguise"]) e[k] = Math.max(0, e[k] - dt);
+  for (const k of ["slow", "weak", "fragile", "boost", "speedBuff", "stun", "noclip", "tremble", "paranoid", "disguise", "batMark"]) e[k] = Math.max(0, e[k] - dt);
   if (!(e.fragile > 0)) e.fragStack = 0;
   e.atkT -= dt;
   const dp = Math.hypot(e.x - PIT.x, (e.y - PIT.y) / .82);
@@ -3504,12 +3517,15 @@ function updateBats(dt) {
       else { b.x += dx / d * Math.min(d, sp * dt); b.y += dy / d * Math.min(d, sp * dt); }
       for (const e of G.enemies) { if (e.dead || e.hidden) continue; if (Math.hypot(e.x - b.x, e.y - 30 - b.y) < e.r + 12) { b.state = "latch"; b.target = e; b.ox = rand(-10, 10); b.oy = rand(-50, -30) * (BOSS_SCALE[e.type] || 1); break; } }
     } else if (b.state === "latch") {
-      const e = b.target;
-      if (!e || e.dead || e.hidden) { dropCandy(b.x, b.y + 30, "cherry"); burst(b.x, b.y, "#e8395f", 6, 80); b.dead = true; continue; }
+      const e = b.target, fa = upLv(b.from, "bats", 0);
+      if (!e || e.dead || e.hidden) {
+        if (fa >= 2 && (b.jumps || 0) < 2) { const n = nearestEnemy(b, 170); if (n) { b.jumps = (b.jumps || 0) + 1; b.state = "chase"; b.target = n; continue; } }
+        dropCandy(b.x, b.y + 30, "cherry"); burst(b.x, b.y, "#e8395f", 6, 80); b.dead = true; continue;
+      }
       b.x = e.x + b.ox; b.y = e.y + b.oy; b.tick -= dt;
-      const fa = upLv(b.from, "bats", 0);
+      if (fa >= 1) e.batMark = .3;
       if (fa >= 3) e.slow = Math.max(e.slow, .3);
-      if (b.tick <= 0) { b.tick = .25 / [1, 1.3, 1.6, 2][fa]; hurtEnemy(e, 6 * dmgMul(b.from), { from: b.from }); b.drained += 6; }
+      if (b.tick <= 0) { b.tick = .25; hurtEnemy(e, 6 * dmgMul(b.from), { from: b.from }); b.drained += 6; if (fa >= 3 && b.from && b.from.alive) b.from.hp = Math.min(b.from.maxhp, b.from.hp + 1); }
       if (b.drained >= (fa >= 2 ? 54 : 36)) { dropCandy(b.x, b.y + 34, "cherry"); burst(b.x, b.y, "#e8395f", 8, 90); b.dead = true; }
     } else if (b.state === "hover") {
       b.t -= dt; b.x = b.hx + Math.cos(G.t * 3 + b.flap * .01) * 10; b.y = b.hy + Math.sin(G.t * 4 + b.flap * .02) * 6;
@@ -4703,6 +4719,7 @@ function netDoAct(u, m) {
   else if (m.a === "build" && DECO[m.k]) buildFor(u, m.k);
   else if (m.a === "upg" && G.ustand) buyUp(u, m.k, +m.p);
   else if (m.a === "ready" && G.ustand) u.ready = !!m.v;
+  else if (m.a === "extra" && G.ustand) buyExtra(u, m.x);
   else if (m.a === "douse" && u.burn > 0) u.burn--;
 }
 // remote festilocos on the host: they move where their phone says, and come back after falling
@@ -5143,6 +5160,7 @@ function drawObjArrows() {
     if (sx > 0 && sx < VW && sy > 0 && sy < VH) continue;
     const cx = VW / 2, cy = VH / 2, a = Math.atan2(sy - cy, sx - cx), m = 60;
     const ex = clamp(cx + Math.cos(a) * VW, m, VW - m), ey = clamp(cy + Math.sin(a) * VH, m + 60, VH - m - 90);
+    if (P.ic === "$") { const pu = 1 + Math.sin(T() * 6) * .12; ctx.save(); ctx.translate(ex, ey); ctx.scale(pu, pu); circS(0, 0, 21, "rgba(74,20,36,.95)", 3); label("☠", 0, 6, 17, P.c); ctx.save(); ctx.rotate(a); poly([34, 0, 22, -10, 22, 10]); S(P.c, 2); ctx.restore(); ctx.restore(); label("Mejoras", ex, ey + 36, 12, P.c); continue; }
     ctx.save(); ctx.translate(ex, ey); circS(0, 0, 15, "rgba(36,24,58,.92)", 2); label(P.ic === "🔥" ? "A" : P.ic === "$" ? "☠" : P.ic, 0, 5, 13, P.c);
     ctx.save(); ctx.rotate(a); poly([26, 0, 17, -7, 17, 7]); S(P.c, 1.6); ctx.restore(); ctx.restore();
   }
@@ -5682,7 +5700,7 @@ const partyDiscount = () => [1, .8, .68, .6][partySize() - 1];
 const upCost = lv => Math.max(1, Math.round(UPG_COST[lv] * (1 + .12 * Math.max(0, (G.wave || 1) - 1)) * partyDiscount()));
 const UPG = {
   bats: { name: "Murciélagos golosos", key: "Q", desc: "Salen 7 murciélagos de la cerradura hacia la zona marcada. Se prenden a los empleados y les chupan 6 de vida cada cuarto de segundo, hasta 36. Al terminar dejan un caramelo que cura. Espera: 17 s.",
-    paths: [{ name: "Colmillos", lv: ["Chupan 30% más rápido", "Chupan 60% más rápido y hasta 54 de vida cada uno", "Chupan el doble de rápido y el mordido camina a la mitad de velocidad"] },
+    paths: [{ name: "Colmillos", lv: ["Los empleados mordidos reciben 25% más daño de todo", "Cada murciélago chupa hasta 54, y si su presa cae salta a otro empleado cercano (hasta 2 veces)", "Los mordidos caminan a la mitad de velocidad y cada mordida te cura 1 de vida"] },
             { name: "Bandada", lv: ["9 murciélagos", "11 murciélagos y 2 s menos de espera", "14 murciélagos y 4 s menos de espera"] }] },
   tomb: { name: "Tumba", key: "E", desc: "Fobi patea una tumba a la zona marcada. Los empleados la atacan y cada golpe hace salir 3 esqueletos (hasta 15 a la vez). Aguanta 10 golpes. Espera: 30 s.",
     paths: [{ name: "Guardianes", lv: ["Cada vez que salen esqueletos, 15% de que uno sea un esqueleto guardián", "20%, y cuando pasa, todos los que salen son guardianes", "30%, y cuando la tumba se rompe siempre suelta 3 guardianes más"] },
@@ -5713,10 +5731,28 @@ function creditKill(e, from) {
   if (from === G.player) text(e.x + 14, e.y - 104, "+" + v + " ☠", "#ff9ab0", 11);
 }
 // bots shop on their own, picking at random
+const EXTRAS = [
+  { id: "hp", name: "Remiendo", desc: "+10 de vida máxima por el resto de la partida (hasta +50).", base: 12, can: u => (u.extraHp || 0) < 50, why: "Ya tenés +50" },
+  { id: "pot", name: "Frasco sin etiqueta", desc: "Una poción al azar en tu bolsillo.", base: 10, can: u => !u.potion, why: "Ya tenés una poción" },
+  { id: "deco", name: "Caja de repuesto", desc: "+1 decoración al azar en la caja de decoración de esta partida (para todo el equipo).", base: 10, can: () => true },
+  { id: "coins", name: "Bajas por monedas", desc: "60 monedas más al terminar la partida.", base: 10, flat: true, can: () => true }
+];
+const allMaxed = u => UKEYS.every(k => u.up && u.up[k] && u.up[k].lv >= 3);
+const extraCost = x => x.flat ? x.base : Math.max(1, Math.round(x.base * (1 + .12 * Math.max(0, (G.wave || 1) - 1)) * partyDiscount()));
+function extraState(u, x) { if (!allMaxed(u)) return "locked"; if (!x.can(u)) return "no"; return (u.bajas || 0) < extraCost(x) ? "poor" : "ok"; }
+function buyExtra(u, id) {
+  const x = EXTRAS.find(q => q.id === id); if (!x || extraState(u, x) !== "ok") return false;
+  u.bajas -= extraCost(x);
+  if (id === "hp") { u.extraHp = (u.extraHp || 0) + 10; u.maxhp += 10; u.hp += 10; }
+  else if (id === "pot") u.potion = pick(POT_KEYS);
+  else if (id === "deco") { const k = pick(["apple", "dulce", "caldero"]); G.free[k] = (G.free[k] || 0) + 1; }
+  else if (id === "coins") G.earn.obj += 60;
+  return true;
+}
 function botShop(a) {
   for (let i = 0; i < 12; i++) {
     const opts = []; for (const k of UKEYS) for (const p of [0, 1]) if (upState(a, k, p) === "ok") opts.push([k, p]);
-    if (!opts.length) return;
+    if (!opts.length) { if (allMaxed(a)) { const ok = EXTRAS.filter(x => x.id !== "coins" && extraState(a, x) === "ok"); if (ok.length) { buyExtra(a, pick(ok).id); continue; } } return; }
     const owned = opts.filter(([k]) => a.up && a.up[k]), [k, p] = pick(owned.length && Math.random() < .6 ? owned : opts);
     buyUp(a, k, p);
   }
@@ -5731,7 +5767,7 @@ function openStand() {
   festis().forEach(u => u.ready = false);
   G.allies.forEach(a => { if (a.ai && !a.remote) botShop(a); });
   ring(at.x, at.y, 10, 120, "rgba(255,120,150,.7)", .6); burst(at.x, at.y - 40, "#ff9ab0", 16, 160);
-  toast("Llegó alguien disfrazado a vender mejoras junto al Corazón. Cuando estés listo, tocá el megáfono.", 4);
+  G.ustand.fresh = 7; showStandBanner();
 }
 function closeStand() { G.ustand = null; festis().forEach(u => u.ready = false); G.allies.forEach(a => a.ready = false); if (!$("upOv").hidden) closeUpShop(); }
 const humans = () => [G.player, ...G.allies.filter(a => a.remote && !a.dead)];
@@ -5739,9 +5775,15 @@ function updateStand(dt) {
   const S0 = G.ustand; S0.t += dt;
   const hs = humans(); if (hs.length && hs.every(h => h.ready)) { closeStand(); toast("¡Todos listos! Llega la próxima horda", 2.4); nextHorde(); }
 }
+function showStandBanner() {
+  const el = $("standBanner"); if (!el) return;
+  setText("sbSub", "Está junto al Corazón (seguí la flecha rosa) · tenés ☠ " + (G.player.bajas || 0) + " bajas");
+  el.hidden = false; el.classList.remove("go"); void el.offsetWidth; el.classList.add("go");
+  clearTimeout(showStandBanner.t); showStandBanner.t = setTimeout(() => { el.hidden = true; }, 4600);
+}
 const nearStand = () => { const S0 = G.ustand, p = G.player; return !!S0 && p.alive && Math.hypot(p.x - (S0.x + 40), p.y - S0.y) < 160; };
 function toggleReady() {
-  if (!G.ustand) return;
+  if (!G.ustand || G.over) return;
   if (netIntercept("ready", { v: !G.player.ready })) { G.player.ready = !G.player.ready; return; }
   G.player.ready = !G.player.ready;
   if (G.player.ready) { G.ustand.ring = .6; text(G.ustand.mx, G.ustand.my - 90, "¡Listo!", "#9be37a", 15); }
@@ -5786,6 +5828,7 @@ function drawDisfrazado(t, writing) {
 function drawStand() {
   const S0 = G.ustand; if (!S0) return;
   const t = T(), x = S0.x, y = S0.y;
+  { const a = (S0.fresh > 0 ? .55 : .2) + Math.sin(t * 4) * .06; ctx.save(); ctx.globalCompositeOperation = "lighter"; const g = ctx.createLinearGradient(0, y - 520, 0, y); g.addColorStop(0, "rgba(255,120,160,0)"); g.addColorStop(1, `rgba(255,120,160,${a})`); ctx.fillStyle = g; ctx.fillRect(x - 70, y - 520, 160, 520); ctx.restore(); }
   ctx.save(); ctx.translate(x, y);
   ell(0, 6, 62, 14, "rgba(4,2,12,.45)");
   // a crate stall with a little red lantern
@@ -5807,7 +5850,7 @@ function drawStand() {
   ctx.restore();
   if (G.mode === "match") { const near = nearStand(); label("Mejoras", x + 40, y - 150 + Math.sin(t * 3) * 3, near ? 17 : 14, near ? "#ffb3c4" : "rgba(255,200,215,.8)"); }
 }
-function updateStandFx(dt) { if (G.ustand && G.ustand.ring > 0) G.ustand.ring = Math.max(0, G.ustand.ring - dt); }
+function updateStandFx(dt) { if (!G.ustand) return; if (G.ustand.ring > 0) G.ustand.ring = Math.max(0, G.ustand.ring - dt); if (G.ustand.fresh > 0) G.ustand.fresh = Math.max(0, G.ustand.fresh - dt); }
 
 // ---------- the shop window (same layout as the kiosk) ----------
 // he never talks: everything he "says" is a note he writes and holds up
@@ -5832,7 +5875,14 @@ function pathSummary(u, k) { const s = u.up && u.up[k]; return s ? UPG[k].paths[
 function upRender() {
   const u = G.player, k = USHOP.sel, D = UPG[k], s = (u.up && u.up[k]) || null;
   $("upBajas").textContent = u.bajas || 0;
-  $("upLeft").innerHTML = `<div class="sk-list">${UKEYS.map(q => `<button class="sk-row${q === k ? " on" : ""}" data-act="sel" data-k="${q}"><i class="heart">♥</i><span>${UPG[q].name}<small>${pathSummary(u, q)}</small></span><em>${UPG[q].key}</em></button>`).join("")}<button class="sk-row" data-act="exit"><i class="heart">♥</i><span>Salir</span></button></div>`;
+  const xr = `<button class="sk-row${k === "extra" ? " on" : ""}" data-act="sel" data-k="extra"><i class="heart">♥</i><span>Extras<small>${allMaxed(u) ? "Para cuando ya tenés todo" : "Se abren al completar las 3 habilidades"}</small></span><em>${allMaxed(u) ? "★" : "🔒"}</em></button>`;
+  if (k === "extra") {
+    $("upLeft").innerHTML = `<div class="sk-list">${UKEYS.map(q => `<button class="sk-row" data-act="sel" data-k="${q}"><i class="heart">♥</i><span>${UPG[q].name}<small>${pathSummary(u, q)}</small></span><em>${UPG[q].key}</em></button>`).join("")}${xr}<button class="sk-row" data-act="exit"><i class="heart">♥</i><span>Salir</span></button></div>`;
+    const cards = EXTRAS.map(x => { const st = extraState(u, x); return `<div class="upath${st === "locked" ? " locked" : ""}"><b>${x.name}</b><ol style="list-style:none;padding:0"><li>${x.desc}</li></ol>${st === "locked" ? `<span class="sk-note">Completá las 3 habilidades primero</span>` : st === "no" ? `<span class="sk-note">${x.why}</span>` : `<button class="cta" data-act="extra" data-x="${x.id}" ${st === "poor" ? "disabled" : ""}>Comprar · ☠ ${extraCost(x)}</button>`}</div>`; }).join("");
+    $("upRight").innerHTML = `<div class="sk-detail"><span class="kind">Extras</span><b>Para seguir gastando bajas</b><p>Cosas chicas que se pueden comprar las veces que quieras, una vez que tenés un camino completo en cada habilidad.</p><div class="upaths">${cards}</div></div>`;
+    return;
+  }
+  $("upLeft").innerHTML = `<div class="sk-list">${UKEYS.map(q => `<button class="sk-row${q === k ? " on" : ""}" data-act="sel" data-k="${q}"><i class="heart">♥</i><span>${UPG[q].name}<small>${pathSummary(u, q)}</small></span><em>${UPG[q].key}</em></button>`).join("")}${xr}<button class="sk-row" data-act="exit"><i class="heart">♥</i><span>Salir</span></button></div>`;
   const paths = D.paths.map((P, p) => {
     const st = upState(u, k, p), lv = s && s.p === p ? s.lv : 0;
     const items = P.lv.map((txt, i) => `<li class="${i < lv ? "got" : ""}">${i < lv ? "✓ " : ""}${txt}</li>`).join("");
@@ -5847,6 +5897,10 @@ function upAct(el) {
   if (a === "skip") { USHOP.shown = USHOP.say.length; return; }
   if (a === "sel") USHOP.sel = el.dataset.k;
   else if (a === "exit") { closeUpShop(); toast("Una nota: «" + pick(NOTES.exit).replace(/\n/g, " ") + "»", 2.6); return; }
+  else if (a === "extra") {
+    const x = EXTRAS.find(q => q.id === el.dataset.x), st = x && extraState(G.player, x);
+    if (st === "poor") upSay(pick(NOTES.poor)); else if (st === "ok") { if (netIntercept("extra", { x: x.id })) G.player.bajas -= extraCost(x); else buyExtra(G.player, x.id); upSay(pick(NOTES.buy)); burst(G.player.x, G.player.y - 60, "#ff9ab0", 14, 140); }
+  }
   else if (a === "buy") {
     const k = USHOP.sel, p = +el.dataset.p, st = upState(G.player, k, p);
     if (st === "poor") upSay(pick(NOTES.poor)); else if (st === "locked") upSay(NOTES.locked); else if (st === "max") upSay(NOTES.max);
@@ -6526,7 +6580,7 @@ function updateHUD() {
   setText("waveTxt", G.phase === "setup" ? "Preparación · " + G.diff.name : G.phase === "escape" ? "¡Huida! · " + Math.max(0, Math.ceil(G.escape.t)) + " s" : "Oleada " + G.wave + "/" + MAX_WAVE + " · " + G.diff.name);
   let st;
   if (G.phase === "setup") st = G.allies.length ? "Llevá el Corazón a uno de los 3 lugares marcados" : "Llamá ayuda en el teléfono o andá directo a un lugar marcado";
-  else if (G.phase === "prep" && G.ustand) { const [r, n] = readyCount(); st = "Tienda de mejoras abierta junto al Corazón · listos " + r + "/" + n + " en el megáfono"; }
+  else if (G.phase === "prep" && G.ustand) { const [r, n] = readyCount(); st = "Tienda de mejoras abierta junto al Corazón · tocá «¡Listo!» cuando quieras seguir (" + r + "/" + n + ")"; }
   else if (G.phase === "prep") st = (G.wave === 0 ? "La primera oleada llega en " : "Siguiente oleada en ") + Math.ceil(G.prepT) + " s";
   else if (G.phase === "slot") st = "Tragaperras girando…";
   else if (G.phase === "escape") st = (G.escape.fly < 1 ? "El Corazón está volando hacia otro lugar…" : "Llegá al círculo del Corazón y aguantá ahí hasta el final");
@@ -6570,7 +6624,9 @@ function updateHUD() {
   setText("ammoTxt", p.reload > 0 ? "…" : p.ammo + "/" + magOf(p)); setCd("bA", p.reload > 0 ? p.reload / reloadOf(p) : 0); setText("ammoLbl", p.reload > 0 ? "Recargando" : "Ataque");
   setText("bajasTxt", "☠ " + (p.bajas || 0) + " bajas");
   const ns = G.ustand && nearStand() && !G.over; setHidden("standPanel", !ns);
-  if (ns) { const [r, n] = readyCount(); setText("upBtnN", String(p.bajas || 0)); setText("readyTxt", "Listos: " + r + "/" + n + (n > 1 ? " · la horda llega cuando todos tocan el megáfono" : "")); setClass("readyBtn", "on", !!p.ready); setText("readyBtn", p.ready ? "¡Listo! (tocá para esperar)" : "Megáfono: ¡listo!"); }
+  if (ns) setText("upBtnN", String(p.bajas || 0));
+  const showReady = !!G.ustand && !G.over; setHidden("readyTop", !showReady);
+  if (showReady) { const [r, n] = readyCount(); setText("readyN", r + "/" + n); setClass("readyTop", "on", !!p.ready); setText("readyLbl", p.ready ? "¡Listo! Esperando al resto" : "¡Listo para la próxima horda!"); }
   const ph = nearPhone() && !G.over && !isGuest();
   setHidden("phonePanel", !ph);
   if (ph) {

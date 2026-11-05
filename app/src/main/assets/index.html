@@ -426,15 +426,15 @@ details ul{margin:6px 0 0;padding-left:16px;display:flex;flex-direction:column;g
     <div class="movehint">Mover</div>
     <button class="use lobbyonly" id="useBtn" disabled><b id="useLbl">Usar</b><span id="useSub">Acercate a algo</span></button>
     <div class="pad matchonly">
-      <button class="skill" id="bQ" aria-label="Murciélago gigante"><span class="key">Q</span>
+      <button class="skill" id="bQ" aria-label="Murciélagos golosos"><span class="key">Q</span>
         <svg viewBox="0 0 24 24"><path d="M2 8c2.5 0 4 1.5 4.5 4 .8-1.3 2-1.8 3.3-1.6L12 7l2.2 3.4c1.3-.2 2.5.3 3.3 1.6.5-2.5 2-4 4.5-4-.6 4.2-3 7.5-6.4 8.3-.8-.9-2-1.2-3.6-.4-1.6-.8-2.8-.5-3.6.4C5 15.5 2.6 12.2 2 8z"/></svg>
-        <span class="nm" id="nQ">Murciélago</span><span class="cdn" id="tQ"></span></button>
+        <span class="nm" id="nQ">Murciélagos</span><span class="cdn" id="tQ"></span></button>
       <button class="skill" id="bE" aria-label="Tumba"><span class="key">E</span>
         <svg viewBox="0 0 24 24"><path d="M6 20V10a6 6 0 0 1 12 0v10M4 20h16M12 9v6M9.5 11.5h5"/></svg>
         <span class="nm" id="nE">Tumba</span><span class="cdn" id="tE"></span></button>
-      <button class="skill" id="bR" aria-label="Embestida de lobo"><span class="key">R</span>
+      <button class="skill" id="bR" aria-label="Hombre lobo"><span class="key">R</span>
         <svg viewBox="0 0 24 24"><path d="M15 3a8 8 0 1 0 6 13A7 7 0 0 1 15 3z"/></svg>
-        <span class="nm" id="nR">Lobo</span><span class="cdn" id="tR"></span></button>
+        <span class="nm" id="nR">Hombre lobo</span><span class="cdn" id="tR"></span></button>
       <button class="skill" id="bF" aria-label="Lord Terror"><span class="key">F</span>
         <svg viewBox="0 0 24 24"><path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
         <span class="nm" id="nF">0%</span></button>
@@ -591,10 +591,10 @@ details ul{margin:6px 0 0;padding-left:16px;display:flex;flex-direction:column;g
           <p>Ahora vive con los festilocos y es feliz. Ya casi nunca se le escapa nada.</p>
           <div class="box"><h3>Habilidades</h3><ul>
             <li><b>Partes sueltas:</b> cada cargador lanza mano, bota, mano, bota. Las que fallan se desvanecen; las que aciertan se quedan flotando y te dan unos segundos para acertar la siguiente. Acertá las 4 seguidas y se reúnen en el Señor Ghonzalo, o lo suben de nivel.</li>
-            <li><b>Murciélago gigante:</b> va de empleado en empleado mordiéndolos a todos (cada mordida nueva suelta caramelos que curan), después se queda en el piso como carnada y explota.</li>
-            <li><b>Tumba:</b> lanzás una tumba entera. Al caer explota y aturde; salen 3 esqueletos donde cae y 3 más alrededor de cada empleado golpeado.</li>
-            <li><b>Lobo:</b> por un momento Fobi se vuelve un lobo fantasma y embiste hacia donde apuntes, mordiendo y aturdiendo todo a su paso.</li>
-            <li><b>Lord Terror (definitiva):</b> Fobi se fusiona con el Señor Ghonzalo en una figura enorme. Sus disparos atraviesan a todos y los puños de Ghonzalo golpean lo que se acerque. No tiene tiempo: aguanta tantos golpes como niveles tenía Ghonzalo.</li>
+            <li><b>Murciélagos golosos:</b> chupan sangre y caen como caramelos de cereza que curan.</li>
+            <li><b>Tumba:</b> cada golpe que recibe invoca tres esqueletos.</li>
+            <li><b>Hombre lobo:</b> un hombre aterrado que atrae a los enemigos. Si aguanta hasta la luna llena, se transforma. Usarla otra vez le da un ataque de furia.</li>
+            <li><b>Lord Terror (definitiva):</b> Fobi se fusiona con el Señor Ghonzalo en una figura enorme. Sus disparos atraviesan a todos, los puños de Ghonzalo golpean lo que se acerque y sus habilidades cambian: un murciélago gigante que muerde a todos y suelta caramelos, una tumba entera que lanza y explota en un ejército de esqueletos, y una embestida de lobo hacia donde apunte. No tiene tiempo: aguanta tantos golpes como niveles tenía Ghonzalo.</li>
           </ul></div>
         </div></div>
       </div>
@@ -2343,7 +2343,7 @@ const endJoy = e => { if (e.pointerId === joy.id) { joy.id = null; joy.active = 
 cv.addEventListener("pointerup", endJoy); cv.addEventListener("pointercancel", endJoy);
 cv.addEventListener("contextmenu", e => e.preventDefault());
 window.addEventListener("pointerup", e => { if (e.pointerType === "mouse") mouse.down = false; });
-const RANGES = { atk: 540, bats: 380, tomb: 300, ghost: 320 };
+const RANGES = { atk: 540, bats: 380, tomb: 260, ghost: 260 };
 function resolveKind(kind) { return (G.monster && !G.monster.used && kind !== "atk") ? "ult_" + kind : kind; }
 function dragPoint(kind, dx, dy) {
   const p = G.player, d = Math.hypot(dx, dy) || 1, k = resolveKind(kind);
@@ -2496,7 +2496,7 @@ function tryAttack(u, target) {
   G.shots.push({ x: u.x, y: sy, vx: Math.cos(a) * 640, vy: Math.sin(a) * 640, a, left: L ? 640 : 540, dmg: 35 * dmgMul(u) * (L ? 1.6 : 1), pierce: L ? 99 : 0, big: !!L, kind: limb, from: u, tint: u.ai ? u.cos.lining : null });
   if (Math.abs(Math.cos(a)) > .2) u.face = Math.sign(Math.cos(a));
 }
-const SKILL_CD = { bats: 17, tomb: 30, ghost: 14 };
+const SKILL_CD = { bats: 17, tomb: 30, ghost: 24 }, TERROR_CD = { bats: 9, tomb: 12, ghost: 5 };
 function setCdMax(u, k) { (u.cdMax || (u.cdMax = {}))[k] = u.cd[k]; }
 function useSkill(k, pt, who) {
   if (!who && isGuest()) { netIntercept("skill", { k, pt: pt || aimPoint(k === "bats" ? 380 : 260) }); return true; }
@@ -2505,14 +2505,20 @@ function useSkill(k, pt, who) {
   if (!who) { const M = G.monster; if (M && !M.used) { ultVariant(k, pt); return true; } }
   if (u.cd[k] > 0) return false;
   u.lift = 1;
+  if (u.terror) { // Lord Terror: the skills turn into their fused versions, with their own (short) waits
+    if (k === "bats") { const c = pt || aimPoint(380); u.cd.bats = TERROR_CD.bats - [0, 1, 2, 3][upLv(u, "bats", 1)]; setCdMax(u, "bats"); startCast(u, "bats", c); u.cast.big = true; }
+    else if (k === "tomb") { const c = pt || aimPoint(300); u.cd.tomb = TERROR_CD.tomb; setCdMax(u, "tomb"); startCast(u, "tomb", c); u.cast.big = true; }
+    else if (k === "ghost") { const c = pt || aimPoint(320); wolfDash(u, c); u.cd.ghost = TERROR_CD.ghost - [0, 1, 1.5, 2][upLv(u, "ghost", 1)]; setCdMax(u, "ghost"); }
+    return true;
+  }
   if (k === "bats") {
-    const c = pt || aimPoint(380); u.cd.bats = SKILL_CD.bats - [0, 2, 4, 6][upLv(u, "bats", 1)]; setCdMax(u, "bats"); startCast(u, "bats", c);
+    const c = pt || aimPoint(380); u.cd.bats = SKILL_CD.bats - [0, 0, 2, 4][upLv(u, "bats", 1)]; setCdMax(u, "bats"); startCast(u, "bats", c);
   } else if (k === "tomb") {
-    const c = pt || aimPoint(300); u.cd.tomb = SKILL_CD.tomb; setCdMax(u, "tomb"); startCast(u, "tomb", c);
+    const c = pt || aimPoint(260); u.cd.tomb = SKILL_CD.tomb; setCdMax(u, "tomb"); startCast(u, "tomb", c);
   } else if (k === "ghost") {
-    const c = pt || aimPoint(320);
-    wolfDash(u, c);
-    u.cd.ghost = SKILL_CD.ghost - [0, 2, 4, 6][upLv(u, "ghost", 1)]; setCdMax(u, "ghost");
+    const c = pt || aimPoint(260);
+    if (!castWolf(u, c)) return false;
+    u.cd.ghost = SKILL_CD.ghost - [0, 4, 4, 8][upLv(u, "ghost", 1)]; setCdMax(u, "ghost");
   }
   return true;
 }
@@ -3719,8 +3725,9 @@ function updateCasts(dt) {
     if (c.kind === "bats") {
       if (c.t < .9) u.lift = 1;
       // bats pour out of the keyhole one by one while the pail is up
-      if (!c.spawned && c.t > .35) { c.spawned = 1; launchBigBat(u, c.pt); burst(keyholePos(u).x, keyholePos(u).y, "#e8395f", 10, 120); }
-      while (false) {
+      if (c.big) { if (!c.spawned && c.t > .35) { c.spawned = 1; launchBigBat(u, c.pt); burst(keyholePos(u).x, keyholePos(u).y, "#e8395f", 10, 120); } }
+      const nb = c.big ? 0 : [7, 9, 11, 14][upLv(u, "bats", 1)];
+      while (c.spawned < nb && c.t > .18 + c.spawned * (.6 / nb)) {
         const k = keyholePos(u), a = rand(0, TAU), r = 115 * Math.sqrt(Math.random());
         G.bats.push({ x: k.x, y: k.y, tx: c.pt.x + Math.cos(a) * r, ty: c.pt.y + Math.sin(a) * r, delay: 0, state: "fly", t: 0, target: null, drained: 0, tick: 0, flap: rand(0, TAU), alpha: 1, from: u });
         c.spawned++; burst(k.x, k.y, "#a6f4e8", 3, 60, 2);
@@ -3731,7 +3738,7 @@ function updateCasts(dt) {
       if (!c.kicked && c.t >= .7) {
         c.kicked = true; u.kick = .3;
         const h = handsPos(u);
-        G.tombFly.push({ x: h.x, y: h.y, sx: h.x, sy: h.y, tx: c.pt.x, ty: c.pt.y, t: 0, dur: .45 + Math.hypot(c.pt.x - h.x, c.pt.y - h.y) / 900, from: u, spin: 0, throw: true });
+        G.tombFly.push({ x: h.x, y: h.y, sx: h.x, sy: h.y, tx: c.pt.x, ty: c.pt.y, t: 0, dur: c.big ? .45 + Math.hypot(c.pt.x - h.x, c.pt.y - h.y) / 900 : .38, from: u, spin: 0, throw: !!c.big });
         burst(h.x + u.face * 10, h.y + 20, "#a6f4e8", 8, 120, 2.5);
       }
     } else if (c.kind === "wolf") {
@@ -5715,15 +5722,18 @@ const partySize = () => Math.min(4, 1 + (G && G.allies ? G.allies.filter(a => a.
 const partyDiscount = () => [1, .8, .68, .6][partySize() - 1];
 const upCost = lv => Math.max(1, Math.round(UPG_COST[lv] * (1 + .12 * Math.max(0, (G.wave || 1) - 1)) * partyDiscount()));
 const UPG = {
-  bats: { name: "Murciélago gigante", key: "Q", desc: "Fobi suelta un murciélago enorme que va de empleado en empleado mordiéndolos (13 de daño por mordida). Cada empleado nuevo que muerde suelta 2 caramelos que curan. Después se queda en el piso atrayendo empleados y explota. Espera: 17 s.",
-    paths: [{ name: "Colmillos", lv: ["Mordidas 25% más fuertes", "Mordidas 50% más fuertes y explosión más grande", "Mordidas 80% más fuertes y explosión enorme"] },
-            { name: "Bandada", lv: ["2 s menos de espera", "4 s menos de espera y 3 caramelos por mordida", "6 s menos de espera y el murciélago tiene 50% más de vida como carnada"] }] },
-  tomb: { name: "Tumba", key: "E", desc: "Fobi lanza una tumba entera. Al caer explota (45 de daño) y aturde 1,5 s. Salen 3 esqueletos donde cae y 3 más alrededor de cada empleado golpeado (hasta 24 esqueletos tuyos a la vez). Espera: 30 s.",
-    paths: [{ name: "Guardianes", lv: ["15% de los esqueletos salen como guardianes", "30% salen como guardianes", "50% salen como guardianes y los del impacto siempre lo son"] },
-            { name: "Más huesos", lv: ["4 esqueletos por empleado golpeado", "5 esqueletos en el impacto", "5 por empleado golpeado y explosión 30% más grande"] }] },
-  ghost: { name: "Lobo", key: "R", desc: "Fobi se vuelve un lobo fantasma y embiste hacia donde apuntes (300 de distancia). Muerde a todo lo que cruza (42 de daño), lo aturde y no recibe daño mientras corre. Espera: 14 s.",
-    paths: [{ name: "Alfa", lv: ["25% más de daño", "50% más de daño", "80% más de daño y aturde 1,2 s"] },
-            { name: "Cazador", lv: ["2 s menos de espera", "4 s menos de espera y embestida 20% más larga", "6 s menos de espera y embestida 40% más larga"] }] }
+  bats: { name: "Murciélagos golosos", key: "Q", desc: "Salen 7 murciélagos de la cerradura hacia la zona marcada. Se prenden a los empleados y les chupan 6 de vida cada cuarto de segundo, hasta 36. Al terminar dejan un caramelo que cura. Espera: 17 s.",
+    terror: "En Lord Terror sale un murciélago gigante que va de empleado en empleado mordiéndolos (cada uno nuevo suelta caramelos), se queda como carnada y explota. Espera: 9 s.",
+    paths: [{ name: "Colmillos", lv: ["Los empleados mordidos reciben 25% más daño de todo", "Cada murciélago chupa hasta 54, y si su presa cae salta a otro empleado cercano (hasta 2 veces)", "Los mordidos caminan a la mitad de velocidad y cada mordida te cura 1 de vida"], tlv: ["mordidas +25%", "mordidas +50% y explosión más grande", "mordidas +80% y explosión enorme"] },
+            { name: "Bandada", lv: ["9 murciélagos", "11 murciélagos y 2 s menos de espera", "14 murciélagos y 4 s menos de espera"], tlv: ["1 s menos de espera", "2 s menos y 3 caramelos por mordida", "3 s menos y 50% más de vida como carnada"] }] },
+  tomb: { name: "Tumba", key: "E", desc: "Fobi patea una tumba a la zona marcada. Los empleados la atacan y cada golpe hace salir 3 esqueletos (hasta 15 a la vez). Aguanta 10 golpes. Espera: 30 s.",
+    terror: "En Lord Terror lanzás la tumba entera: explota, aturde, deja 3 esqueletos donde cae y 3 más alrededor de cada empleado golpeado. Espera: 12 s.",
+    paths: [{ name: "Guardianes", lv: ["Cada vez que salen esqueletos, 15% de que uno sea un esqueleto guardián", "20%, y cuando pasa, todos los que salen son guardianes", "30%, y cuando la tumba se rompe siempre suelta 3 guardianes más"], tlv: ["15% guardianes", "30% guardianes", "50% guardianes y los del impacto siempre"] },
+            { name: "Más huesos", lv: ["30% de que salgan 4 esqueletos en vez de 3", "40% de que salgan 5", "Mitad y mitad: salen 3 o 6"], tlv: ["4 por empleado golpeado", "5 en el impacto", "5 por empleado y explosión 30% más grande"] }] },
+  ghost: { name: "Hombre lobo", key: "R", desc: "Sale un hombre de la cerradura que a los 6 s se transforma en lobo (si lo golpean antes, se escapa). El lobo muerde y embiste al empleado más lejano. Usala de nuevo con el lobo afuera para enfurecerlo. Espera: 24 s.",
+    terror: "En Lord Terror, Fobi mismo se vuelve un lobo fantasma y embiste hacia donde apuntes, mordiendo y aturdiendo todo a su paso. Espera: 5 s.",
+    paths: [{ name: "Alfa", lv: ["El lobo tiene 30% más de vida", "+30% de vida y 25% más de daño", "+60% de vida, 50% más de daño y se transforma en 3 s"], tlv: ["embestida +25% de daño", "+50% de daño", "+80% de daño y aturde 1,2 s"] },
+            { name: "Cazador", lv: ["4 s menos de espera", "Embiste cada 4 s en vez de cada 7 y aturde 1 s", "8 s menos de espera y la embestida hace 60% más de daño"], tlv: ["1 s menos de espera", "1,5 s menos y embestida 20% más larga", "2 s menos y embestida 40% más larga"] }] }
 };
 const UKEYS = ["bats", "tomb", "ghost"]; // the basic attack has no upgrades for now: it's always available, so they were too strong
 function upLv(u, k, p) { const s = u && u.up && u.up[k]; return s && s.p === p ? s.lv : 0; }
@@ -5904,9 +5914,9 @@ function upRender() {
     const items = P.lv.map((txt, i) => `<li class="${i < lv ? "got" : ""}">${i < lv ? "✓ " : ""}${txt}</li>`).join("");
     const btn = st === "locked" ? `<span class="sk-note">Cerrado: elegiste ${D.paths[1 - p].name}</span>` : st === "max" ? `<span class="sk-note">¡Camino completo!</span>` :
       `<button class="cta" data-act="buy" data-p="${p}" ${st === "poor" ? "disabled" : ""}>${lv ? "Nivel " + (lv + 1) : "Elegir"} · ☠ ${upCost(lv)}</button>`;
-    return `<div class="upath${st === "locked" ? " locked" : ""}"><b>${P.name}</b><ol>${items}</ol>${btn}</div>`;
+    return `<div class="upath${st === "locked" ? " locked" : ""}"><b>${P.name}</b><ol>${items}</ol>${P.tlv ? `<span class="fine" style="color:#c9fbf3">Lord Terror: ${P.tlv.slice(0, Math.max(1, lv)).slice(-1)[0]}${lv ? "" : " (nivel 1)"}</span>` : ""}${btn}</div>`;
   }).join("");
-  $("upRight").innerHTML = `<div class="sk-detail"><span class="kind">Habilidad · ${D.key}</span><b>${D.name}</b><p>${D.desc}</p><div class="upaths">${paths}</div><p class="sk-note">Elegir un camino cierra el otro. Los precios suben con cada nivel y con cada horda${partySize() > 1 ? " · con " + partySize() + " festilocos en la partida, todo sale " + Math.round((1 - partyDiscount()) * 100) + "% más barato" : ""}.</p></div>`;
+  $("upRight").innerHTML = `<div class="sk-detail"><span class="kind">Habilidad · ${D.key}</span><b>${D.name}</b><p>${D.desc}</p>${D.terror ? `<p style="color:#c9fbf3">${D.terror}</p>` : ""}<div class="upaths">${paths}</div><p class="sk-note">Elegir un camino cierra el otro. Los precios suben con cada nivel y con cada horda${partySize() > 1 ? " · con " + partySize() + " festilocos en la partida, todo sale " + Math.round((1 - partyDiscount()) * 100) + "% más barato" : ""}.</p></div>`;
 }
 function upAct(el) {
   const a = el.dataset.act;
@@ -6784,13 +6794,13 @@ function updateHUD() {
   const bkey = bosses.map(b => b.type + Math.ceil(b.hp)).join();
   if (hc.boss !== bkey) { hc.boss = bkey; $("bossBox").innerHTML = bosses.map(b => `<div class="panel boss"><div class="bn"><span>${b.type === "mocha" ? "Mocha" : "???"} <em>${b.type === "mocha" ? "Empleada" : "Empleado"} del mes</em></span><span>${Math.ceil(b.hp)}</span></div><div class="bb"><i style="width:${(100 * b.hp / b.maxhp).toFixed(1)}%"></i></div></div>`).join(""); }
   const M = G.monster, um = M && !M.used;
-  [["bQ", "nQ", "tQ", "bats", "Murciélago", "Gigante", SKILL_CD.bats], ["bE", "nE", "tE", "tomb", "Tumba", "Guardianes", SKILL_CD.tomb], ["bR", "nR", "tR", "ghost", "Lobo", "Lobo blanco", SKILL_CD.ghost]].forEach(([b, n, tc, k, a, u, max]) => {
+  [["bQ", "nQ", "tQ", "bats", p.terror ? "Gigante" : "Murciélagos", "Gigante", SKILL_CD.bats], ["bE", "nE", "tE", "tomb", p.terror ? "Lanzar" : "Tumba", "Guardianes", SKILL_CD.tomb], ["bR", "nR", "tR", "ghost", p.terror ? "Embestida" : "Hombre lobo", "Lobo blanco", SKILL_CD.ghost]].forEach(([b, n, tc, k, a, u, max]) => {
     setText(n, um ? u : a); setClass(b, "ultmode", um);
     setCd(b, um ? 0 : p.cd[k] / ((p.cdMax && p.cdMax[k]) || max)); setText(tc, !um && p.cd[k] > 0 ? String(Math.ceil(p.cd[k])) : "");
     setClass(b, "disabled", !p.alive || p.stun > 0);
   });
   const myWolf = G.wolves.find(w => !w.dead && !w.white && w.from === p && (w.state === "wolf" || w.state === "rage"));
-  setClass("bR", "rage", false);
+  setClass("bR", "rage", !!myWolf && !um && !p.terror); if (myWolf && !um && !p.terror) setText("nR", "Enfurecer");
   const ready = p.ult >= 100 && !M;
   const L = p.terror, blocked = ultBlocked(p), rdy = ready && !L && !blocked;
   setText("nF", L ? "♥ " + L.hits + "/" + L.max : ready && blocked ? "Sin Ghonzalo" : rdy ? "¡Fusión!" : Math.floor(p.ult) + "%"); setCd("bF", L ? 0 : 1 - p.ult / 100); setClass("bF", "ready", rdy);

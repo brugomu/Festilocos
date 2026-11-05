@@ -426,16 +426,16 @@ details ul{margin:6px 0 0;padding-left:16px;display:flex;flex-direction:column;g
     <div class="movehint">Mover</div>
     <button class="use lobbyonly" id="useBtn" disabled><b id="useLbl">Usar</b><span id="useSub">Acercate a algo</span></button>
     <div class="pad matchonly">
-      <button class="skill" id="bQ" aria-label="Murciélagos golosos"><span class="key">Q</span>
+      <button class="skill" id="bQ" aria-label="Murciélago gigante"><span class="key">Q</span>
         <svg viewBox="0 0 24 24"><path d="M2 8c2.5 0 4 1.5 4.5 4 .8-1.3 2-1.8 3.3-1.6L12 7l2.2 3.4c1.3-.2 2.5.3 3.3 1.6.5-2.5 2-4 4.5-4-.6 4.2-3 7.5-6.4 8.3-.8-.9-2-1.2-3.6-.4-1.6-.8-2.8-.5-3.6.4C5 15.5 2.6 12.2 2 8z"/></svg>
-        <span class="nm" id="nQ">Murciélagos</span><span class="cdn" id="tQ"></span></button>
+        <span class="nm" id="nQ">Murciélago</span><span class="cdn" id="tQ"></span></button>
       <button class="skill" id="bE" aria-label="Tumba"><span class="key">E</span>
         <svg viewBox="0 0 24 24"><path d="M6 20V10a6 6 0 0 1 12 0v10M4 20h16M12 9v6M9.5 11.5h5"/></svg>
         <span class="nm" id="nE">Tumba</span><span class="cdn" id="tE"></span></button>
-      <button class="skill" id="bR" aria-label="Hombre lobo"><span class="key">R</span>
+      <button class="skill" id="bR" aria-label="Embestida de lobo"><span class="key">R</span>
         <svg viewBox="0 0 24 24"><path d="M15 3a8 8 0 1 0 6 13A7 7 0 0 1 15 3z"/></svg>
-        <span class="nm" id="nR">Hombre lobo</span><span class="cdn" id="tR"></span></button>
-      <button class="skill" id="bF" aria-label="Fobia ajena"><span class="key">F</span>
+        <span class="nm" id="nR">Lobo</span><span class="cdn" id="tR"></span></button>
+      <button class="skill" id="bF" aria-label="Lord Terror"><span class="key">F</span>
         <svg viewBox="0 0 24 24"><path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
         <span class="nm" id="nF">0%</span></button>
       <button class="skill pot" id="bP" aria-label="Poción"><span class="key">Esp</span>
@@ -590,11 +590,11 @@ details ul{margin:6px 0 0;padding-left:16px;display:flex;flex-direction:column;g
           <p>Pero lo que de verdad alejaba a la gente era la cerradura en su cabeza. Cuando la magia apareció en el mundo, de un día para el otro, por esa ranura empezaron a salir monstruos: los que él imaginaba y también los miedos de quien tuviera cerca. No podía evitarlo. Los vecinos cruzaban de vereda. Sus padres empezaron a hacer todas las horas extra que podían, solo para no estar en casa con él.</p>
           <p>Ahora vive con los festilocos y es feliz. Ya casi nunca se le escapa nada.</p>
           <div class="box"><h3>Habilidades</h3><ul>
-            <li><b>Partes sueltas:</b> lanza manos y botas fantasma. Al caer marcan el piso; dos manos y dos botas juntas forman un fantasma: una gabardina con boina, guantes y botas, sin nadie adentro.</li>
-            <li><b>Murciélagos golosos:</b> chupan sangre y caen como caramelos de cereza que curan.</li>
-            <li><b>Tumba:</b> cada golpe que recibe invoca tres esqueletos.</li>
-            <li><b>Hombre lobo:</b> un hombre aterrado que atrae a los enemigos. Si aguanta hasta la luna llena, se transforma. Usarla otra vez le da un ataque de furia.</li>
-            <li><b>Fobia ajena (definitiva):</b> invoca la fobia de un compañero o la suya. La de Fobi es la anatidaefobia: durante 9 segundos, cada mano y bota que cae al piso llama a un pato que baja del cielo y deja a los empleados de esa zona paralizados de paranoia y con la guardia baja.</li>
+            <li><b>Partes sueltas:</b> cada cargador lanza mano, bota, mano, bota. Las que fallan se desvanecen; las que aciertan se quedan flotando y te dan unos segundos para acertar la siguiente. Acertá las 4 seguidas y se reúnen en el Señor Ghonzalo, o lo suben de nivel.</li>
+            <li><b>Murciélago gigante:</b> va de empleado en empleado mordiéndolos a todos (cada mordida nueva suelta caramelos que curan), después se queda en el piso como carnada y explota.</li>
+            <li><b>Tumba:</b> lanzás una tumba entera. Al caer explota y aturde; salen 3 esqueletos donde cae y 3 más alrededor de cada empleado golpeado.</li>
+            <li><b>Lobo:</b> por un momento Fobi se vuelve un lobo fantasma y embiste hacia donde apuntes, mordiendo y aturdiendo todo a su paso.</li>
+            <li><b>Lord Terror (definitiva):</b> Fobi se fusiona con el Señor Ghonzalo en una figura enorme. Sus disparos atraviesan a todos y los puños de Ghonzalo golpean lo que se acerque. No tiene tiempo: aguanta tantos golpes como niveles tenía Ghonzalo.</li>
           </ul></div>
         </div></div>
       </div>
@@ -1510,6 +1510,7 @@ function drawFobi(u) {
   if (!u.alive) return;
   if (u.enter && u.enter.t < 0) return;
   if (u.enter) drawEnterPortal(u);
+  drawTerrorBack(u);
   if (u.beamK && G && G.core) { // being beamed up into the flying heart
     const k = u.beamK, e = k * k * (3 - 2 * k), c = G.core, tx = c.x, ty = c.y - (c.alt || 0) - 50;
     if (k >= .98) return;
@@ -1524,7 +1525,7 @@ function drawFobi(u) {
   shadowE(0, 2, 17); ctx.globalAlpha = 1;
   if ((u.slowStack || 0) > .05) { ctx.globalAlpha = Math.min(.8, u.slowStack); ell(0, 2, 22, 8, "#f4efe4"); ctx.globalAlpha = 1; }
   if (u.intangible > 0) ctx.globalAlpha = .45 + Math.sin(T() * 18) * .1;
-  ctx.scale(u.face * 1.28, 1.28);
+  const big = u.terror ? 1 + .55 * u.terror.grow : 1; ctx.scale(u.face * 1.28 * big, 1.28 * big);
   const hj = hurtK(u); if (hj > 0) { ctx.translate(-3 * hj, 0); ctx.rotate(-.12 * hj); }
   drawFobiBody(u);
   ctx.restore();
@@ -1532,6 +1533,7 @@ function drawFobi(u) {
   if (G && G.mode === "match") drawCastFx(u);
   const auras = POT_KEYS.filter(k => u.buff[k] > 0);
   auras.forEach((k, i) => { ctx.strokeStyle = POTIONS[k].color; ctx.globalAlpha = .6 + Math.sin(T() * 8) * .2; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.ellipse(u.x, u.y + 2, 25 + i * 5, 9 + i * 2, 0, 0, TAU); ctx.stroke(); ctx.globalAlpha = 1; });
+  drawDashWolf(u); drawComboLimbs(u); drawTerrorFront(u);
   if (u.stun > 0) stunStars(u.x, u.y - 88);
   if (G && G.mode === "match") {
     if (!u.ai && u.reload > 0) { ctx.strokeStyle = "rgba(166,244,232,.85)"; ctx.lineWidth = 3; ctx.beginPath(); ctx.ellipse(u.x, u.y + 2, 24, 9, 0, -Math.PI / 2, -Math.PI / 2 + TAU * (1 - u.reload / reloadOf(u))); ctx.stroke(); }
@@ -2341,7 +2343,7 @@ const endJoy = e => { if (e.pointerId === joy.id) { joy.id = null; joy.active = 
 cv.addEventListener("pointerup", endJoy); cv.addEventListener("pointercancel", endJoy);
 cv.addEventListener("contextmenu", e => e.preventDefault());
 window.addEventListener("pointerup", e => { if (e.pointerType === "mouse") mouse.down = false; });
-const RANGES = { atk: 540, bats: 380, tomb: 260, ghost: 260 };
+const RANGES = { atk: 540, bats: 380, tomb: 300, ghost: 320 };
 function resolveKind(kind) { return (G.monster && !G.monster.used && kind !== "atk") ? "ult_" + kind : kind; }
 function dragPoint(kind, dx, dy) {
   const p = G.player, d = Math.hypot(dx, dy) || 1, k = resolveKind(kind);
@@ -2369,7 +2371,7 @@ function aimButton(id, kind) {
   el.addEventListener("keydown", e => { if (e.key === "Enter" && G && !G.paused && !G.over) { e.preventDefault(); fireKind(kind, null); } });
 }
 aimButton("bA", "atk"); aimButton("bQ", "bats"); aimButton("bE", "tomb");
-tapBtn("bR", () => useSkill("ghost")); // the werewolf always appears next to Fobi: nothing to aim
+aimButton("bR", "ghost"); // the wolf dash goes wherever you drag
 function tapBtn(id, fn) {
   $(id).addEventListener("pointerdown", e => { e.preventDefault(); e.stopPropagation(); if (e.pointerType !== "mouse") lastInput = "touch"; if (G && !G.paused && !G.over) fn(); });
   $(id).addEventListener("keydown", e => { if (e.key === "Enter" && G && !G.paused && !G.over) { e.preventDefault(); fn(); } });
@@ -2405,7 +2407,7 @@ function hurtEnemy(e, amt, opts) {
   if (e.batMark > 0) amt *= 1.25;
   if (e.shield > 0) { const ab = Math.min(e.shield, amt); e.shield -= ab; amt -= ab; e.flash = .1; if (e.shield <= 0) { burst(e.x, e.y - 60, "#ffd34a", 8, 120); text(e.x, e.y - 80, "¡Casco roto!", "#ffd34a", 12); } if (amt <= 0) return; }
   e.hp -= amt; e.flash = .1;
-  if (opts.from && (opts.from === G.player || opts.from.remote) && !G.monster) opts.from.ult = Math.min(100, opts.from.ult + amt / 15);
+  if (opts.from && (opts.from === G.player || opts.from.remote) && !G.monster && !opts.from.terror) opts.from.ult = Math.min(100, opts.from.ult + amt / 15);
   if (opts.slow) e.slow = Math.max(e.slow, opts.slow);
   if (amt >= 8 && Math.random() < .5) text(e.x + rand(-10, 10), e.y - 70 * (BOSS_SCALE[e.type] || 1), String(Math.round(amt)), "#fff2d6", 12);
   if (e.hp <= 0) killEnemy(e, opts.from);
@@ -2419,7 +2421,7 @@ function allyTargets() {
   G.ducks.forEach(d => { if (d.state === "spy" && !d.dead) a.push(d); });
   G.wolves.forEach(w => { if (w.state === "man" || w.state === "wolf" || w.state === "rage") a.push(w); });
   G.bigbats.forEach(b => { if (b.state === "decoy") a.push(b); });
-  return a.filter(t => !t.dead);
+  return a.filter(t => !t.dead && !t.fused);
 }
 function findEnemyTarget(e, range, festiOnly) {
   let best = null, bd = range || 175;
@@ -2453,6 +2455,7 @@ function hurtAlly(t, amt) {
   amt *= teamDmg() * (G.diff ? G.diff.dmg : 1);
   if (t.intangible > 0) { if (Math.random() < .2) text(t.x, t.y - 60, "intangible", "#a6f4e8", 11); return; }
   if (isFesti(t) && t.buff.resistencia > 0) amt *= .5;
+  if (isFesti(t) && t.terror && terrorAbsorb(t, amt)) return;
   t.hp -= amt; t.flash = .12;
   if (t === G.player) feelHurt(amt);
   if (isFesti(t) && amt >= 3 && !(spiritOf(t) && spiritOf(t).react)) spiritReact(t, "flinch", .5);
@@ -2485,14 +2488,15 @@ function canAct(u) { return u.alive && !(u.stun > 0) && !G.over && !u.cast && !u
 function tryAttack(u, target) {
   if (u === G.player && netIntercept("atk", { pt: { x: Math.round(target.x), y: Math.round(target.y) } })) return;
   if (!u || !canAct(u) || u.reload > 0 || u.ammo < 1 || u.fireCd > 0) return;
+  const limb = limbFor(u);
   u.ammo -= 1; u.fireCd = .2; u.lift = 1; u.idleFire = 0;
   if (u.ammo <= 0) u.reload = reloadOf(u);
   const a = Math.atan2(target.y - (u.y - 28), target.x - u.x);
-  const ua = upLv(u, "atk", 0);
-  G.shots.push({ x: u.x, y: u.y - 28, vx: Math.cos(a) * 640, vy: Math.sin(a) * 640, a, left: 540, dmg: 35 * dmgMul(u) * (1 + .2 * ua), pierce: ua >= 2 ? ua - 1 : 0, boom: ua >= 3 && u.ammo <= 0, kind: Math.random() < .5 ? "mano" : "bota", from: u, tint: u.ai ? u.cos.lining : null });
+  const L = u.terror, sy = L ? u.y - 70 : u.y - 28;
+  G.shots.push({ x: u.x, y: sy, vx: Math.cos(a) * 640, vy: Math.sin(a) * 640, a, left: L ? 640 : 540, dmg: 35 * dmgMul(u) * (L ? 1.6 : 1), pierce: L ? 99 : 0, big: !!L, kind: limb, from: u, tint: u.ai ? u.cos.lining : null });
   if (Math.abs(Math.cos(a)) > .2) u.face = Math.sign(Math.cos(a));
 }
-const SKILL_CD = { bats: 17, tomb: 30, ghost: 24 };
+const SKILL_CD = { bats: 17, tomb: 30, ghost: 14 };
 function setCdMax(u, k) { (u.cdMax || (u.cdMax = {}))[k] = u.cd[k]; }
 function useSkill(k, pt, who) {
   if (!who && isGuest()) { netIntercept("skill", { k, pt: pt || aimPoint(k === "bats" ? 380 : 260) }); return true; }
@@ -2502,13 +2506,13 @@ function useSkill(k, pt, who) {
   if (u.cd[k] > 0) return false;
   u.lift = 1;
   if (k === "bats") {
-    const c = pt || aimPoint(380); u.cd.bats = SKILL_CD.bats - [0, 0, 2, 4][upLv(u, "bats", 1)]; setCdMax(u, "bats"); startCast(u, "bats", c);
+    const c = pt || aimPoint(380); u.cd.bats = SKILL_CD.bats - [0, 2, 4, 6][upLv(u, "bats", 1)]; setCdMax(u, "bats"); startCast(u, "bats", c);
   } else if (k === "tomb") {
-    const c = pt || aimPoint(260); u.cd.tomb = SKILL_CD.tomb; setCdMax(u, "tomb"); startCast(u, "tomb", c);
+    const c = pt || aimPoint(300); u.cd.tomb = SKILL_CD.tomb; setCdMax(u, "tomb"); startCast(u, "tomb", c);
   } else if (k === "ghost") {
-    const c = pt || aimPoint(260);
-    if (!castWolf(u, c)) return false;
-    u.cd.ghost = SKILL_CD.ghost - [0, 4, 4, 8][upLv(u, "ghost", 1)]; setCdMax(u, "ghost");
+    const c = pt || aimPoint(320);
+    wolfDash(u, c);
+    u.cd.ghost = SKILL_CD.ghost - [0, 2, 4, 6][upLv(u, "ghost", 1)]; setCdMax(u, "ghost");
   }
   return true;
 }
@@ -2568,7 +2572,7 @@ function tickFesti(u, dt) {
   if (u.reload > 0) { u.reload -= dt; if (u.reload <= 0) { u.reload = 0; u.ammo = magOf(u); } }
   else if (u.ammo < magOf(u) && u.idleFire > 2.5) u.reload = reloadOf(u);
   u.fireCd -= dt;
-  if (G.mode === "match") { tickStatus(u, dt); tickKnock(u, dt); }
+  if (G.mode === "match") { tickStatus(u, dt); tickKnock(u, dt); tickCombo(u, dt); tickTerror(u, dt); tickDash(u, dt); }
   if (G.mode !== "match" || !u.alive) return;
   let milked = false;
   u.puddleT -= dt;
@@ -3489,7 +3493,7 @@ function updateShots(dt) {
   for (const s of G.shots) {
     if (s.dead) continue;
     s.x += s.vx * dt; s.y += s.vy * dt; s.left -= Math.hypot(s.vx, s.vy) * dt;
-    if (s.left <= 0) { s.dead = true; if (!s.noDrop) dropPart(s); continue; }
+    if (s.left <= 0) { s.dead = true; for (let i = 0; i < 5; i++) G.parts.push({ x: s.x + rand(-6, 6), y: s.y + rand(-6, 6), vx: rand(-20, 20), vy: rand(-50, -20), life: .45, max: .45, color: "rgba(201,251,243,.6)", size: 3 }); continue; }
     if (G.mode === "match" && shotHitsMTomb(s)) { s.dead = true; continue; }
     for (const e of G.enemies) {
       if (e.dead || e.hidden) continue;
@@ -3497,9 +3501,10 @@ function updateShots(dt) {
       if (s.hit && s.hit.includes(e)) continue;
       if (Math.hypot(e.x - s.x, e.y - 22 * k - s.y) < e.r + 14) {
         hurtEnemy(e, s.dmg, { from: s.from }); burst(s.x, s.y, "#a6f4e8", 7, 120, 2.5); stars(s.x, s.y);
+        if (!s.counted && !s.noDrop) { s.counted = true; comboHit(s.from, s.kind, e); }
         if (s.boom) { s.boom = false; ring(s.x, s.y, 10, 90, "rgba(255,190,110,.8)", .4); burst(s.x, s.y, "#ffb347", 16, 200); for (const o of G.enemies) if (o !== e && !o.dead && !o.hidden && Math.hypot(o.x - s.x, o.y - 20 - s.y) < 90 + o.r) hurtEnemy(o, s.dmg * .6, { from: s.from }); }
         if (s.pierce > 0) { s.pierce--; (s.hit || (s.hit = [])).push(e); continue; }
-        s.dead = true; if (!s.noDrop) dropPart(s); break;
+        s.dead = true; break;
       }
     }
   }
@@ -3648,12 +3653,19 @@ function updateBigBats(dt) {
     b.flash = Math.max(0, b.flash - dt); b.flap += dt * (b.state === "fly" ? 14 : 4);
     if (b.state === "fly") {
       b.x = clamp(b.x + b.vx * dt, 30, W.w - 30); b.y = clamp(b.y + b.vy * dt, 60, W.h - 20); b.t -= dt; b.tick -= dt;
-      if (b.tick <= 0) { b.tick = .2; for (const e of G.enemies) { if (e.dead || e.hidden) continue; if (Math.hypot(e.x - b.x, e.y - 30 - b.y) < 66 + e.r) { b.absorbed += Math.min(e.hp, 13); hurtEnemy(e, 13); } } }
+      if (b.from) { // zigzag: it steers toward the closest employee it hasn't bitten yet
+        let best = null, bd = 260; for (const e of G.enemies) { if (e.dead || e.hidden || b.bitten.includes(nid(e))) continue; const d = Math.hypot(e.x - b.x, e.y - 30 - b.y); if (d < bd) { bd = d; best = e; } }
+        if (best) { const a = Math.atan2(best.y - 30 - b.y, best.x - b.x), sp = 340; b.vx += (Math.cos(a) * sp - b.vx) * Math.min(1, dt * 5); b.vy += (Math.sin(a) * sp - b.vy) * Math.min(1, dt * 5); }
+      }
+      if (b.tick <= 0) { b.tick = .2; for (const e of G.enemies) { if (e.dead || e.hidden) continue; if (Math.hypot(e.x - b.x, e.y - 30 - b.y) < 66 + e.r) {
+        const d = 13 * (b.biteK || 1); b.absorbed += Math.min(e.hp, d); hurtEnemy(e, d, { from: b.from });
+        if (b.bitten && !b.bitten.includes(nid(e))) { b.bitten.push(nid(e)); if (b.candies < 16) for (let i = 0; i < (b.perBite || 2); i++) { dropCandy(e.x + rand(-30, 30), e.y + rand(-16, 22), "cherry"); b.candies++; } }
+      } } }
       if (b.t <= 0) { b.state = "decoy"; b.t = 8; b.y += 20; ring(b.x, b.y, 10, 90, "rgba(232,57,95,.6)"); text(b.x, b.y - 60, "Absorbió " + Math.round(b.absorbed), "#ff9fb3", 14); }
     } else if (b.t -= dt, b.t <= 0 || b.hp <= 0) {
-      const dmg = Math.max(60, b.absorbed * 1.2);
-      ring(b.x, b.y, 10, 175, "rgba(232,57,95,.8)", .55); burst(b.x, b.y, "#e8395f", 40, 300, 4);
-      for (const e of G.enemies) if (!e.dead && !e.hidden && dist(e, b) < 175) hurtEnemy(e, dmg);
+      const dmg = Math.max(60, b.absorbed * 1.2), R = b.boomR || 175;
+      ring(b.x, b.y, 10, R, "rgba(232,57,95,.8)", .55); burst(b.x, b.y, "#e8395f", 40, 300, 4);
+      for (const e of G.enemies) if (!e.dead && !e.hidden && dist(e, b) < R) hurtEnemy(e, dmg, { from: b.from });
       text(b.x, b.y - 70, "¡" + Math.round(dmg) + "!", "#ff6d8a", 22); b.dead = true;
     }
   }
@@ -3707,8 +3719,8 @@ function updateCasts(dt) {
     if (c.kind === "bats") {
       if (c.t < .9) u.lift = 1;
       // bats pour out of the keyhole one by one while the pail is up
-      const nb = [7, 9, 11, 14][upLv(u, "bats", 1)];
-      while (c.spawned < nb && c.t > .18 + c.spawned * (.6 / nb)) {
+      if (!c.spawned && c.t > .35) { c.spawned = 1; launchBigBat(u, c.pt); burst(keyholePos(u).x, keyholePos(u).y, "#e8395f", 10, 120); }
+      while (false) {
         const k = keyholePos(u), a = rand(0, TAU), r = 115 * Math.sqrt(Math.random());
         G.bats.push({ x: k.x, y: k.y, tx: c.pt.x + Math.cos(a) * r, ty: c.pt.y + Math.sin(a) * r, delay: 0, state: "fly", t: 0, target: null, drained: 0, tick: 0, flap: rand(0, TAU), alpha: 1, from: u });
         c.spawned++; burst(k.x, k.y, "#a6f4e8", 3, 60, 2);
@@ -3719,7 +3731,7 @@ function updateCasts(dt) {
       if (!c.kicked && c.t >= .7) {
         c.kicked = true; u.kick = .3;
         const h = handsPos(u);
-        G.tombFly.push({ x: h.x, y: h.y, sx: h.x, sy: h.y, tx: c.pt.x, ty: c.pt.y, t: 0, dur: .38, from: u, spin: 0 });
+        G.tombFly.push({ x: h.x, y: h.y, sx: h.x, sy: h.y, tx: c.pt.x, ty: c.pt.y, t: 0, dur: .45 + Math.hypot(c.pt.x - h.x, c.pt.y - h.y) / 900, from: u, spin: 0, throw: true });
         burst(h.x + u.face * 10, h.y + 20, "#a6f4e8", 8, 120, 2.5);
       }
     } else if (c.kind === "wolf") {
@@ -3740,10 +3752,11 @@ function updateCasts(dt) {
     if (f.dead) continue;
     f.t += dt; f.spin += dt * 9;
     const k = Math.min(1, f.t / f.dur);
-    f.x = f.sx + (f.tx - f.sx) * k; f.y = f.sy + (f.ty - f.sy) * k - Math.sin(k * Math.PI) * 50;
+    f.x = f.sx + (f.tx - f.sx) * k; f.y = f.sy + (f.ty - f.sy) * k - Math.sin(k * Math.PI) * (f.throw ? 130 : 50);
     if (k >= 1) {
       // the blue silhouette teleports into place and becomes a real tomb
       f.dead = true;
+      if (f.throw) { tombBlast(f); continue; }
       const t = { kind: "tomb", x: f.tx, y: f.ty, r: 20, hp: 10, maxhp: 10, flash: 0, rise: 0, from: f.from };
       collideWorld(t); G.tombs.push(t); tombPulse(t);
       ring(t.x, t.y, 10, 60, "rgba(166,244,232,.9)", .45); burst(t.x, t.y - 20, "#a6f4e8", 16, 160, 3);
@@ -4334,6 +4347,7 @@ const PUNCH_R = 215;
 function updateSpirits(dt) {
   for (const g of G.spirits) {
     if (g.dead) continue;
+    if (g.fused) { if (g.from) { g.x = g.from.x; g.y = g.from.y - 70; } continue; } // inside Lord Terror
     if (g.from && g.from.kind === "ally" && g.from.dead) { g.dead = true; burst(g.x, g.y, "#c9fbf3", 14, 140); continue; }
     g.atkT -= dt; g.bob += dt * 4; g.swing = Math.max(0, g.swing - dt); g.flash = Math.max(0, (g.flash || 0) - dt); g.pump = Math.max(0, (g.pump || 0) - dt); g.appear = Math.min(1, g.appear + dt * 1.6);
     if (g.punch) { g.punch.t -= dt; if (g.punch.t <= 0) g.punch = null; }
@@ -4372,7 +4386,8 @@ const ULT_MSG = { fobi: "Sientes cómo las miradas te apuñalan desde abajo. La 
 const DUCK_LEVEL_T = 1.6, DUCKS_PER_LEVEL = 5, DRAIN = .11, DRAIN_DUCK = .4, DUCK = { spd: 185, peck: 1.3, mark: .5, r: 70, stun: 1.6, fragile: 6, life: 11, dmg: 16, maxStack: 8 };
 function spiritPhobic(u) { const g = spiritOf(u); return !!(g && g.phobia); }
 function useUlt() { if (netIntercept("ult")) return; useUltFor(G.player); }
-function useUltFor(p) {
+function useUltFor(p) { useUltForTerror(p); }
+function useUltForDucks(p) { // the old duck ultimate, no longer used
   if (G.mode !== "match" || !canAct(p) || p.ult < 100 || spiritPhobic(p)) return;
   p.ult = 0;
   if (p === G.player) showUltMsg(ULT_MSG.fobi); else if (p.netId) netSendTo(p.netId, { t: "ev", e: "ultmsg", msg: ULT_MSG.fobi });
@@ -4480,6 +4495,7 @@ function drawRunDuck(d) {
 
 // ================= ghost art: moods, little gestures with Fobi, and the duck-swarmed state =================
 function drawSpirit(g, part) {
+  if (g.fused) return;
   const y = g.y + Math.sin(g.bob) * 4, t = T(), f = g.face, sway = Math.sin(g.bob * .7) * .06, mood = g.mood || "normal";
   const P = g.phobia, shake = P ? Math.sin(t * 40) * 1.6 : 0;
   if (!g.attached) ell(g.x, g.y + 42, 14, 4, "rgba(120,240,230,.18)");
@@ -4833,7 +4849,7 @@ function guestUpdate(dt) {
   for (const key of LISTS) for (const o of G[key]) if (o._tx !== undefined) { o.x += (o._tx - o.x) * k; o.y += (o._ty - o.y) * k; }
   for (const a of G.allies) if (a._tx !== undefined) { a.x += (a._tx - a.x) * k; a.y += (a._ty - a.y) * k; }
   // shoves from the host (like the Partier's speaker) are applied here, since I move myself
-  if ((p.kbId || 0) !== (NET.kbId || 0)) { NET.kbId = p.kbId || 0; NET.kb = { x: p.kbx || 0, y: p.kby || 0, t: .3 }; }
+  if ((p.kbId || 0) !== (NET.kbId || 0)) { NET.kbId = p.kbId || 0; NET.kb = { x: p.kbx || 0, y: p.kby || 0, t: p.kbDur || .3 }; }
   if (NET.kb && NET.kb.t > 0) { NET.kb.t -= dt; const px = p.x; p.x += NET.kb.x * dt; p.y += NET.kb.y * dt; collideWorld(p, px); if (G.core) pushFromCore(p); }
   if (p.alive && !(p.stun > 0) && !p.enter) {
     let mx = 0, my = 0;
@@ -5699,15 +5715,15 @@ const partySize = () => Math.min(4, 1 + (G && G.allies ? G.allies.filter(a => a.
 const partyDiscount = () => [1, .8, .68, .6][partySize() - 1];
 const upCost = lv => Math.max(1, Math.round(UPG_COST[lv] * (1 + .12 * Math.max(0, (G.wave || 1) - 1)) * partyDiscount()));
 const UPG = {
-  bats: { name: "Murciélagos golosos", key: "Q", desc: "Salen 7 murciélagos de la cerradura hacia la zona marcada. Se prenden a los empleados y les chupan 6 de vida cada cuarto de segundo, hasta 36. Al terminar dejan un caramelo que cura. Espera: 17 s.",
-    paths: [{ name: "Colmillos", lv: ["Los empleados mordidos reciben 25% más daño de todo", "Cada murciélago chupa hasta 54, y si su presa cae salta a otro empleado cercano (hasta 2 veces)", "Los mordidos caminan a la mitad de velocidad y cada mordida te cura 1 de vida"] },
-            { name: "Bandada", lv: ["9 murciélagos", "11 murciélagos y 2 s menos de espera", "14 murciélagos y 4 s menos de espera"] }] },
-  tomb: { name: "Tumba", key: "E", desc: "Fobi patea una tumba a la zona marcada. Los empleados la atacan y cada golpe hace salir 3 esqueletos (hasta 15 a la vez). Aguanta 10 golpes. Espera: 30 s.",
-    paths: [{ name: "Guardianes", lv: ["Cada vez que salen esqueletos, 15% de que uno sea un esqueleto guardián", "20%, y cuando pasa, todos los que salen son guardianes", "30%, y cuando la tumba se rompe siempre suelta 3 guardianes más"] },
-            { name: "Más huesos", lv: ["30% de que salgan 4 esqueletos en vez de 3", "40% de que salgan 5", "Mitad y mitad: salen 3 o 6"] }] },
-  ghost: { name: "Hombre lobo", key: "R", desc: "Sale un hombre de la cerradura que a los 6 s se transforma en lobo (si lo golpean antes, se escapa). El lobo muerde y embiste al empleado más lejano. Usala de nuevo con el lobo afuera para enfurecerlo. Espera: 24 s.",
-    paths: [{ name: "Alfa", lv: ["El lobo tiene 30% más de vida", "+30% de vida y 25% más de daño", "+60% de vida, 50% más de daño y se transforma en 3 s"] },
-            { name: "Cazador", lv: ["4 s menos de espera", "Embiste cada 4 s en vez de cada 7 y aturde 1 s", "8 s menos de espera y la embestida hace 60% más de daño"] }] }
+  bats: { name: "Murciélago gigante", key: "Q", desc: "Fobi suelta un murciélago enorme que va de empleado en empleado mordiéndolos (13 de daño por mordida). Cada empleado nuevo que muerde suelta 2 caramelos que curan. Después se queda en el piso atrayendo empleados y explota. Espera: 17 s.",
+    paths: [{ name: "Colmillos", lv: ["Mordidas 25% más fuertes", "Mordidas 50% más fuertes y explosión más grande", "Mordidas 80% más fuertes y explosión enorme"] },
+            { name: "Bandada", lv: ["2 s menos de espera", "4 s menos de espera y 3 caramelos por mordida", "6 s menos de espera y el murciélago tiene 50% más de vida como carnada"] }] },
+  tomb: { name: "Tumba", key: "E", desc: "Fobi lanza una tumba entera. Al caer explota (45 de daño) y aturde 1,5 s. Salen 3 esqueletos donde cae y 3 más alrededor de cada empleado golpeado (hasta 24 esqueletos tuyos a la vez). Espera: 30 s.",
+    paths: [{ name: "Guardianes", lv: ["15% de los esqueletos salen como guardianes", "30% salen como guardianes", "50% salen como guardianes y los del impacto siempre lo son"] },
+            { name: "Más huesos", lv: ["4 esqueletos por empleado golpeado", "5 esqueletos en el impacto", "5 por empleado golpeado y explosión 30% más grande"] }] },
+  ghost: { name: "Lobo", key: "R", desc: "Fobi se vuelve un lobo fantasma y embiste hacia donde apuntes (300 de distancia). Muerde a todo lo que cruza (42 de daño), lo aturde y no recibe daño mientras corre. Espera: 14 s.",
+    paths: [{ name: "Alfa", lv: ["25% más de daño", "50% más de daño", "80% más de daño y aturde 1,2 s"] },
+            { name: "Cazador", lv: ["2 s menos de espera", "4 s menos de espera y embestida 20% más larga", "6 s menos de espera y embestida 40% más larga"] }] }
 };
 const UKEYS = ["bats", "tomb", "ghost"]; // the basic attack has no upgrades for now: it's always available, so they were too strong
 function upLv(u, k, p) { const s = u && u.up && u.up[k]; return s && s.p === p ? s.lv : 0; }
@@ -6258,7 +6274,7 @@ function placeSpeaker(e) {
 }
 function knockFesti(u, ax, ay, power) {
   if (!isFesti(u) || !u.alive || u.intangible > 0) return;
-  const d = Math.hypot(ax, ay) || 1; u.kbx = ax / d * power; u.kby = ay / d * power; u.kbT = .3; u.kbId = (u.kbId || 0) + 1;
+  const d = Math.hypot(ax, ay) || 1; u.kbx = ax / d * power; u.kby = ay / d * power; u.kbT = .3; u.kbDur = .3; u.kbId = (u.kbId || 0) + 1;
 }
 function tickKnock(u, dt) { if (!(u.kbT > 0) || u.remote) return; u.kbT -= dt; const px = u.x; u.x += u.kbx * dt; u.y += u.kby * dt; collideWorld(u, px); if (G.core) pushFromCore(u); }
 function updateSpeaker(s, dt) {
@@ -6290,6 +6306,165 @@ function drawCongaLine(e) {
 }
 function drawPucho(e) { // a cigarette in the mouth of anyone on the smoke break (drawn in the employee's own space)
   ctx.save(); ctx.translate(3, -39); ctx.rotate(.2); rrS(0, -1.1, 10, 2.2, .8, "#f4efe4", .7); rr(0, -1.1, 3, 2.2, .5, "#d9a06a"); circ(10.2, 0, 1.6, "#ff7a3a"); ctx.restore();
+}
+// ================= Fobi rework: limb combos, active skills and the Lord Terror fusion =================
+// BASIC ATTACK: every magazine is always hand, boot, hand, boot. Missed limbs just fade away like ghosts. Each limb
+// that HITS stays floating around Fobi and gives a few seconds to land the next one; land all 4 in a row and they
+// reunite into the Señor Ghonzalo (or level him up). If the timer runs out, the floating limbs are lost.
+// ULTIMATE: Fobi fuses with Ghonzalo into a huge Lord Terror. No timer: it lasts as many hits as Ghonzalo had levels.
+// SKILLS: wolf dash in any direction, a thrown tomb that explodes into skeletons, and one giant bat that leaves candy.
+const COMBO_T = 3.2, LIMB_ORDER = ["mano", "bota", "mano", "bota"], SKEL_CAP = 24;
+
+// ---------- limb combo ----------
+function limbFor(u) { return LIMB_ORDER[Math.max(0, Math.min(3, MAG - u.ammo))]; }
+function comboHit(u, kind, e) {
+  if (!u || !isFesti(u) || u.terror || G.mode !== "match") return;
+  const C = u.combo || (u.combo = { limbs: [], t: 0 });
+  C.limbs.push(kind); C.t = COMBO_T;
+  text(e.x, e.y - 96, C.limbs.length + "/4", "#a6f4e8", 12);
+  if (C.limbs.length >= 4) {
+    u.combo = null;
+    const mine = spiritOf(u), cx = u.x, cy = u.y - 40;
+    if (mine) buffSpirit(mine, cx, cy);
+    else { summonSpirit(u, u.x - u.face * 40, u.y - 60); ring(cx, cy + 40, 10, DROP_R * 1.6, "rgba(166,244,232,.8)", .6); text(cx, cy - 40, "¡Volvió el " + SPIRIT_NAME + "!", "#a6f4e8", 16); }
+    burst(cx, cy, "#c9fbf3", 18, 160);
+  }
+}
+function tickCombo(u, dt) {
+  const C = u.combo; if (!C) return;
+  C.t -= dt;
+  if (C.t <= 0 || !u.alive) { burst(u.x, u.y - 60, "#9adfd6", 8, 80); if (u === G.player && C.limbs.length) text(u.x, u.y - 100, "Se perdió el combo", "#9adfd6", 12); u.combo = null; }
+}
+function drawComboLimbs(u) {
+  const C = u.combo; if (!C || !C.limbs.length) return;
+  const t = T(), k = Math.max(0, C.t / COMBO_T);
+  C.limbs.forEach((kind, i) => {
+    const a = -Math.PI / 2 + (i - 1.5) * .55 + Math.sin(t * 2 + i) * .06, r = 46;
+    ctx.save(); ctx.globalAlpha = .45 + .5 * Math.min(1, k * 2.5) * (k < .25 ? (Math.sin(t * 20) > 0 ? 1 : .4) : 1);
+    ctx.translate(u.x + Math.cos(a) * r, u.y - 58 + Math.sin(a) * r * .5 + Math.sin(t * 3 + i) * 3); ctx.scale(1.5, 1.5);
+    ctx.shadowColor = "#a6f4e8"; ctx.shadowBlur = 10; drawShot({ x: 0, y: 0, a: kind === "mano" ? -.4 : .4, kind, tint: u.ai ? u.cos.lining : null }); ctx.shadowBlur = 0;
+    ctx.restore();
+  });
+  // the countdown to land the next one
+  ctx.strokeStyle = k < .25 ? "#ff9a7a" : "rgba(166,244,232,.9)"; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(u.x, u.y - 92, 9, -Math.PI / 2, -Math.PI / 2 + TAU * k); ctx.stroke();
+  label(C.limbs.length + "/4", u.x, u.y - 88, 9, "#e6fffb");
+}
+
+// ---------- ultimate: Lord Terror ----------
+const ULT_TERROR_MSG = "Por un instante, la mano que te faltaba vuelve a sostenerte. Y juntos dan miedo.";
+function ultBlocked(p) { const g = spiritOf(p); return !g || g.fused ? "Falta el " + SPIRIT_NAME : ""; }
+function useUltForTerror(p) {
+  if (G.mode !== "match" || !canAct(p) || p.ult < 100 || p.terror) return;
+  const g = spiritOf(p); if (!g) { if (p === G.player) text(p.x, p.y - 100, "Necesitás al " + SPIRIT_NAME + " para fusionarte", "#a6f4e8", 13); return; }
+  p.ult = 0; p.combo = null; p.burn = 0; p.blindT = 0;
+  if (p === G.player) showUltMsg(ULT_TERROR_MSG); else if (p.netId) netSendTo(p.netId, { t: "ev", e: "ultmsg", msg: ULT_TERROR_MSG });
+  const hits = Math.max(1, g.lvl);
+  g.fused = true; g.attached = false;
+  p.terror = { hits, max: hits, lvl: g.lvl, grow: 0, slamT: 1, iframe: 0 };
+  ring(p.x, p.y, 20, 180, "rgba(120,240,220,.85)", .8); burst(p.x, p.y - 60, "#a6f4e8", 40, 260, 4); burst(p.x, p.y - 60, "#3a1a5a", 30, 220, 4);
+  text(p.x, p.y - 150, "¡LORD TERROR!", "#c9fbf3", 22);
+  fobiFeel(p, "proud", 3);
+}
+function tickTerror(u, dt) {
+  const L = u.terror; if (!L) return;
+  L.grow = Math.min(1, L.grow + dt * 2.5); L.iframe = Math.max(0, L.iframe - dt);
+  if (!u.alive) { endTerror(u); return; }
+  // Ghonzalo's fists, fused into him: a heavy slam on whoever is close
+  L.slamT -= dt;
+  if (L.slamT <= 0) {
+    const near = G.enemies.filter(e => !e.dead && !e.hidden && dist(e, u) < 150 + e.r);
+    if (near.length) {
+      L.slamT = 1.1; const dmg = 26 * (1 + .25 * (L.lvl - 1)) * dmgMul(u);
+      near.forEach(e => { hurtEnemy(e, dmg, { from: u }); stars(e.x, e.y - 30); });
+      ring(u.x, u.y, 10, 150, "rgba(120,240,220,.75)", .4); burst(u.x, u.y, "#5a2a8a", 14, 160);
+    } else L.slamT = .2;
+  }
+}
+// returns true when the hit was taken by the fusion instead of the health bar
+function terrorAbsorb(t, amt) {
+  const L = t.terror; if (!L) return false;
+  if (amt < 3 || L.iframe > 0) return true; // small chip damage (burns, puddles) doesn't break the fusion
+  L.hits--; L.iframe = .7; t.flash = .2;
+  text(t.x, t.y - 170, L.hits > 0 ? "♥ " + L.hits : "¡Se rompe la fusión!", "#c9fbf3", 15); ring(t.x, t.y - 60, 10, 90, "rgba(200,250,240,.8)", .3);
+  if (t === G.player) feelHurt(6);
+  if (L.hits <= 0) endTerror(t);
+  return true;
+}
+function endTerror(u) {
+  if (!u.terror) return;
+  u.terror = null; u.intangible = Math.max(u.intangible, 1.2);
+  const g = G.spirits.find(s => !s.dead && s.from === u && s.fused);
+  if (g) { // he comes out of the fusion exhausted, back at level 1
+    g.fused = false; g.lvl = 1; const S0 = spiritStats(1); g.maxhp = S0.hp; g.hp = S0.hp; g.x = u.x - u.face * 40; g.y = u.y - 60; g.appear = 0; fobiFeel(u, "worried", 2);
+  }
+  burst(u.x, u.y - 60, "#a6f4e8", 30, 220, 3); ring(u.x, u.y, 10, 140, "rgba(166,244,232,.7)", .5);
+}
+function drawTerrorBack(u) { // the huge phantom of Ghonzalo wrapped around Fobi, drawn behind him
+  const L = u.terror; if (!L) return;
+  const t = T(), k = L.grow;
+  ctx.save(); ctx.translate(u.x, u.y);
+  ctx.globalAlpha = .35 * k; ctx.fillStyle = rg(0, -70, 10, 130, ["rgba(90,40,140,.9)", "rgba(90,40,140,0)"]); ctx.beginPath(); ctx.ellipse(0, -70, 120, 120, 0, 0, TAU); ctx.fill();
+  for (let i = 0; i < 8; i++) { const a = t * 1.5 + i * .8, r = 60 + Math.sin(t * 3 + i) * 8; ctx.globalAlpha = .5 * k; circ(Math.cos(a) * r, -60 + Math.sin(a) * r * .4, 5 + (i % 3) * 2, i % 2 ? "#5a2a8a" : "#7fe0d0"); }
+  // a giant, darkened Señor Ghonzalo (empty trench coat, beret, gloves) looming over Fobi with glowing eyes
+  ctx.globalAlpha = .92 * k; ctx.translate(0, Math.sin(t * 1.6) * 3); const sc = 2.5 * k; ctx.scale(sc, sc);
+  ctx.filter = "brightness(.62) saturate(1.3)";
+  try { drawSpirit({ x: 0, y: -52, face: u.face, lvl: 5, mood: "angry", bob: t * 2, attached: true, appear: 1, swing: 0, pump: 0 }); } catch (err) {}
+  ctx.filter = "none";
+  ctx.globalAlpha = k; ctx.shadowColor = "#7fffe8"; ctx.shadowBlur = 8; circ(-4.5 * u.face, -52 - 28, 2.4, "#bffff4"); circ(4.5 * u.face, -52 - 28, 2.4, "#bffff4"); ctx.shadowBlur = 0;
+  ctx.restore();
+}
+function drawTerrorFront(u) {
+  const L = u.terror; if (!L) return;
+  for (let i = 0; i < L.max; i++) { const x = u.x - (L.max - 1) * 9 + i * 18; ctx.save(); ctx.translate(x, u.y - 182); ctx.globalAlpha = i < L.hits ? 1 : .25; ghostPath(0, 0, 6); S(i < L.hits ? "#c9fbf3" : "#5a6a70", 1.2); ctx.restore(); }
+}
+
+// ---------- skills ----------
+// wolf dash: Fobi turns into a ghostly wolf for a moment and charges wherever you aim, biting everything in the way
+const DASH_SPD = 950;
+function wolfDash(u, pt) {
+  const al = upLv(u, "ghost", 0), hb = upLv(u, "ghost", 1), range = 300 * [1, 1, 1.2, 1.4][hb];
+  const a = Math.atan2(pt.y - u.y, pt.x - u.x), dur = range / DASH_SPD;
+  u.kbx = Math.cos(a) * DASH_SPD; u.kby = Math.sin(a) * DASH_SPD; u.kbT = dur; u.kbDur = dur; u.kbId = (u.kbId || 0) + 1;
+  u.dashT = dur + .05; u.dashHit = []; u.dashA = a; u.intangible = Math.max(u.intangible, dur + .15);
+  u.dashDmg = 42 * [1, 1.25, 1.5, 1.8][al] * dmgMul(u); u.dashStun = al >= 3 ? 1.2 : .6;
+  if (Math.abs(Math.cos(a)) > .2) u.face = Math.sign(Math.cos(a));
+  text(u.x, u.y - 100, "¡AUUU!", "#ffcf8a", 16); burst(u.x, u.y - 30, "#8a6040", 12, 160);
+}
+function tickDash(u, dt) {
+  if (!(u.dashT > 0)) return;
+  u.dashT -= dt;
+  for (const e of G.enemies) {
+    if (e.dead || e.hidden || u.dashHit.includes(e)) continue;
+    if (dist(e, u) < e.r + u.r + 26) { u.dashHit.push(e); hurtEnemy(e, u.dashDmg, { from: u }); e.stun = Math.max(e.stun || 0, u.dashStun); stars(e.x, e.y - 30); burst(e.x, e.y - 30, "#8a6040", 8, 120); }
+  }
+  if (Math.random() < dt * 40) G.parts.push({ x: u.x + rand(-10, 10), y: u.y - rand(10, 50), vx: -Math.cos(u.dashA) * 80, vy: -Math.sin(u.dashA) * 80, life: .35, max: .35, color: pick(["rgba(166,244,232,.7)", "rgba(200,160,110,.7)"]), size: 4 });
+}
+function drawDashWolf(u) {
+  if (!(u.dashT > 0)) return;
+  ctx.save(); ctx.globalAlpha = .55;
+  try { drawWolf({ x: u.x, y: u.y + 4, state: "wolf", face: u.face, walk: G.t * 20, flash: 0, shake: 0, rageLv: 0, rageT: 0, swing: 0, white: false, action: null, hp: 1, maxhp: 1, r: 17 }); } catch (err) {}
+  ctx.restore();
+}
+// the thrown tomb: lands, explodes and stuns; 3 skeletons crawl out where it lands, and 3 more around every employee it hit
+function tombBlast(f) {
+  const u = f.from, ga = upLv(u, "tomb", 0), qb = upLv(u, "tomb", 1);
+  const R = 95 * (qb >= 3 ? 1.3 : 1), dmg = 45 * dmgMul(u), perHit = [3, 4, 4, 5][qb], atImpact = [3, 3, 5, 5][qb], gch = [0, .15, .3, .5][ga];
+  ring(f.tx, f.ty, 10, R, "rgba(170,150,220,.85)", .5); burst(f.tx, f.ty - 10, "#8d8a98", 26, 220, 4); burst(f.tx, f.ty - 10, "#d9d2bd", 14, 160);
+  const hit = G.enemies.filter(e => !e.dead && !e.hidden && Math.hypot(e.x - f.tx, (e.y - f.ty) / .8) < R + e.r);
+  hit.forEach(e => { hurtEnemy(e, dmg, { from: u }); if (!e.boss) e.stun = Math.max(e.stun || 0, 1.5); stars(e.x, e.y - 34); });
+  let mine = G.skeletons.filter(s => !s.dead && s.from === u).length;
+  const raise = (x, y, big) => { if (mine >= SKEL_CAP) return; mine++; const s = makeSkeleton(x, y, x, y, big, u); collideWorld(s); G.skeletons.push(s); burst(s.x, s.y, big ? "#e6d29a" : "#d9d2bd", 5, 90); };
+  for (let i = 0; i < atImpact; i++) { const a = i / atImpact * TAU; raise(f.tx + Math.cos(a) * 34, f.ty + Math.sin(a) * 22 + 10, ga >= 3 || Math.random() < gch); }
+  hit.forEach(e => { for (let i = 0; i < perHit; i++) { const a = i / perHit * TAU + rand(-.3, .3); raise(e.x + Math.cos(a) * (e.r + 22), e.y + Math.sin(a) * (e.r + 14), Math.random() < gch); } });
+  if (hit.length) text(f.tx, f.ty - 80, "¡" + hit.length + " rodeados!", "#e8e2cf", 15);
+}
+// one giant bat: zigzags from employee to employee biting them all (each new bite drops candy), then lands as bait and explodes
+function launchBigBat(u, pt) {
+  const ca = upLv(u, "bats", 0), bb = upLv(u, "bats", 1), k = keyholePos(u), a = Math.atan2(pt.y - k.y, pt.x - k.x);
+  const hp = 70 * (bb >= 3 ? 1.5 : 1);
+  G.bigbats.push({ kind: "bigbat", x: k.x, y: k.y, vx: Math.cos(a) * 320, vy: Math.sin(a) * 320, state: "fly", t: 2.6, tick: 0, absorbed: 0, hp, maxhp: hp, r: 26, taunt: true, flash: 0, flap: 0,
+    from: u, bitten: [], candies: 0, biteK: [1, 1.25, 1.5, 1.8][ca], boomR: [175, 175, 200, 230][ca], perBite: bb >= 2 ? 3 : 2 });
+  text(u.x, u.y - 110, "¡Murciélago gigante!", "#ff9fb3", 15);
 }
 
 // ================= waves, objectives, slot machine =================
@@ -6609,15 +6784,16 @@ function updateHUD() {
   const bkey = bosses.map(b => b.type + Math.ceil(b.hp)).join();
   if (hc.boss !== bkey) { hc.boss = bkey; $("bossBox").innerHTML = bosses.map(b => `<div class="panel boss"><div class="bn"><span>${b.type === "mocha" ? "Mocha" : "???"} <em>${b.type === "mocha" ? "Empleada" : "Empleado"} del mes</em></span><span>${Math.ceil(b.hp)}</span></div><div class="bb"><i style="width:${(100 * b.hp / b.maxhp).toFixed(1)}%"></i></div></div>`).join(""); }
   const M = G.monster, um = M && !M.used;
-  [["bQ", "nQ", "tQ", "bats", "Murciélagos", "Gigante", SKILL_CD.bats], ["bE", "nE", "tE", "tomb", "Tumba", "Guardianes", SKILL_CD.tomb], ["bR", "nR", "tR", "ghost", "Hombre lobo", "Lobo blanco", SKILL_CD.ghost]].forEach(([b, n, tc, k, a, u, max]) => {
+  [["bQ", "nQ", "tQ", "bats", "Murciélago", "Gigante", SKILL_CD.bats], ["bE", "nE", "tE", "tomb", "Tumba", "Guardianes", SKILL_CD.tomb], ["bR", "nR", "tR", "ghost", "Lobo", "Lobo blanco", SKILL_CD.ghost]].forEach(([b, n, tc, k, a, u, max]) => {
     setText(n, um ? u : a); setClass(b, "ultmode", um);
     setCd(b, um ? 0 : p.cd[k] / ((p.cdMax && p.cdMax[k]) || max)); setText(tc, !um && p.cd[k] > 0 ? String(Math.ceil(p.cd[k])) : "");
     setClass(b, "disabled", !p.alive || p.stun > 0);
   });
   const myWolf = G.wolves.find(w => !w.dead && !w.white && w.from === p && (w.state === "wolf" || w.state === "rage"));
-  setClass("bR", "rage", !!myWolf && !um); if (myWolf && !um) setText("nR", "Enfurecer");
+  setClass("bR", "rage", false);
   const ready = p.ult >= 100 && !M;
-  const fob = spiritPhobic(p); const rdy = ready && !fob; setText("nF", fob ? "¡Patos!" : rdy ? "¡Lista!" : Math.floor(p.ult) + "%"); setCd("bF", fob ? 0 : 1 - p.ult / 100); setClass("bF", "ready", rdy);
+  const L = p.terror, blocked = ultBlocked(p), rdy = ready && !L && !blocked;
+  setText("nF", L ? "♥ " + L.hits + "/" + L.max : ready && blocked ? "Sin Ghonzalo" : rdy ? "¡Fusión!" : Math.floor(p.ult) + "%"); setCd("bF", L ? 0 : 1 - p.ult / 100); setClass("bF", "ready", rdy);
   setText("nP", p.potion ? POTIONS[p.potion].name : "Poción");
   $("bP").style.setProperty("--potc", p.potion ? POTIONS[p.potion].color : "#bdb0d2"); setClass("bP", "disabled", !p.potion);
   setClass("bA", "disabled", !p.alive || p.stun > 0);
